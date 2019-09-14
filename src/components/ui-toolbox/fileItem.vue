@@ -1,13 +1,19 @@
 <template>
-  <li class="file-item notification">
-    <div class="delete" @click="$emit('delete')">x</div>
-    <div class="level">
-      <div class="level-left">
-        <p class="filename level-item">{{filename}}</p>
-      </div>
-      <div class="level-right">
-        <p class="filetype level-item">{{filetype==''?'no defined type':filetype}}</p>
-        <p class="filesize level-item">{{filesizeFormated}}</p>
+  <li class="file-item level has-background-light box">
+    <div class="level-left">
+      <p class="filename level-item">{{filename}}</p>
+    </div>
+    <div class="level-right">
+      <p class="filetype level-item">{{filetype==''?'no defined type':filetype}}</p>
+      <p class="filesize level-item">{{filesizeFormated}}</p>
+      <div class="level-item">
+        <p class="buttons">
+          <button class="button is-danger is-small is-rounded" @click="$emit('delete')">
+            <span class="icon is-small">
+                <i class="fas fa-times fa-inverse"></i>
+            </span>
+          </button>
+        </p>
       </div>
     </div>
   </li>

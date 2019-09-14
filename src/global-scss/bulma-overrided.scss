@@ -1,0 +1,22 @@
+$cyan: #4c97ca;
+$red: #e0657d;
+$info-hover-override: #226c9e;
+$danger-hover-override: #d00730;
+
+@import 'bulma/bulma';
+
+.button {
+  &.is-info {
+    &.is-hovered,
+    &:hover {
+      background-color: $info-hover-override;
+    }
+  }
+
+  &.is-danger {
+    &.is-hovered,
+    &:hover {
+      background-color: $danger-hover-override;
+    }
+  }
+}

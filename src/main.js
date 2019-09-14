@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
 
-import 'bulma/css/bulma.css'
+import './global-scss/bulma-overrided.scss'
 import '@fortawesome/fontawesome-free/css/all.css'
 import router from './router'
 
