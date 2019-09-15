@@ -2219,6 +2219,11 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
+chardet@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.8.0.tgz#215e9e457296aa88fb0c38b010fd7a7e20482ed3"
+  integrity sha512-fRAe54sDSPvCz9I3puKUoUpLBEIUjlwBoNyNcD2eAiP5Ybw2iXnrT7w15hfkNywosXFNllWwvOKsxl7UUCKQaQ==
+
 check-types@^8.0.3:
   version "8.0.3"
   resolved "https://registry.yarnpkg.com/check-types/-/check-types-8.0.3.tgz#3356cca19c889544f2d7a95ed49ce508a0ecf552"
