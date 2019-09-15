@@ -1,12 +1,13 @@
 <template>
   <div class="dropfile-box box" ref="dropArea">
-    <span>Drag your your file here</span>
+    <span class="content box">Drag your file here</span>
     <ul class="filelist">
       <fileItem
         v-for="(file, key) in $store.state.files.list"
         :key="key"
         :filedata="file"
         @delete="removeFile(key)"
+        @play="useFile(key)"
       />
     </ul>
   </div>
@@ -28,6 +29,17 @@ export default {
   methods: {
     removeFile (fileKey) {
       this.$store.dispatch('DEL_AND_UNLOG_FILE', fileKey)
+    },
+    useFile (fileKey) {
+      if (this.$store.state.files.list[fileKey]) {
+        this.$store.dispatch('ANALYZE_CSV', this.$store.state.files.list[fileKey].path)
+        this.$router.push({
+          name: 'csv-loading',
+          params: {
+            msg: 'Please wait while I analyze this file'
+          }
+        })
+      }
     }
   },
   created () {
