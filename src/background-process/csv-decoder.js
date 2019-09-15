@@ -2,6 +2,7 @@ import { promises as fsp } from 'fs'
 import { ipcMain } from 'electron'
 import chardet from 'chardet'
 import iconv from 'iconv-lite'
+import csvParser from 'csvtojson'
 
 function checkEncoding (buffer) {
   return new Promise((resolve, reject) => {
@@ -18,14 +19,31 @@ async function openCsv (path) {
   }
 }
 
+async function decodeCsv (csvString, delimiter) {
+  const params = {
+    ignoreEmpty: true,
+    delimiter: [';', ',', '|']
+  }
+  if (delimiter) params.delimiter = delimiter
+  return csvParser(params).fromString(csvString)
+}
+
 const init = function () {
   ipcMain.on('analyzeCsv', (event, path) => {
-    openCsv(path).then((data) => {
-      event.reply('analyzedCsv', data)
-    }).catch(err => {
-      console.error('An error occurred reading the file :' + err)
-      event.reply('csvReadError', err)
-    })
+    var csvData = {}
+    openCsv(path)
+      .then(data => {
+        csvData = data
+        return decodeCsv(data.file)
+      })
+      .then(json => {
+        csvData.file = json
+        event.reply('analyzedCsv', csvData)
+      })
+      .catch(err => {
+        console.error('An error occurred reading the file :' + err)
+        event.reply('csvReadError', err)
+      })
   })
 }
 
