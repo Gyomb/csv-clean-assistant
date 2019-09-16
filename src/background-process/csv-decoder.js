@@ -10,6 +10,21 @@ function checkEncoding (buffer) {
   })
 }
 
+function getCsvDelimiter (header, csvString) {
+  function trimEscapedQuote (string) {
+    return string.replace(/\\"/g, '')
+  }
+  try {
+    const trimmedString = trimEscapedQuote(csvString).replace(/"/g, '')
+    const delimiterStartIndex = trimEscapedQuote(header[0]).length
+    const delimiterEndIndex = trimmedString.indexOf(trimEscapedQuote(header[1]))
+    return trimmedString.substring(delimiterStartIndex, delimiterEndIndex)
+  } catch (err) {
+    console.error(err)
+    return ','
+  }
+}
+
 async function openCsv (path) {
   var fileBuffer = await fsp.readFile(path)
   var encoding = await checkEncoding(fileBuffer)
@@ -25,11 +40,15 @@ async function decodeCsv (csvString, delimiter) {
     ignoreEmpty: true,
     delimiter: [';', ',', '|']
   }
-  if (delimiter) params.delimiter = delimiter
+  if (delimiter) {
+    params.delimiter = delimiter
+    csvData.delimiter = delimiter
+  }
   return csvParser(params)
     .on('header', header => { csvData.header = header })
     .fromString(csvString)
     .then(json => {
+      if (!csvData.delimiter) csvData.delimiter = getCsvDelimiter(csvData.header, csvString)
       csvData.json = json
       return csvData
     })

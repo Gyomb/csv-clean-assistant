@@ -39,7 +39,7 @@ const actions = {
   },
   SAVE_CSV ({ state, commit }, filename) {
     commit('CSV_STATUS_UPDATE', 'saving')
-    let { json, encoding, header } = state
+    let { json, encoding, header, delimiter } = state
     ipcRenderer.once('savedCsv', (event, content) => {
       commit('CSV_STATUS_UPDATE', 'saved')
       commit('CSV_STATUS_UPDATE', 'ready')
@@ -48,7 +48,7 @@ const actions = {
       console.error({ csvSaveError: msg })
       commit('CSV_STATUS_UPDATE', msg)
     })
-    ipcRenderer.send('saveCsv', { json, encoding, header })
+    ipcRenderer.send('saveCsv', { json, encoding, header, delimiter })
   }
 }
 
