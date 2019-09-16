@@ -75,7 +75,7 @@ export default {
           for (const key in e.dataTransfer.files[i]) {
             fileDescriptor[key] = e.dataTransfer.files[i][key]
           }
-          if (fileDescriptor.type === '' || /^text/.test(fileDescriptor.type)) {
+          if (fileDescriptor.type === '' || /^text|ms-excel/.test(fileDescriptor.type)) {
             this.$store.dispatch('ADD_AND_LOG_FILE', fileDescriptor)
           } else {
             console.log('cannot drag ' + fileDescriptor.type + ' files')
