@@ -12,9 +12,9 @@ const mutations = {
     Vue.set(state, 'csvRequestStatus', status)
   },
   CSV_CONTENT_UPDATE (state, content) {
-    if(typeof content === 'object') {
+    if (typeof content === 'object') {
       for (const prop in content) {
-        if(state[prop] !== content[prop]) {
+        if (state[prop] !== content[prop]) {
           Vue.set(state, prop, content[prop])
         }
       }

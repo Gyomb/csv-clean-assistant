@@ -27,7 +27,7 @@ async function decodeCsv (csvString, delimiter) {
   }
   if (delimiter) params.delimiter = delimiter
   return csvParser(params)
-    .on('header', header => csvData.header = header)
+    .on('header', header => { csvData.header = header })
     .fromString(csvString)
     .then(json => {
       csvData.json = json
@@ -44,7 +44,7 @@ const init = function () {
         return decodeCsv(data.file)
       })
       .then(decodedData => {
-        csvData = {...csvData, ...decodedData}
+        csvData = { ...csvData, ...decodedData }
         event.reply('analyzedCsv', csvData)
       })
       .catch(err => {
