@@ -6,6 +6,7 @@ import {
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 import csvDecoder from './background-process/csv-decoder'
+import csvEncoder from './background-process/csv-encoder'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -72,6 +73,7 @@ app.on('ready', async () => {
   }
   createWindow()
   csvDecoder.init()
+  csvEncoder.init()
 })
 
 // Exit cleanly on request from parent process in development mode.
