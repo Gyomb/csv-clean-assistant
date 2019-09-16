@@ -20,12 +20,19 @@ async function openCsv (path) {
 }
 
 async function decodeCsv (csvString, delimiter) {
+  const csvData = {}
   const params = {
     ignoreEmpty: true,
     delimiter: [';', ',', '|']
   }
   if (delimiter) params.delimiter = delimiter
-  return csvParser(params).fromString(csvString)
+  return csvParser(params)
+    .on('header', header => csvData.header = header)
+    .fromString(csvString)
+    .then(json => {
+      csvData.json = json
+      return csvData
+    })
 }
 
 const init = function () {
@@ -36,8 +43,8 @@ const init = function () {
         csvData = data
         return decodeCsv(data.file)
       })
-      .then(json => {
-        csvData.file = json
+      .then(decodedData => {
+        csvData = {...csvData, ...decodedData}
         event.reply('analyzedCsv', csvData)
       })
       .catch(err => {

@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <pre>{{$store.state.csv.csvContent}}</pre>
+    <pre>{{$store.state.csv.json}}</pre>
   </div>
 </template>
 
