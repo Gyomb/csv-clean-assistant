@@ -21,13 +21,13 @@
 
 <script>
 export default {
-  name:'bulmaFileSelect',
-  data(){
+  name: 'bulmaFileSelect',
+  data () {
     return {
       filename: ''
     }
   },
-  props :{
+  props: {
     fieldId: String,
     picto: {
       String,
@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     faPicto () {
-      return 'fas fa-'+this.picto
+      return 'fas fa-' + this.picto
     },
     filenameDisplay () {
       return this.filename ? this.filename : this.placeholder
