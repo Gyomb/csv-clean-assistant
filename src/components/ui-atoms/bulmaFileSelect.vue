@@ -1,7 +1,12 @@
 <template>
   <div class="file has-name">
     <label :for="fieldId" class="file-label">
-      <input type="file" name="resume" :id="fieldId" class="file-input">
+      <input type="file" class="file-input"
+        :id="fieldId" :name="fieldId"
+        :webkitdirectory="isFolder"
+        :multiple="isMultiple"
+        @change="fileSelected"
+      >
       <span class="file-cta is-primary">
         <span class="file-icon">
           <i :class="faPicto"></i>
@@ -33,8 +38,12 @@ export default {
     },
     label: { default: '' },
     placeholder: {
+      type: [String, Boolean],
+      default: false
+    },
+    selectType: {
       type: String,
-      default: 'Select a folder...'
+      default: ''
     }
   },
   computed: {
@@ -42,7 +51,31 @@ export default {
       return 'fas fa-' + this.picto
     },
     filenameDisplay () {
-      return this.filename ? this.filename : this.placeholder
+      if (this.filename) {
+        return this.filename
+      } else if (this.placeholder) {
+        return this.placeholder
+      } else if (this.placeholder === '') {
+        return this.isFolder ? 'Select a folder...' : 'Select a file...'
+      } else {
+        return ''
+      }
+    },
+    isFolder () {
+      return /folder|directory/.test(this.selectType)
+    },
+    isMultiple () {
+      return /multiple/.test(this.selectType)
+    }
+  },
+  methods: {
+    fileSelected (e) {
+      if (this.isMultiple) {
+        this.filename = Array.from(e.target.files).map(file => file.name).join(', ')
+      } else {
+        this.filename = e.target.files[0].name
+      }
+      this.$emit('file-selected', e.target.files)
     }
   }
 }
