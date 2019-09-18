@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <div id="nav">
+      <router-link v-if="$route.path != '/'" to="/">Home</router-link>
+    </div>
     <router-view/>
   </div>
 </template>
