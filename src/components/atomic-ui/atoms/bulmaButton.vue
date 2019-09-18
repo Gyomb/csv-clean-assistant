@@ -1,7 +1,7 @@
 <template>
   <button class="button is-rounded" :class="[colorClass]" @click="$emit('click')">
     <span class="icon is-small" v-if="picto">
-        <i class="fas fa-play fa-inverse" :class="[iconClass]"></i>
+        <i class="fas" :class="[iconClass, {'fa-inverse': !!purpose}]"></i>
     </span>
     <span v-if="label">{{label}}</span>
   </button>

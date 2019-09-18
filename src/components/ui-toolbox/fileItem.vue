@@ -8,16 +8,8 @@
       <p class="filesize level-item">{{filesizeFormated}}</p>
       <div class="level-item">
         <p class="buttons">
-          <button class="button is-info is-small is-rounded" @click="$emit('play')">
-            <span class="icon is-small">
-                <i class="fas fa-play fa-inverse"></i>
-            </span>
-          </button>
-          <button class="button is-danger is-small is-rounded" @click="$emit('delete')">
-            <span class="icon is-small">
-                <i class="fas fa-times fa-inverse"></i>
-            </span>
-          </button>
+          <bulmaButton class="is-small" purpose="info" picto="play" @click="$emit('play')" />
+          <bulmaButton class="is-small" purpose="" picto="times" @click="$emit('delete')" />
         </p>
       </div>
     </div>
