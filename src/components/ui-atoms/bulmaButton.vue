@@ -1,5 +1,5 @@
 <template>
-  <button class="button is-small is-rounded" :class="[colorClass]" @click="$emit('click')">
+  <button class="button is-rounded" :class="[colorClass]" @click="$emit('click')">
     <span class="icon is-small" v-if="picto">
         <i class="fas fa-play fa-inverse" :class="[iconClass]"></i>
     </span>
