@@ -1,15 +1,17 @@
 <template>
-  <div class="about">
+  <div class="csv-display">
+    <saveFileControls />
     <pre>{{$store.state.csv.json}}</pre>
   </div>
 </template>
 
 <script>
-// import dropfileBox from '@/components/dropfileBox'
+import saveFileControls from '@/components/saveFileControls.vue'
 
 export default {
   name: 'csv-display',
   components: {
+    saveFileControls
   },
   methods: {
   }
