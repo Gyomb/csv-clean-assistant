@@ -27,7 +27,8 @@ export default {
   name: 'bulmaFileSelect',
   data () {
     return {
-      filename: ''
+      filename: '',
+      filepath: ''
     }
   },
   props: {
@@ -51,8 +52,11 @@ export default {
       return 'fas fa-' + this.picto
     },
     filenameDisplay () {
-      if (this.filename) {
+      if (!this.isFolder && this.filename) {
+        if (Array.isArray(this.filename)) return this.filename.join(', ')
         return this.filename
+      } else if (this.isFolder && this.filepath) {
+        return this.filepath
       } else if (this.placeholder) {
         return this.placeholder
       } else if (this.placeholder === '') {
@@ -71,9 +75,13 @@ export default {
   methods: {
     fileSelected (e) {
       if (this.isMultiple) {
-        this.filename = Array.from(e.target.files).map(file => file.name).join(', ')
+        for (const file of e.target.files) {
+          this.filename.push(file.name)
+          this.filepath.push(file.path)
+        }
       } else {
         this.filename = e.target.files[0].name
+        this.filepath = e.target.files[0].path
       }
       this.$emit('file-selected', e.target.files)
     }
