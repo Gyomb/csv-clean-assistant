@@ -1,6 +1,6 @@
 <template>
-  <div class="modal">
-    <div class="modal-background"></div>
+  <div class="modal" :class="{'is-active': isActive}">
+    <div class="modal-background" @click="close()"></div>
     <div :class="isCard ? 'modal-card' : 'modal-content'">
       <template v-if="isCard">
         <header class="modal-card-head">
@@ -28,6 +28,10 @@
 export default {
   name: 'bulmaModal',
   props: {
+    isActive: {
+      type: Boolean,
+      default: false
+    },
     noBox: {
       type: Boolean,
       default: false
@@ -51,3 +55,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  .modal-background {
+    cursor: pointer;
+  }
+</style>
