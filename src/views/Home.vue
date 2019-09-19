@@ -1,12 +1,9 @@
 <template>
-  <div class="home section">
-    <div class="container">
-      <img alt="Vue logo" src="../assets/logo.png">
-      <p class="content">
-        How can I help you today?
-      </p>
-      <dropfileBox />
-    </div>
+  <div class="home">
+    <p class="content">
+      How can I help you today?
+    </p>
+    <dropfileBox />
   </div>
 </template>
 
@@ -18,6 +15,8 @@ export default {
   name: 'home',
   components: {
     dropfileBox
+  },
+  methods: {
   }
 }
 </script>
