@@ -25,13 +25,11 @@
 <script>
 export default {
   name: 'bulmaFileSelect',
-  data () {
-    return {
-      filename: '',
-      filepath: ''
-    }
-  },
   props: {
+    value: {
+      type: [String, Array],
+      default: ''
+    },
     fieldId: String,
     picto: {
       String,
@@ -41,6 +39,13 @@ export default {
     placeholder: {
       type: [String, Boolean],
       default: false
+    },
+    display: {
+      type: String,
+      default: 'name',
+      validator(value) {
+        return value === 'name' || value === 'path'
+      }
     },
     selectType: {
       type: String,
@@ -52,11 +57,14 @@ export default {
       return 'fas fa-' + this.picto
     },
     filenameDisplay () {
-      if (!this.isFolder && this.filename) {
-        if (Array.isArray(this.filename)) return this.filename.join(', ')
-        return this.filename
-      } else if (this.isFolder && this.filepath) {
-        return this.filepath
+      if (this.value) {
+        let folderEndString = ''
+        if(this.isFolder) {
+          folderEndString = this.value.includes('\\') ? `\\` : '/' // use 'slash' as folder ending, except on windows, if the fullpath was provided
+        }
+        console.log(folderEndString)
+        if (Array.isArray(this.value)) return this.value.join(folderEndString + ', ') + folderEndString
+        return this.value + folderEndString
       } else if (this.placeholder) {
         return this.placeholder
       } else if (this.placeholder === '') {
@@ -74,16 +82,13 @@ export default {
   },
   methods: {
     fileSelected (e) {
-      if (this.isMultiple) {
-        for (const file of e.target.files) {
-          this.filename.push(file.name)
-          this.filepath.push(file.path)
-        }
-      } else {
-        this.filename = e.target.files[0].name
-        this.filepath = e.target.files[0].path
+      let value = Array.from(e.target.files).map(file => file[this.display])
+      let files = e.target.files
+      if(!this.isMultiple) {
+        value = value[0]
+        files = [e.target.files[0]]
       }
-      this.$emit('file-selected', e.target.files)
+      this.$emit('select', {value, files})
     }
   }
 }

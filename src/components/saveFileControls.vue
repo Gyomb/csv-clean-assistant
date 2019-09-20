@@ -9,7 +9,10 @@
       <h2 slot="header">Choose where to save your file&hellip;</h2>
       <bulmaField>
         <label>In a new file :</label>
-        <bulmaFileSelect select-type="folder" picto="folder" placeholder />
+        <bulmaFileSelect class="is-fullwidth"
+          select-type="folder" picto="folder" placeholder display="path" 
+          :value="folderpath" @select="folderSelected" 
+        />
       </bulmaField>
       <bulmaField>
         <input type="text" class="input" placeholder="Enter a filename...">
@@ -17,7 +20,10 @@
       <hr>
       <bulmaField>
         <label>In an existing file :</label>
-        <bulmaFileSelect picto="file" placeholder/>
+        <bulmaFileSelect 
+          picto="file" placeholder 
+          :value="filename" @select="fileSelected"
+        />
       </bulmaField>
       <bulma-button slot="footer" picto="save" purpose="success" label="Save" @click="saveCsv()" />
       <bulma-button slot="footer" picto="times" label="Cancel" @click="fileModalIsActive = false"/>
@@ -31,12 +37,20 @@ export default {
   name: 'save-file-controls',
   data () {
     return {
-      fileModalIsActive: false
+      fileModalIsActive: false,
+      filename: '',
+      folderpath: ''
     }
   },
   methods: {
     saveCsv () {
       this.$store.dispatch('SAVE_CSV', 'filename_test')
+    },
+    folderSelected (folder) {
+      this.folderpath = folder.value
+    },
+    fileSelected (file) {
+      this.filename = file.value
     }
   }
 }
