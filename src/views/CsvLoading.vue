@@ -11,8 +11,8 @@ export default {
       return this.$route.params.msg ? this.$route.params.msg : 'Please wait while loading…'
     },
     csvStatus () {
-      console.log(this.$store.state.csv.csvRequestStatus)
-      return this.$store.state.csv.csvRequestStatus
+      console.log(this.$store.state.csv.loadStatus)
+      return this.$store.state.csv.loadStatus
     }
   },
   watch: {

@@ -1,15 +1,17 @@
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, remote } from 'electron'
 import Vue from 'vue'
 
 const state = {
-  csvRequestStatus: undefined,
-  csvContent: undefined,
+  loadStatus: undefined,
+  content: undefined,
+  newFilename: 'document',
+  newPath: remote.app.getPath('documents'),
   encoding: 'utf-8'
 }
 
 const mutations = {
   CSV_STATUS_UPDATE (state, status) {
-    Vue.set(state, 'csvRequestStatus', status)
+    Vue.set(state, 'loadStatus', status)
   },
   CSV_CONTENT_UPDATE (state, content) {
     if (typeof content === 'object') {
@@ -19,8 +21,12 @@ const mutations = {
         }
       }
     } else {
-      Vue.set(state, 'csvContent', content)
+      Vue.set(state, 'content', content)
     }
+  },
+  CSV_REGISTER_NEW_FILEPATH (state, {filename, filepath}) {
+    state.newFilename = filename
+    state.newFilepath = filepath
   }
 }
 

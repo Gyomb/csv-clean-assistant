@@ -3,7 +3,7 @@
     <bulmaField has-addons>
       <bulma-button picto="save" purpose="success" @click="saveCsv()" />
       <bulma-button picto="search" @click="fileModalIsActive = true" />
-      <input type="text" class="input" disabled />
+      <span class="button is-rounded" @click="fileModalIsActive = true">{{$store.state.csv.newFilename}}</span>
     </bulmaField>
     <bulmaModal :is-active="fileModalIsActive" @close="fileModalIsActive = false">
       <h2 slot="header">Choose where to save your file&hellip;</h2>
