@@ -10,8 +10,8 @@
       <bulmaField>
         <label>In a new file :</label>
         <bulmaFileSelect class="is-fullwidth"
-          select-type="folder" picto="folder" placeholder display="path" 
-          :value="folderpath" @select="folderSelected" 
+          select-type="folder" picto="folder" placeholder display="path"
+          :value="folderpath" @select="folderSelected"
         />
       </bulmaField>
       <bulmaField>
@@ -20,8 +20,8 @@
       <hr>
       <bulmaField>
         <label>In an existing file :</label>
-        <bulmaFileSelect 
-          picto="file" placeholder 
+        <bulmaFileSelect
+          picto="file" placeholder
           :value="filename" @select="fileSelected"
         />
       </bulmaField>

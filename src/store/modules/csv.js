@@ -24,7 +24,7 @@ const mutations = {
       Vue.set(state, 'content', content)
     }
   },
-  CSV_REGISTER_NEW_FILEPATH (state, {filename, filepath}) {
+  CSV_REGISTER_NEW_FILEPATH (state, { filename, filepath }) {
     state.newFilename = filename
     state.newFilepath = filepath
   }

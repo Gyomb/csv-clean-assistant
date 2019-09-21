@@ -43,7 +43,7 @@ export default {
     display: {
       type: String,
       default: 'name',
-      validator(value) {
+      validator (value) {
         return value === 'name' || value === 'path'
       }
     },
@@ -59,7 +59,7 @@ export default {
     filenameDisplay () {
       if (this.value) {
         let folderEndString = ''
-        if(this.isFolder) {
+        if (this.isFolder) {
           folderEndString = this.value.includes('\\') ? `\\` : '/' // use 'slash' as folder ending, except on windows, if the fullpath was provided
         }
         console.log(folderEndString)
@@ -84,11 +84,11 @@ export default {
     fileSelected (e) {
       let value = Array.from(e.target.files).map(file => file[this.display])
       let files = e.target.files
-      if(!this.isMultiple) {
+      if (!this.isMultiple) {
         value = value[0]
         files = [e.target.files[0]]
       }
-      this.$emit('select', {value, files})
+      this.$emit('select', { value, files })
     }
   }
 }
