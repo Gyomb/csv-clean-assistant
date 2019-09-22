@@ -1,11 +1,13 @@
 import { ipcRenderer, remote } from 'electron'
+import path from 'path'
 import Vue from 'vue'
 
 const state = {
   loadStatus: undefined,
   content: undefined,
   newFilename: 'document',
-  newPath: remote.app.getPath('documents'),
+  newPath: path.join(remote.app.getPath('documents'), 'document.csv'),
+  saveMode: 'newfile',
   encoding: 'utf-8'
 }
 
@@ -24,9 +26,10 @@ const mutations = {
       Vue.set(state, 'content', content)
     }
   },
-  CSV_REGISTER_NEW_FILEPATH (state, { filename, filepath }) {
-    state.newFilename = filename
-    state.newFilepath = filepath
+  CSV_SAVE_DATA_UPDATE (state, { filename, filepath, saveMode }) {
+    if (filename) state.newFilename = filename
+    if (filepath) state.newPath = filepath
+    if (saveMode) state.saveMode = saveMode
   }
 }
 
@@ -43,9 +46,9 @@ const actions = {
     })
     ipcRenderer.send('analyzeCsv', path)
   },
-  SAVE_CSV ({ state, commit }, filename) {
+  SAVE_CSV ({ state, commit }, { filename, filepath }) {
+    if (filename && filepath) commit('CSV_SAVE_DATA_UPDATE', { filename, filepath })
     commit('CSV_STATUS_UPDATE', 'saving')
-    let { json, encoding, header, delimiter } = state
     ipcRenderer.once('savedCsv', (event, content) => {
       commit('CSV_STATUS_UPDATE', 'saved')
       commit('CSV_STATUS_UPDATE', 'ready')
@@ -54,7 +57,7 @@ const actions = {
       console.error({ csvSaveError: msg })
       commit('CSV_STATUS_UPDATE', msg)
     })
-    ipcRenderer.send('saveCsv', { json, encoding, header, delimiter })
+    ipcRenderer.send('saveCsv', state)
   }
 }
 

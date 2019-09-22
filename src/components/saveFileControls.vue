@@ -76,11 +76,21 @@ export default {
       switch (this.saveMode) {
         case 'overwrite' :
           completePath = this.overwritePath ? addExtension(this.overwritePath) : ''
+          this.$store.commit('CSV_SAVE_DATA_UPDATE', {
+            filename: this.overwriteFileData.displayValue,
+            filepath: completePath,
+            saveMode: this.saveMode
+          })
           break
         case 'newfile' :
           if (this.newfilePath === '' || this.newfileFilename === '') return ''
           let pathDelimiter = this.newfilePath.includes('\\') ? `\\` : '/' // use 'slash' as folder ending, except on windows, if the fullpath was provided
           completePath = addExtension(this.newfilePath + pathDelimiter + this.newfileFilename)
+          this.$store.commit('CSV_SAVE_DATA_UPDATE', {
+            filename: this.newfileFilename,
+            filepath: completePath,
+            saveMode: this.saveMode
+          })
           break
       }
       return completePath
