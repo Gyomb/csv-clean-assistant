@@ -5,6 +5,7 @@
         :id="fieldId" :name="fieldId"
         :webkitdirectory="isFolder"
         :multiple="isMultiple"
+        :accept="accept"
         @change="fileSelected"
       >
       <span class="file-cta is-primary">
@@ -25,10 +26,19 @@
 <script>
 export default {
   name: 'bulmaFileSelect',
+  model: {
+    prop: 'fileData',
+    event: 'select'
+  },
   props: {
-    value: {
-      type: [String, Array],
-      default: ''
+    fileData: {
+      type: [Object],
+      default () { return { displayValue: '', files: [] } },
+      validator (value) {
+        if (typeof value.displayValue !== 'string' && !Array.isArray(value.displayValue)) return false
+        if (!Array.isArray(value.files)) return false
+        return true
+      }
     },
     fieldId: String,
     picto: {
@@ -50,6 +60,10 @@ export default {
     selectType: {
       type: String,
       default: ''
+    },
+    accept: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -57,14 +71,13 @@ export default {
       return 'fas fa-' + this.picto
     },
     filenameDisplay () {
-      if (this.value) {
+      if (this.fileData.displayValue) {
         let folderEndString = ''
-        if (this.isFolder) {
-          folderEndString = this.value.includes('\\') ? `\\` : '/' // use 'slash' as folder ending, except on windows, if the fullpath was provided
+        if (this.isFolder) { // NOTE: folder input don't allow multiple selection (no need to check for Arrays)
+          folderEndString = this.fileData.displayValue.includes('\\') ? `\\` : '/' // use 'slash' as folder ending, except on windows, if the fullpath was provided
         }
-        console.log(folderEndString)
-        if (Array.isArray(this.value)) return this.value.join(folderEndString + ', ') + folderEndString
-        return this.value + folderEndString
+        if (Array.isArray(this.fileData.displayValue)) return this.fileData.displayValue.join(folderEndString + ', ') + folderEndString
+        return this.fileData.displayValue + folderEndString
       } else if (this.placeholder) {
         return this.placeholder
       } else if (this.placeholder === '') {
@@ -82,13 +95,13 @@ export default {
   },
   methods: {
     fileSelected (e) {
-      let value = Array.from(e.target.files).map(file => file[this.display])
+      let displayValue = Array.from(e.target.files).map(file => file[this.display])
       let files = e.target.files
       if (!this.isMultiple) {
-        value = value[0]
+        displayValue = displayValue[0]
         files = [e.target.files[0]]
       }
-      this.$emit('select', { value, files })
+      this.$emit('select', { displayValue, files })
     }
   }
 }
