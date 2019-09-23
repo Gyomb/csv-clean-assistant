@@ -31,13 +31,17 @@ export default {
 </script>
 
 <style lang="scss">
+  @import "bulma/sass/utilities/_all.sass";
+
   .colhead {
     cursor: pointer;
+    &:hover {
+      color: $link;
+    }
   }
   .colhdead-label {
     text-decoration: underline;
     &:hover {
-      font-weight: bolder;
       text-decoration: none;
     }
   }
