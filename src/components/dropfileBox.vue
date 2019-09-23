@@ -3,9 +3,9 @@
     <span class="content box">Drag your file here</span>
     <ul class="filelist">
       <fileItem
-        v-for="(file, key) in $store.state.files.list"
+        v-for="(fileUid, key) in $store.state.userSettings.fileIdList"
         :key="key"
-        :filedata="file"
+        :filedata="getFileData(fileUid)"
         @delete="removeFile(key)"
         @play="useFile(key)"
       />
@@ -18,35 +18,36 @@ import fileItem from '@/components/ui-toolbox/fileItem'
 
 export default {
   name: 'dropfile-box',
-  data () {
-    return {
-      files: []
-    }
-  },
   components: {
     fileItem
+  },
+  computed: {
+    getFileData () {
+      return (uid) => {
+        let fileData = this.$store.state.files.list[uid]
+        return fileData || {}
+      }
+    }
   },
   methods: {
     removeFile (fileKey) {
       this.$store.dispatch('DEL_AND_UNLOG_FILE', fileKey)
     },
     useFile (fileKey) {
-      if (this.$store.state.files.list[fileKey]) {
+      let file = this.$store.getters.getFileFromFileKey(fileKey)
+      if (file) {
         this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: fileKey })
-        this.$store.dispatch('ANALYZE_CSV', this.$store.state.files.list[fileKey].path)
+        this.$store.dispatch('ANALYZE_CSV', file.path)
         this.$router.push({
           name: 'csv-loading',
           params: {
             msg: 'Please wait while I analyze this file'
           }
         })
+      } else {
+        console.error(`File #${fileKey} doesn't exist.`)
       }
     }
-  },
-  created () {
-    this.$store.state.userSettings.importedFiles.forEach(file => {
-      this.$store.commit('ADD_FILE_IN_LIST', file)
-    })
   },
   mounted () {
     this.$nextTick(() => {

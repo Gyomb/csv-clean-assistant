@@ -8,7 +8,7 @@ const userData = remote.app.getPath('userData')
 const userSettingsPath = path.join(userData, 'user-settings.json')
 
 const defaultValues = {
-  importedFiles: [],
+  fileIdList: [],
   openedFile: false
 }
 
@@ -46,6 +46,17 @@ const state = {
 }
 
 const getters = {
+  getUniqueId: (state) => (fileKey) => {
+    return state.fileIdList[fileKey]
+  },
+  uniqueIdExists: (state) => (uid) => {
+    return state.fileIdList.includes(uid)
+  },
+  getNewUniqueId: (state, getters) => () => {
+    let randomId = `uid${Date.now()}${Math.round(Math.random() * 100)}`
+    console.log(randomId)
+    return getters.uniqueIdExists(randomId) ? getters.getNewUniqueId() : randomId
+  }
 }
 
 const mutations = {
@@ -53,11 +64,10 @@ const mutations = {
     state[prop] = value
     saveUserSettings()
   },
-  UPDATE_IMPORTEDFILES (state, { operation, fileKey, value }) {
-    let importedFilesList = state.importedFiles
+  UPDATE_FILE_ID_LIST (state, { operation, fileKey, value }) {
     if (typeof (fileKey) === 'number') {
       if (fileKey < 0) fileKey = 0
-      if (fileKey > importedFilesList.length) fileKey = importedFilesList.length
+      if (fileKey > state.fileIdList.length) fileKey = state.fileIdList.length
     }
     importedFilesListUpdate()
     saveUserSettings()
@@ -65,26 +75,26 @@ const mutations = {
     function importedFilesListUpdate () {
       switch (operation) {
         case 'add':
-          fileKey = importedFilesList.length
+          fileKey = state.fileIdList.length
           // fall through
         case 'update':
           if (typeof (value) === 'undefined') {
             operation = 'delete'
             importedFilesListUpdate()
           } else {
-            Vue.set(importedFilesList, fileKey, value)
+            Vue.set(state.fileIdList, fileKey, value)
           }
           break
         case 'move':
           if (typeof (fileKey) === 'number' && typeof (value) === 'number') {
-            moveInArray(importedFilesList, fileKey, fileKey + value)
+            moveInArray(state.fileIdList, fileKey, fileKey + value)
             // console.log(`[${importedFilesList[fileKey + value]}] was moved.`)
           } else {
             console.warn('One fof the parameters isn\'t in the correct format and no move can be performed')
           }
           break
         case 'delete':
-          /* let removedItem = */ importedFilesList.splice(fileKey, 1)
+          /* let removedItem = */ state.fileIdList.splice(fileKey, 1)
           // console.log(`${removedItem} is deleted.`)
           break
         default:
@@ -95,6 +105,16 @@ const mutations = {
 }
 
 const actions = {
+  REGISTER_IMPORTED_FILE ({ state, getters, commit }, { uid }) {
+    return new Promise((resolve, reject) => {
+      if (!getters.uniqueIdExists(uid)) {
+        commit('UPDATE_FILE_ID_LIST', { operation: 'add', value: uid })
+        resolve(uid)
+      } else {
+        reject(uid)
+      }
+    })
+  }
 }
 
 export default {
