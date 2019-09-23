@@ -8,7 +8,8 @@ const userData = remote.app.getPath('userData')
 const userSettingsPath = path.join(userData, 'user-settings.json')
 
 const defaultValues = {
-  importedFiles: []
+  importedFiles: [],
+  openedFile: false
 }
 
 const getUserSettings = function () {

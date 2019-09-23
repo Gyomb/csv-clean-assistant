@@ -5,11 +5,11 @@
         <div class="navbar-brand">
           <div class="navbar-item">
             <div class="buttons">
-              <router-link class="button is-rounded is-black is-inverse" :disabled="$route.path == '/'" to="/">
+              <button class="button is-rounded is-black is-inverse" :disabled="isHome" @click="goHome">
                 <span class="icon">
                   <i class="fas fa-home"></i>
                 </span>
-              </router-link>
+              </button>
             </div>
           </div>
           <div class="navbar-item">
@@ -25,6 +25,23 @@
     </section>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'app',
+  computed: {
+    isHome () {
+      return this.$route.path === '/'
+    }
+  },
+  methods: {
+    goHome () {
+      this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: false })
+      this.$router.push('/')
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 #app {

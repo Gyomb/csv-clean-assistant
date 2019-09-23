@@ -32,6 +32,7 @@ export default {
     },
     useFile (fileKey) {
       if (this.$store.state.files.list[fileKey]) {
+        this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: fileKey })
         this.$store.dispatch('ANALYZE_CSV', this.$store.state.files.list[fileKey].path)
         this.$router.push({
           name: 'csv-loading',
