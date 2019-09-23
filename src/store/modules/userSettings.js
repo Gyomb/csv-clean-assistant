@@ -8,7 +8,7 @@ const userData = remote.app.getPath('userData')
 const userSettingsPath = path.join(userData, 'user-settings.json')
 
 const defaultValues = {
-  openFiles: []
+  importedFiles: []
 }
 
 const getUserSettings = function () {
@@ -52,38 +52,38 @@ const mutations = {
     state[prop] = value
     saveUserSettings()
   },
-  UPDATE_OPENFILES (state, { operation, fileKey, value }) {
-    let openFilesList = state.openFiles
+  UPDATE_IMPORTEDFILES (state, { operation, fileKey, value }) {
+    let importedFilesList = state.importedFiles
     if (typeof (fileKey) === 'number') {
       if (fileKey < 0) fileKey = 0
-      if (fileKey > openFilesList.length) fileKey = openFilesList.length
+      if (fileKey > importedFilesList.length) fileKey = importedFilesList.length
     }
-    openFilesListUpdate()
+    importedFilesListUpdate()
     saveUserSettings()
 
-    function openFilesListUpdate () {
+    function importedFilesListUpdate () {
       switch (operation) {
         case 'add':
-          fileKey = openFilesList.length
+          fileKey = importedFilesList.length
           // fall through
         case 'update':
           if (typeof (value) === 'undefined') {
             operation = 'delete'
-            openFilesListUpdate()
+            importedFilesListUpdate()
           } else {
-            Vue.set(openFilesList, fileKey, value)
+            Vue.set(importedFilesList, fileKey, value)
           }
           break
         case 'move':
           if (typeof (fileKey) === 'number' && typeof (value) === 'number') {
-            moveInArray(openFilesList, fileKey, fileKey + value)
-            // console.log(`[${openFilesList[fileKey + value]}] was moved.`)
+            moveInArray(importedFilesList, fileKey, fileKey + value)
+            // console.log(`[${importedFilesList[fileKey + value]}] was moved.`)
           } else {
             console.warn('One fof the parameters isn\'t in the correct format and no move can be performed')
           }
           break
         case 'delete':
-          /* let removedItem = */ openFilesList.splice(fileKey, 1)
+          /* let removedItem = */ importedFilesList.splice(fileKey, 1)
           // console.log(`${removedItem} is deleted.`)
           break
         default:

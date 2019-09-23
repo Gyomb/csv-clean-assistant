@@ -22,7 +22,7 @@ const actions = {
     }
     if (!alreadyExist) {
       commit('ADD_FILE_IN_LIST', file)
-      commit('UPDATE_OPENFILES', {
+      commit('UPDATE_IMPORTEDFILES', {
         operation: 'add',
         value: file
       })
@@ -30,7 +30,7 @@ const actions = {
   },
   DEL_AND_UNLOG_FILE ({ state, commit }, fileKey) {
     commit('DEL_FILE_IN_LIST', fileKey)
-    commit('UPDATE_OPENFILES', {
+    commit('UPDATE_IMPORTEDFILES', {
       operation: 'delete',
       fileKey
     })

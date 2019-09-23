@@ -43,7 +43,7 @@ export default {
     }
   },
   created () {
-    this.$store.state.userSettings.openFiles.forEach(file => {
+    this.$store.state.userSettings.importedFiles.forEach(file => {
       this.$store.commit('ADD_FILE_IN_LIST', file)
     })
   },
