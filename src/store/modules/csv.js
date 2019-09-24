@@ -43,22 +43,21 @@ const actions = {
     commit('CSV_STATUS_UPDATE', 'analyzing')
     ipcRenderer.once('analyzedCsv', (event, content) => {
       commit('CSV_CONTENT_UPDATE', content)
-      console.log(content)
       commit('CSV_STATUS_UPDATE', 'ready')
     })
     ipcRenderer.once('csvReadError', (event, msg) => {
       console.error({ csvReadError: msg })
       commit('CSV_STATUS_UPDATE', msg)
     })
-    ipcRenderer.send('analyzeCsv', filepath)
+    ipcRenderer.send('analyzeCsv', { uid, filepath })
   },
   OPEN_IMPORTED_CSV ({ commit }, uid) {
     let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
     return new Promise((resolve, reject) => {
-      fsp.readFile(importedFilePath)
+      fsp.readFile(importedFilePath, 'utf-8')
         .then(content => {
-          commit('CSV_CONTENT_UPDATE', { json: content })
-          resolve()
+          commit('CSV_CONTENT_UPDATE', { ...JSON.parse(content) })
+          resolve(content)
         })
         .catch(err => reject(err))
     })
