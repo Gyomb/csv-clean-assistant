@@ -1,6 +1,9 @@
 # csv-clean-assistant
 
 ## Project setup
+### Prerequisites
+**recommended:** install [yarn](https://yarnpkg.com/lang/fr/docs/install/) globally
+### Project initialization
 ```
 yarn install
 ```
