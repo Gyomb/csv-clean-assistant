@@ -1,6 +1,10 @@
 import { ipcRenderer, remote } from 'electron'
+import { promises as fsp } from 'fs'
 import path from 'path'
 import Vue from 'vue'
+
+const userData = remote.app.getPath('userData')
+const importedFolder = path.join(userData, 'imported-files')
 
 const state = {
   loadStatus: undefined,
@@ -34,17 +38,30 @@ const mutations = {
 }
 
 const actions = {
-  ANALYZE_CSV ({ commit }, path) {
+  IMPORT_CSV ({ commit, rootState }, uid) {
+    let filepath = rootState.files.list[uid].path
     commit('CSV_STATUS_UPDATE', 'analyzing')
     ipcRenderer.once('analyzedCsv', (event, content) => {
       commit('CSV_CONTENT_UPDATE', content)
+      console.log(content)
       commit('CSV_STATUS_UPDATE', 'ready')
     })
     ipcRenderer.once('csvReadError', (event, msg) => {
       console.error({ csvReadError: msg })
       commit('CSV_STATUS_UPDATE', msg)
     })
-    ipcRenderer.send('analyzeCsv', path)
+    ipcRenderer.send('analyzeCsv', filepath)
+  },
+  OPEN_IMPORTED_CSV ({ commit }, uid) {
+    let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
+    return new Promise((resolve, reject) => {
+      fsp.readFile(importedFilePath)
+        .then(content => {
+          commit('CSV_CONTENT_UPDATE', { json: content })
+          resolve()
+        })
+        .catch(err => reject(err))
+    })
   },
   SAVE_CSV ({ state, commit }, { filename, filepath }) {
     if (filename && filepath) commit('CSV_SAVE_DATA_UPDATE', { filename, filepath })

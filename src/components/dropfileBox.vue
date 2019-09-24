@@ -34,19 +34,34 @@ export default {
       this.$store.dispatch('DEL_AND_UNLOG_FILE', fileKey)
     },
     useFile (fileKey) {
-      let file = this.$store.getters.getFileFromFileKey(fileKey)
+      let uid = this.$store.getters.getUniqueId(fileKey)
+      let file = this.$store.state.files.list[uid]
       if (file) {
-        this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: fileKey })
-        this.$store.dispatch('ANALYZE_CSV', file.path)
-        this.$router.push({
-          name: 'csv-loading',
-          params: {
-            msg: 'Please wait while I analyze this file'
-          }
-        })
+        this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: uid })
+        this.$store.dispatch('OPEN_IMPORTED_CSV', uid)
+          .then(data => {
+            console.log(data)
+            this.loading()
+          })
+          .catch(error => {
+            if(error.code) {
+              this.$store.dispatch('IMPORT_CSV', uid)
+              this.loading()
+            } else {
+              console.error(error)
+            }
+          })
       } else {
         console.error(`File #${fileKey} doesn't exist.`)
       }
+    },
+    loading () {
+      this.$router.push({
+        name: 'csv-loading',
+        params: {
+          msg: 'Please wait while I analyze this file'
+        }
+      })
     }
   },
   mounted () {

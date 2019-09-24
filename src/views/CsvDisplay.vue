@@ -16,6 +16,11 @@ export default {
     saveFileControls,
     csvTable
   },
+  computed: {
+    fileUid () {
+      return this.$store.state.userSettings.openedFile
+    }
+  },
   methods: {
   }
 }
