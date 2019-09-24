@@ -1,8 +1,22 @@
 import { promises as fsp } from 'fs'
-import { ipcMain } from 'electron'
+import { ipcMain, app } from 'electron'
 import chardet from 'chardet'
 import iconv from 'iconv-lite'
 import csvParser from 'csvtojson'
+import path from 'path'
+
+const userData = app.getPath('userData')
+const importedFilesFolder = path.join(userData, 'imported-files')
+
+async function checkAndCreateParentFolder (filepath) {
+  let dirname = path.dirname(filepath)
+  try {
+    if (await fsp.access(dirname)) return true
+  } catch {
+    await checkAndCreateParentFolder(dirname) // Recursive call
+    return fsp.mkdir(dirname)
+  }
+}
 
 function checkEncoding (buffer) {
   return new Promise((resolve, reject) => {
@@ -34,6 +48,28 @@ async function openCsv (path) {
   }
 }
 
+async function saveCsv (uid, content) {
+  let filepath = path.join(importedFilesFolder, uid + '-original.csv')
+  try {
+    await checkAndCreateParentFolder(filepath)
+    await fsp.writeFile(filepath, content, 'utf-8')
+    return content
+  } catch (error) {
+    return error
+  }
+}
+
+async function saveDecodedCsv (uid, content) {
+  let filepath = path.join(importedFilesFolder, uid + '-decoded.json')
+  try {
+    await checkAndCreateParentFolder(filepath)
+    await fsp.writeFile(filepath, JSON.stringify(content, null, 2), 'utf-8')
+    return content
+  } catch (error) {
+    return error
+  }
+}
+
 async function decodeCsv (csvString, delimiter) {
   const csvData = {}
   const params = {
@@ -55,12 +91,18 @@ async function decodeCsv (csvString, delimiter) {
 }
 
 const init = function () {
-  ipcMain.on('analyzeCsv', (event, path) => {
+  ipcMain.on('analyzeCsv', (event, { uid, filepath }) => {
     var csvData = {}
-    openCsv(path)
+    openCsv(filepath)
       .then(data => {
         csvData = data
-        return decodeCsv(data.file)
+        return saveCsv(uid, data.file) // Returns only the file content
+      })
+      .then(filecontent => {
+        return decodeCsv(filecontent)
+      })
+      .then(decodedData => {
+        return saveDecodedCsv(uid, decodedData)
       })
       .then(decodedData => {
         csvData = { ...csvData, ...decodedData }

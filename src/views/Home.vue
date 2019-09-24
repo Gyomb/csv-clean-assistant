@@ -17,6 +17,12 @@ export default {
     dropfileBox
   },
   methods: {
+  },
+  mounted () {
+    let wasAfileAlreadyOpened = this.$store.state.userSettings.openedFile || this.$store.state.userSettings.openedFile === 0
+    if (wasAfileAlreadyOpened) {
+      this.$router.push('/csv-display')
+    }
   }
 }
 </script>
