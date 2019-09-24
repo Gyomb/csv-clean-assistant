@@ -22,6 +22,16 @@ export default {
     }
   },
   methods: {
+  },
+  mounted () {
+    this.$store.dispatch('OPEN_IMPORTED_CSV', this.fileUid)
+      .catch(error => {
+        if (error.code) {
+          this.$store.dispatch('IMPORT_CSV', this.fileUid)
+        } else {
+          console.error(error)
+        }
+      })
   }
 }
 </script>

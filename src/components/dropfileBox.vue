@@ -38,19 +38,7 @@ export default {
       let file = this.$store.state.files.list[uid]
       if (file) {
         this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: uid })
-        this.$store.dispatch('OPEN_IMPORTED_CSV', uid)
-          .then(data => {
-            console.log(data)
-            this.loading()
-          })
-          .catch(error => {
-            if(error.code) {
-              this.$store.dispatch('IMPORT_CSV', uid)
-              this.loading()
-            } else {
-              console.error(error)
-            }
-          })
+        this.$router.push('/csv-display')
       } else {
         console.error(`File #${fileKey} doesn't exist.`)
       }
