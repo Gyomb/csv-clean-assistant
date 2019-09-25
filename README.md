@@ -47,3 +47,11 @@ src/
 -+ main.js        # JS file that initiate the front process (renderer)
 -+ router.js      # defines the app's routes (= screens)
 ```
+### Details on the Vuex store modules
+The Vuex store in this project is split in different modules, each one with its own purpose:
+
+1. **csv.js** This module stores the data for the currently opened csv and manages the calls to the decode/encode background processes
+2. **files.js** This module stores the imported file list
+3. **userSettings.js** This module stores data related to user preferences (last opened files, display order of the imported files, etc.) and provides the methods to manipulate it
+
+The files and userSettings store both save their state in the app's local user folder and import it back at app's reload.
