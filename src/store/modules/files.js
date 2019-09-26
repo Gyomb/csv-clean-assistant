@@ -28,6 +28,12 @@ const mutations = {
   DEL_FILE_IN_LIST (state, uid) {
     Vue.delete(state.list, uid)
     saveFilesState()
+  },
+  UPDATE_FILE_COLUMN_SETTINGS (state, { uid, heading, settings }) {
+    if (state.file[uid]) {
+      if (typeof state.file[uid].columns !== 'object') Vue.set(state.file[uid], 'columns', {})
+      Vue.set(state.file[uid].columns, heading, settings)
+    }
   }
 }
 
