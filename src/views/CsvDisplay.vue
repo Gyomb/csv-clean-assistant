@@ -1,7 +1,7 @@
 <template>
   <div class="csv-display">
     <saveFileControls />
-    <csvTable :header="$store.state.csv.header" :data="$store.state.csv.json" />
+    <csvTable :header="$store.state.csv.header" :data="$store.state.csv.json" @update="saveCellUpdate" />
     <pre>{{$store.state.csv.json}}</pre>
   </div>
 </template>
@@ -22,6 +22,9 @@ export default {
     }
   },
   methods: {
+    saveCellUpdate ({ row, col, value }) {
+      this.$store.dispatch('MODIFY_CELL', { row, col, value })
+    }
   },
   mounted () {
     this.$store.dispatch('OPEN_IMPORTED_CSV', this.fileUid)

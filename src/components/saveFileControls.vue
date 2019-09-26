@@ -99,7 +99,7 @@ export default {
   methods: {
     saveCsv () {
       if (typeof this.saveFilePath === 'string' && this.saveFilePath !== '') {
-        this.$store.dispatch('SAVE_CSV', this.saveFilePath)
+        this.$store.dispatch('EXPORT_CSV', this.saveFilePath)
       }
     }
   }

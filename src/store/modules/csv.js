@@ -34,10 +34,17 @@ const mutations = {
     if (filename) state.newFilename = filename
     if (filepath) state.newPath = filepath
     if (saveMode) state.saveMode = saveMode
+  },
+  JSON_UPDATE (state, { row, col, value }) {
+    Vue.set(state.json[row], col, value)
   }
 }
 
 const actions = {
+  MODIFY_CELL ({ commit, dispatch, rootState }, { row, col, value }) {
+    commit('JSON_UPDATE', { row, col, value })
+    dispatch('SAVE_IMPORTED_CSV', rootState.userSettings.openedFile)
+  },
   IMPORT_CSV ({ commit, rootState }, uid) {
     let filepath = rootState.files.list[uid].path
     commit('CSV_STATUS_UPDATE', 'analyzing')
@@ -62,7 +69,13 @@ const actions = {
         .catch(err => reject(err))
     })
   },
-  SAVE_CSV ({ state, commit }, { filename, filepath }) {
+  SAVE_IMPORTED_CSV ({ state }, uid) {
+    let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
+    let { header, delimiter, json } = state
+    return fsp.writeFile(importedFilePath, JSON.stringify({ header, delimiter, json }), 'utf-8')
+      .catch(err => console.error(err))
+  },
+  EXPORT_CSV ({ state, commit }, { filename, filepath }) {
     if (filename && filepath) commit('CSV_SAVE_DATA_UPDATE', { filename, filepath })
     commit('CSV_STATUS_UPDATE', 'saving')
     ipcRenderer.once('savedCsv', (event, content) => {
