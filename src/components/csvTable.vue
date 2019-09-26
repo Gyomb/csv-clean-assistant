@@ -11,8 +11,7 @@
       <tbody>
         <tr v-for="(row, rowIndex) in data" :key="rowIndex">
           <template v-for="(entry, index) in header">
-            <th :key="entry" v-if="index === 0 ">{{row[entry]}}</th>
-            <td :key="entry" v-else>{{row[entry]}}</td>
+            <editableCell :cellType="cellTypeIs(index)" :key="entry" :cellValue="row[entry]" @update="updateCell(rowIndex, entry, $event)"/>
           </template>
         </tr>
       </tbody>
@@ -22,15 +21,25 @@
 
 <script>
 import columnRules from '@/components/columnRules'
+import editableCell from '@/components/ui-toolbox/editableCell'
 
 export default {
   name: 'csvTable',
   components: {
-    columnRules
+    columnRules,
+    editableCell
   },
   props: {
     header: Array,
     data: Array
+  },
+  methods: {
+    cellTypeIs (index) {
+      return index === 0 ? 'th' : 'td'
+    },
+    updateCell (row, col, value) {
+      this.$emit('update', { row, col, value })
+    }
   }
 }
 </script>
