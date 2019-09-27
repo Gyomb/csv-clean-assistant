@@ -7,10 +7,17 @@
       </span>
     </span>
     <bulmaModal :is-active="columnModalIsActive" @close="columnModalIsActive = false">
+      <h3 class="title" slot="header">Column "{{label}}"</h3>
+      <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
+      <h4 class="subtitle">Applied Rules</h4>
       <!-- pattern list -->
         <!-- regex => action widget -->
       <!-- add pattern button -->
+      <div class="buttons" slot="footer">
+        <button class="button">Save rules</button>
+        <button class="button is-primary">Apply rules</button>
+      </div>
       <!-- save preset button -->
     </bulmaModal>
   </div>

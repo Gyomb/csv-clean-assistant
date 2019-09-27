@@ -5,9 +5,12 @@
         <div class="navbar-brand">
           <div class="navbar-item">
             <div class="buttons">
-              <button class="button is-rounded is-black is-inverse" :disabled="isHome" @click="goHome">
-                <span class="icon">
-                  <i class="fas fa-home"></i>
+              <button class="button-reset" :disabled="isHome" @click="goHome">
+                <span class="icon is-medium">
+                  <span class="fa-stack">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fas fa-home fa-stack-1x fa-inverse"></i>
+                  </span>
                 </span>
               </button>
             </div>

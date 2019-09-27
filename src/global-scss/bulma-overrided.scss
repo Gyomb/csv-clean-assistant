@@ -3,6 +3,12 @@ $red: #e0657d;
 $info-hover-override: #226c9e;
 $danger-hover-override: #d00730;
 
+button.button-reset {
+  border: none;
+  background: none;
+  font-size: inherit;
+}
+
 @import 'bulma/bulma';
 
 .button {
