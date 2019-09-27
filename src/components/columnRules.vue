@@ -12,6 +12,9 @@
         <!-- regex => action widget -->
       <!-- add pattern button -->
       <!-- save preset button -->
+			<button class="button is-success" @click="$emit('save', {})">
+				Save
+			</button>
     </bulmaModal>
   </div>
 </template>
