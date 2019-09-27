@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th v-for="headEntry in header" :key="headEntry">
-            <columnRules :label="headEntry" />
+            <columnRules :label="headEntry" @save="$emit('colupdate', {header: headEntry, settings: $event})" />
           </th>
         </tr>
       </thead>
@@ -38,7 +38,7 @@ export default {
       return index === 0 ? 'th' : 'td'
     },
     updateCell (row, col, value) {
-      this.$emit('update', { row, col, value })
+      this.$emit('cellupdate', { row, col, value })
     }
   }
 }
