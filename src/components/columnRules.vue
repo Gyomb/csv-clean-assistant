@@ -21,11 +21,16 @@
               <button class="button is-primary" @click="$emit('save', {})">
                 Save column settings
               </button>
+              <button class="button is-warning">
+                Apply rules
+              </button>
             </div>
           </div>
           <div class="level-right">
             <div class="level-item">
-              <button class="button is-warning">Apply rules</button>
+              <button class="button" @click="columnModalIsActive = false">
+                Cancel
+              </button>
             </div>
           </div>
         </div>
