@@ -30,9 +30,9 @@ const mutations = {
     saveFilesState()
   },
   UPDATE_FILE_COLUMN_SETTINGS (state, { uid, heading, settings }) {
-    if (state.file[uid]) {
-      if (typeof state.file[uid].columns !== 'object') Vue.set(state.file[uid], 'columns', {})
-      Vue.set(state.file[uid].columns, heading, settings)
+    if (state.list[uid]) {
+      if (typeof state.list[uid].columns !== 'object') Vue.set(state.list[uid], 'columns', {})
+      Vue.set(state.list[uid].columns, heading, settings)
     }
   }
 }
