@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th v-for="headEntry in header" :key="headEntry">
-            <columnRules :label="headEntry" @save="$emit('colupdate', {header: headEntry, settings: $event})" />
+            <columnRules :label="headEntry" @save="$emit('colupdate', {heading: headEntry, settings: $event})" />
           </th>
         </tr>
       </thead>

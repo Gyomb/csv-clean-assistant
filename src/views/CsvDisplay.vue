@@ -25,10 +25,10 @@ export default {
     saveCellUpdate ({ row, col, value }) {
       this.$store.dispatch('MODIFY_CELL', { row, col, value })
     },
-		saveColUpdate ({ header, settings }) {
-			this.$store.dispatch('UPDATE_FILE_COLUMN_SETTINGS', {
+		saveColUpdate ({ heading, settings }) {
+			this.$store.commit('UPDATE_FILE_COLUMN_SETTINGS', {
 				uid: this.fileUid,
-				header,
+				heading,
 				settings
 			})
 		}
