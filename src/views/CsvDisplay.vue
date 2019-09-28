@@ -1,7 +1,13 @@
 <template>
   <div class="csv-display">
     <saveFileControls />
-    <csvTable :header="$store.state.csv.header" :data="$store.state.csv.json" @update="saveCellUpdate" />
+    <csvTable
+      :header="$store.state.csv.header"
+      :data="$store.state.csv.json"
+      :columns-settings="$store.state.files.list[fileUid].columns || {}"
+      @cellupdate="saveCellUpdate"
+      @colupdate="saveColUpdate"
+    />
     <pre>{{$store.state.csv.json}}</pre>
   </div>
 </template>
@@ -24,6 +30,13 @@ export default {
   methods: {
     saveCellUpdate ({ row, col, value }) {
       this.$store.dispatch('MODIFY_CELL', { row, col, value })
+    },
+    saveColUpdate ({ heading, settings }) {
+      this.$store.dispatch('SAVE_AND_APPLY_COL_SETTINGS_WO_RULES', {
+        uid: this.fileUid,
+        heading,
+        settings
+      })
     }
   },
   mounted () {

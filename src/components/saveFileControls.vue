@@ -1,8 +1,8 @@
 <template>
   <div>
     <bulmaField has-addons>
-      <bulma-button picto="save" purpose="success" @click="saveCsv()" :disabled="saveFilePath === ''"/>
-      <bulma-button picto="search" @click="fileModalIsActive = true" />
+      <bulma-button picto="save" purpose="success" @click="saveCsv()" :disabled="saveFilePath === ''" rounded />
+      <bulma-button picto="search" @click="fileModalIsActive = true" rounded />
       <span class="button is-rounded" @click="fileModalIsActive = true">{{$store.state.csv.newFilename}}</span>
     </bulmaField>
     <bulmaModal :is-active="fileModalIsActive" @close="fileModalIsActive = false">

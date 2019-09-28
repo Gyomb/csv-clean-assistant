@@ -28,6 +28,13 @@ const mutations = {
   DEL_FILE_IN_LIST (state, uid) {
     Vue.delete(state.list, uid)
     saveFilesState()
+  },
+  UPDATE_FILE_COLUMN_SETTINGS (state, { uid, heading, settings }) {
+    if (state.list[uid]) {
+      if (typeof state.list[uid].columns !== 'object') Vue.set(state.list[uid], 'columns', {})
+      Vue.set(state.list[uid].columns, heading, settings)
+    }
+    saveFilesState()
   }
 }
 
@@ -56,6 +63,13 @@ const actions = {
       operation: 'delete',
       fileKey
     })
+  },
+  SAVE_AND_APPLY_COL_SETTINGS_WO_RULES ({ state, commit, dispatch }, { uid, heading, settings }) {
+    if (typeof settings.position === 'number') {
+      commit('HEADER_REPOSITION', { heading, newPos: settings.position })
+      dispatch('SAVE_IMPORTED_CSV', uid)
+    }
+    commit('UPDATE_FILE_COLUMN_SETTINGS', { uid, heading, settings })
   }
 }
 
