@@ -61,7 +61,7 @@ export default {
     return {
       columnModalIsActive: false,
       columnIsHeading: false,
-      columnPosition: this.settings.position || this.position || 0
+      columnPosition: this.position || 0
     }
   },
   props: {
@@ -80,7 +80,8 @@ export default {
     saveColumnSettings () {
       // This methods saves the column settings but without applying the defined rules
       this.$emit('save', {
-        columnPosition: this.columnPosition
+        position: this.columnPosition,
+        isHeading: this.columnIsHeading
       })
     }
   }

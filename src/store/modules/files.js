@@ -63,8 +63,11 @@ const actions = {
       fileKey
     })
   },
-  SAVE_AND_APPLY_COL_SETTINGS_WO_RULES ({ state, commit }, { uid, heading, settings }) {
-    if (typeof settings.columnPosition === 'number') commit('HEADER_REPOSITION', { heading, newPos: settings.columnPosition })
+  SAVE_AND_APPLY_COL_SETTINGS_WO_RULES ({ state, commit, dispatch }, { uid, heading, settings }) {
+    if (typeof settings.position === 'number') {
+      commit('HEADER_REPOSITION', { heading, newPos: settings.position })
+      dispatch('SAVE_IMPORTED_CSV', uid)
+    }
     commit('UPDATE_FILE_COLUMN_SETTINGS', { uid, heading, settings })
   }
 }
