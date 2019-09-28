@@ -16,7 +16,11 @@
       </bulmaField>
       <bulmaField isHorizontal hasAddons>
         <label :for="label+'-position'">Column&nbsp;position</label>
-        <input type="number" :max="positionMax" class="input" :name="label+'-position'" v-model="columnPosition">
+        <bulmaButton picto="angle-double-left" @click="columnPosition = 0"/>
+        <bulmaButton picto="angle-left" @click="columnPosition > 0 ? columnPosition-- : 0"/>
+        <input type="number" :max="positionMax" class="input" :name="label+'-position'" v-model.number="columnPosition">
+        <bulmaButton picto="angle-right" @click="columnPosition < positionMax ? columnPosition++ : positionMax"/>
+        <bulmaButton picto="angle-double-right" @click="columnPosition = positionMax"/>
       </bulmaField>
       <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
@@ -28,7 +32,7 @@
         <div class="level">
           <div class="level-left">
             <div class="level-item">
-              <button class="button is-primary" @click="$emit('save', {})">
+              <button class="button is-primary" @click="saveColumnSettings">
                 Save column settings
               </button>
               <button class="button is-warning">
@@ -52,7 +56,7 @@
 
 <script>
 export default {
-  name: 'columnRules',
+  name: 'columnSettings',
   data () {
     return {
       columnModalIsActive: false,
@@ -70,6 +74,14 @@ export default {
     settings: {
       type: Object,
       default () { return {} }
+    }
+  },
+  methods: {
+    saveColumnSettings () {
+      // This methods saves the column settings but without applying the defined rules
+      this.$emit('save', {
+        columnPosition: this.columnPosition
+      })
     }
   }
 }
