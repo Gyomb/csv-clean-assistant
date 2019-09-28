@@ -1,12 +1,12 @@
 <template>
   <div>
-    <span class="colhead" @click="columnModalIsActive = true">
+    <span class="colhead" @click="openModal">
       <span class="colhdead-label">{{label}}</span>
       <span class="icon">
         <i class="fas fa-edit"></i>
       </span>
     </span>
-    <bulmaModal :is-active="columnModalIsActive" @close="columnModalIsActive = false">
+    <bulmaModal :is-active="columnModalIsActive" @close="closeModal">
       <h3 class="title" slot="header">Column "{{label}}"</h3>
       <bulmaField isHorizontal>
         <label class="checkbox" :for="label+'is-heading'">
@@ -42,7 +42,7 @@
           </div>
           <div class="level-right">
             <div class="level-item">
-              <button class="button" @click="columnModalIsActive = false">
+              <button class="button" @click="closeModal">
                 Cancel
               </button>
             </div>
@@ -77,13 +77,32 @@ export default {
     }
   },
   methods: {
+    openModal () {
+      this.resetLocalData()
+      this.columnModalIsActive = true
+    },
+    closeModal () {
+      this.columnModalIsActive = false
+    },
     saveColumnSettings () {
       // This methods saves the column settings but without applying the defined rules
       this.$emit('save', {
         position: this.columnPosition,
         isHeading: this.columnIsHeading
       })
+      this.closeModal()
+    },
+    saveAndApplyRules () {
+      // Add dispatch to save and apply rules
+      this.closeModal()
+    },
+    resetLocalData () {
+      this.columnIsHeading = typeof this.settings.isHeading === 'boolean' ? this.settings.isHeading : false
+      this.columnPosition = this.position || 0
     }
+  },
+  mounted () {
+    this.resetLocalData()
   }
 }
 </script>
