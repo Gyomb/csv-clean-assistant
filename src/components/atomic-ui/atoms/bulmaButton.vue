@@ -1,11 +1,11 @@
 <template>
-  <button class="button" :class="[backgroundColor, isRounded]" @click="$emit('click')">
+  <button class="button" :class="[buttonColor, isRounded]" @click="$emit('click')">
     <span class="icon is-small" :class="[pictoColor]" v-if="picto && !last">
-        <i class="fas" :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
+        <i :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
     </span>
     <span :class="[textColor]" v-if="label">{{label}}</span>
     <span class="icon is-small" :class="[pictoColor]" v-if="picto && last">
-        <i class="fas" :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
+        <i :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
     </span>
   </button>
 </template>
@@ -14,7 +14,7 @@
 export default {
   name: 'bulmaButton',
   props: {
-    picto: String,
+    picto: [String, Object],
     purpose: String,
     applyColorTo: {
       type: String,
@@ -26,13 +26,23 @@ export default {
   },
   computed: {
     iconClass () {
-      return 'fa-' + this.picto
+      if (typeof this.picto === 'string') return 'fas fa-' + this.picto
+      if (this.picto.icon) {
+        let iconSet = this.picto.set || 'fas'
+        return `${iconSet} fa-${this.picto.icon}`
+      }
+      return ''
     },
     hasColoredBackground () {
-      return this.purpose && this.applyColorTo.includes('background')
+      return this.purpose && this.applyColorTo.includes('background') && !this.applyColorTo.includes('border')
     },
-    backgroundColor () {
-      return this.hasColoredBackground ? 'is-' + this.purpose : ''
+    hasColoredBorder () {
+      return this.purpose && this.applyColorTo.includes('border')
+    },
+    buttonColor () {
+      let color = this.hasColoredBackground || this.hasColoredBorder ? 'is-' + this.purpose : ''
+      let outline = this.hasColoredBorder ? ' is-outlined' : ''
+      return color ? color + outline : ''
     },
     textColor () {
       if (this.purpose) {
