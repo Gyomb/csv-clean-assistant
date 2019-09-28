@@ -1,7 +1,13 @@
 <template>
   <div class="csv-display">
     <saveFileControls />
-    <csvTable :header="$store.state.csv.header" :data="$store.state.csv.json" @cellupdate="saveCellUpdate" @colupdate="saveColUpdate" />
+    <csvTable
+      :header="$store.state.csv.header"
+      :data="$store.state.csv.json"
+      :columns-settings="$store.state.files.list[fileUid].columns || {}"
+      @cellupdate="saveCellUpdate"
+      @colupdate="saveColUpdate"
+    />
     <pre>{{$store.state.csv.json}}</pre>
   </div>
 </template>
