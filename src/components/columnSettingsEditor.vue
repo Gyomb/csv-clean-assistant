@@ -16,11 +16,11 @@
       </bulmaField>
       <bulmaField isHorizontal hasAddons>
         <label :for="label+'-position'">Column&nbsp;position</label>
-        <bulmaButton picto="angle-double-left" @click="columnPosition = 0"/>
-        <bulmaButton picto="angle-left" @click="columnPosition > 0 ? columnPosition-- : 0"/>
+        <bulmaButton picto="angle-double-left" @click="columnPosition = 0" rounded />
+        <bulmaButton picto="angle-left" @click="columnPosition > 0 ? columnPosition-- : 0" />
         <input type="number" :max="positionMax" class="input" :name="label+'-position'" v-model.number="columnPosition">
-        <bulmaButton picto="angle-right" @click="columnPosition < positionMax ? columnPosition++ : positionMax"/>
-        <bulmaButton picto="angle-double-right" @click="columnPosition = positionMax"/>
+        <bulmaButton picto="angle-right" @click="columnPosition < positionMax ? columnPosition++ : positionMax" />
+        <bulmaButton picto="angle-double-right" @click="columnPosition = positionMax" rounded />
       </bulmaField>
       <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
@@ -32,19 +32,18 @@
         <div class="level">
           <div class="level-left">
             <div class="level-item">
-              <button class="button is-primary" @click="saveColumnSettings">
-                Save column settings
-              </button>
-              <button class="button is-warning">
-                Apply rules
-              </button>
+              <bulmaButton purpose="primary" label="Save column settings"  @click="saveColumnSettings" />
+            </div>
+            <div class="levl-item">
+              <bulmaButton purpose="warning" label="Apply rules"  @click="saveAndApplyRules" />
             </div>
           </div>
           <div class="level-right">
             <div class="level-item">
-              <button class="button" @click="closeModal">
-                Cancel
-              </button>
+              <bulmaButton picto="redo" purpose="danger" apply-color-to="picto" label="Reset" @click="resetLocalData" />
+            </div>
+            <div class="level-item">
+              <bulmaButton picto="times" label="Cancel" @click="closeModal" last />
             </div>
           </div>
         </div>
