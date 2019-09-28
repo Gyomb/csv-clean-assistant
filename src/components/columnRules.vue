@@ -8,6 +8,16 @@
     </span>
     <bulmaModal :is-active="columnModalIsActive" @close="columnModalIsActive = false">
       <h3 class="title" slot="header">Column "{{label}}"</h3>
+      <bulmaField isHorizontal>
+        <label class="checkbox" :for="label+'is-heading'">
+          Heading&nbsp;column
+        </label>
+        <input type="checkbox" v-model="columnIsHeading" :name="label+'is-heading'">
+      </bulmaField>
+      <bulmaField isHorizontal hasAddons>
+        <label :for="label+'-position'">Column&nbsp;position</label>
+        <input type="number" :max="positionMax" class="input" :name="label+'-position'" v-model="columnPosition">
+      </bulmaField>
       <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
       <h4 class="subtitle">Applied Rules</h4>
@@ -45,11 +55,22 @@ export default {
   name: 'columnRules',
   data () {
     return {
-      columnModalIsActive: false
+      columnModalIsActive: false,
+      columnIsHeading: false,
+      columnPosition: this.settings.position || this.position || 0
     }
   },
   props: {
-    label: String
+    label: String,
+    position: Number,
+    positionMax: {
+      type: [Number, Boolean],
+      default: false
+    },
+    settings: {
+      type: Object,
+      default () { return {} }
+    }
   }
 }
 </script>

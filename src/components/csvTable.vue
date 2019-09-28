@@ -3,8 +3,11 @@
     <table class="table is-hoverable is-fullwidth">
       <thead>
         <tr>
-          <th v-for="headEntry in header" :key="headEntry">
-            <columnRules :label="headEntry" @save="$emit('colupdate', {heading: headEntry, settings: $event})" />
+          <th v-for="(headEntry, index) in header" :key="headEntry+index">
+            <columnRules :label="headEntry"
+              :position="index" :position-max="header.length - 1"
+              @save="$emit('colupdate', {heading: headEntry, settings: $event})"
+            />
           </th>
         </tr>
       </thead>
