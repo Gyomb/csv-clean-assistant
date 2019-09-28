@@ -29,24 +29,12 @@
         <!-- regex => action widget -->
       <!-- add pattern button -->
       <div class="container" slot="footer">
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <bulmaButton purpose="primary" label="Save column settings"  @click="saveColumnSettings" />
-            </div>
-            <div class="levl-item">
-              <bulmaButton purpose="warning" label="Apply rules"  @click="saveAndApplyRules" />
-            </div>
-          </div>
-          <div class="level-right">
-            <div class="level-item">
-              <bulmaButton picto="redo" purpose="danger" apply-color-to="picto" label="Reset" @click="resetLocalData" />
-            </div>
-            <div class="level-item">
-              <bulmaButton picto="times" label="Cancel" @click="closeModal" last />
-            </div>
-          </div>
-        </div>
+        <bulmaLevel mobile-view>
+          <bulmaButton slot="left" purpose="primary" label="Save settings"  @click="saveColumnSettings" />
+          <bulmaButton slot="left" purpose="warning" label="Apply rules"  @click="saveAndApplyRules" />
+          <bulmaButton slot="right" picto="redo" purpose="danger" apply-color-to="picto" label="Reset" @click="resetLocalData" />
+          <bulmaButton slot="right" picto="times" label="Cancel" @click="closeModal" last />
+        </bulmaLevel>
       </div>
       <!-- save preset button -->
     </bulmaModal>
