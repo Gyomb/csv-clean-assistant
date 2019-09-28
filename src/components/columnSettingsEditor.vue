@@ -56,7 +56,7 @@
 
 <script>
 export default {
-  name: 'columnSettings',
+  name: 'columnSettingsEditor',
   data () {
     return {
       columnModalIsActive: false,

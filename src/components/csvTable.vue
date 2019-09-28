@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th v-for="(headEntry, index) in header" :key="headEntry+index">
-            <columnSettings :label="headEntry"
+            <columnSettingsEditor :label="headEntry"
               :settings="columnsSettings[headEntry]"
               :position="index" :position-max="header.length - 1"
               @save="$emit('colupdate', {heading: headEntry, settings: $event})"
@@ -24,13 +24,13 @@
 </template>
 
 <script>
-import columnSettings from '@/components/columnSettings'
+import columnSettingsEditor from '@/components/columnSettingsEditor'
 import editableCell from '@/components/ui-toolbox/editableCell'
 
 export default {
   name: 'csvTable',
   components: {
-    columnSettings,
+    columnSettingsEditor,
     editableCell
   },
   props: {
