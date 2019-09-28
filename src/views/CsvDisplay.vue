@@ -26,7 +26,7 @@ export default {
       this.$store.dispatch('MODIFY_CELL', { row, col, value })
     },
     saveColUpdate ({ heading, settings }) {
-      this.$store.commit('UPDATE_FILE_COLUMN_SETTINGS', {
+      this.$store.dispatch('SAVE_AND_APPLY_COL_SETTINGS_WO_RULES', {
         uid: this.fileUid,
         heading,
         settings

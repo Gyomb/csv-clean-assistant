@@ -62,6 +62,10 @@ const actions = {
       operation: 'delete',
       fileKey
     })
+  },
+  SAVE_AND_APPLY_COL_SETTINGS_WO_RULES ({ state, commit }, { uid, heading, settings }) {
+    if (typeof settings.columnPosition === 'number') commit('HEADER_REPOSITION', { heading, newPos: settings.columnPosition })
+    commit('UPDATE_FILE_COLUMN_SETTINGS', { uid, heading, settings })
   }
 }
 

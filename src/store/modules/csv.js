@@ -2,6 +2,7 @@ import { ipcRenderer, remote } from 'electron'
 import { promises as fsp } from 'fs'
 import path from 'path'
 import Vue from 'vue'
+import { moveInArray } from '@/helpers/arrays'
 
 const userData = remote.app.getPath('userData')
 const importedFolder = path.join(userData, 'imported-files')
@@ -37,6 +38,10 @@ const mutations = {
   },
   JSON_UPDATE (state, { row, col, value }) {
     Vue.set(state.json[row], col, value)
+  },
+  HEADER_REPOSITION (state, { heading, newPos }) {
+    const oldPos = state.header.indexOf(heading)
+    if (oldPos !== newPos) moveInArray(state.header, oldPos, newPos)
   }
 }
 
