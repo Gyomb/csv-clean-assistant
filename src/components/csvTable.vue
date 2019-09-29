@@ -14,9 +14,12 @@
       </thead>
       <tbody>
         <tr v-for="(row, rowIndex) in data" :key="rowIndex">
-          <template v-for="entry in header">
-            <editableCell :cellType="cellTypeIs(entry)" :key="entry" :cellValue="row[entry]" @update="updateCell(rowIndex, entry, $event)"/>
-          </template>
+          <editableCell v-for="column in header" :key="rowIndex+'-'+column"
+            :class="cellColor(column, row[column])"
+            :custom-prop="cellColor(column, row[column])"
+            :cellType="cellTypeIs(column)" :cellValue="row[column]"
+            @update="updateCell(rowIndex, column, $event)"
+          />
         </tr>
       </tbody>
     </table>
@@ -41,10 +44,48 @@ export default {
       default () { return {} }
     }
   },
+  computed: {
+    thisColumnSetting () {
+      return column => {
+        return this.columnsSettings[column] || {}
+      }
+    },
+    columnHighlights () {
+      let columnHighlights = {}
+      for (const column in this.columnsSettings) {
+        if (this.columnsSettings.hasOwnProperty(column)) {
+          const columnRules = this.columnsSettings[column].rules || []
+          columnHighlights[column] = columnRules
+            .filter(rule => rule.action === 'highlight')
+            .map(rule => {
+              return {
+                exclude: !!rule.exclude,
+                match: rule.isRegex ? new RegExp(rule.matchPattern) : rule.matchPattern,
+                color: rule.parameters.color
+              }
+            })
+        }
+      }
+      return columnHighlights
+    }
+  },
   methods: {
-    cellTypeIs (entry) {
-      const thisColumnSetting = this.columnsSettings[entry] || {}
-      return thisColumnSetting.isHeading ? 'th' : 'td'
+    cellTypeIs (column) {
+      return this.thisColumnSetting(column).isHeading ? 'th' : 'td'
+    },
+    cellColor (column, value = '') {
+      const classPartial = ' has-background-'
+      const thisColumnHighlights = this.columnHighlights ? (this.columnHighlights[column] || []) : []
+      const colors = thisColumnHighlights
+        .filter(rule => {
+          const isMatch = rule.match instanceof RegExp ? rule.match.test(value) : value.includes(rule.match)
+          if (!rule.exclude && isMatch) return true
+          if (rule.exclude && !isMatch) return true
+          return false
+        })
+        .map(rule => rule.color)
+
+      return colors.length > 0 ? classPartial + colors.join(classPartial) : ''
     },
     updateCell (row, col, value) {
       this.$emit('cellupdate', { row, col, value })

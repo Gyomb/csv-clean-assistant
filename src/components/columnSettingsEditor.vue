@@ -24,14 +24,14 @@
       </bulmaField>
       <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
-      <bulmaLevel>
+      <bulmaLevel mobile-view>
         <h4 class="subtitle" slot="left">Applied Rules</h4>
         <bulmaButton slot="right"
             rounded class="is-small"
             picto="plus"
             purpose="success"
             title="Add a new column rule"
-            @click="rules.push({})"
+            @click="rules.push({ isRegex: true })"
           />
       </bulmaLevel>
       <!-- pattern list -->
