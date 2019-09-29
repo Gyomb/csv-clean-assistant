@@ -46,7 +46,10 @@
 
 <script>
 const actionOptions = [
-  { value: 'highlight', label: 'Highlight' }
+  { value: 'delete', label: 'Delete' },
+  { value: 'highlight', label: 'Highlight' },
+  { value: 'replace', label: 'Modify' },
+  { value: 'move', label: 'Move' }
 ]
 
 const highlightOptions = [
