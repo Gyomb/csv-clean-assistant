@@ -24,9 +24,22 @@
       </bulmaField>
       <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
-      <h4 class="subtitle">Applied Rules</h4>
+      <bulmaLevel>
+        <h4 class="subtitle" slot="left">Applied Rules</h4>
+        <bulmaButton slot="right"
+            rounded class="is-small"
+            picto="plus"
+            purpose="success"
+            title="Add a new column rule"
+            @click="rules.push({})"
+          />
+      </bulmaLevel>
       <!-- pattern list -->
-        <!-- regex => action widget -->
+        <ul>
+          <li v-for="(rule, index) in rules" :key="index">
+            <rule-editor :rule="rule" @update="updateRuleInRule(index, $event)" />
+          </li>
+        </ul>
       <!-- add pattern button -->
       <div class="container" slot="footer">
         <bulmaLevel mobile-view>
@@ -42,13 +55,20 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import ruleEditor from '@/components/ui-toolbox/ruleEditor'
+
 export default {
   name: 'columnSettingsEditor',
+  components: {
+    ruleEditor
+  },
   data () {
     return {
       columnModalIsActive: false,
       columnIsHeading: false,
-      columnPosition: this.position || 0
+      columnPosition: this.position || 0,
+      rules: []
     }
   },
   props: {
@@ -71,21 +91,26 @@ export default {
     closeModal () {
       this.columnModalIsActive = false
     },
+    updateRuleInRule (index, rule) {
+      Vue.set(this.rules, index, { ...rule })
+    },
     saveColumnSettings () {
       // This methods saves the column settings but without applying the defined rules
       this.$emit('save', {
         position: this.columnPosition,
-        isHeading: this.columnIsHeading
+        isHeading: this.columnIsHeading,
+        rules: this.rules
       })
       this.closeModal()
     },
     saveAndApplyRules () {
-      // Add dispatch to save and apply rules
-      this.closeModal()
+      this.saveColumnSettings()
+      // Add dispatch to apply rules
     },
     resetLocalData () {
       this.columnIsHeading = typeof this.settings.isHeading === 'boolean' ? this.settings.isHeading : false
       this.columnPosition = this.position || 0
+      this.rules = Array.isArray(this.settings.rules) ? [...this.settings.rules] : []
     }
   },
   mounted () {
