@@ -26,11 +26,11 @@
     <actionSelector slot="right" v-model="actionAndParameters" />
     <span class="icon is-small has-text-grey-dark" slot="right">
       <span class="fa-stack">
-        <i class="fas fa-sort-up fa-stack-2x" @click="$emit('up')"></i>
-        <i class="fas fa-sort-down fa-stack-2x" @click="$emit('down')"></i>
+        <i class="fas fa-sort-up fa-stack-2x is-clickable" @click="$emit('move:up')"></i>
+        <i class="fas fa-sort-down fa-stack-2x is-clickable" @click="$emit('move:down')"></i>
       </span>
     </span>
-    <span class="icon has-text-danger is-small" slot="right" @click="$emit('delete')">
+    <span class="icon has-text-danger is-small is-clickable" slot="right" @click="$emit('delete')">
       <i class="fas fa-times fa-lg"></i>
     </span>
   </bulmaLevel>

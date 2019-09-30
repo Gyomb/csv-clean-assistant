@@ -5,6 +5,10 @@ $danger-hover-override: #d00730;
 
 @import 'bulma/bulma';
 
+.is-clickable {
+  cursor: pointer;
+}
+
 .button {
   cursor: pointer;
   &.is-info {

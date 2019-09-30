@@ -37,7 +37,12 @@
       <!-- pattern list -->
         <ul>
           <li v-for="(rule, index) in rules" :key="index">
-            <rule-editor :rule="rule" @update="updateRuleInRule(index, $event)" />
+            <rule-editor :rule="rule"
+              @update="updateRuleInRules(index, $event)"
+              @move:up="moveRuleInRules(index, -1)"
+              @move:down="moveRuleInRules(index, +1)"
+              @delete="deleteRuleInRules(index)"
+            />
           </li>
         </ul>
       <!-- add pattern button -->
@@ -55,7 +60,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import { moveInArray } from '@/helpers/arrays.js'
 import ruleEditor from '@/components/ui-toolbox/ruleEditor'
 
 export default {
@@ -91,8 +96,14 @@ export default {
     closeModal () {
       this.columnModalIsActive = false
     },
-    updateRuleInRule (index, rule) {
-      Vue.set(this.rules, index, { ...rule })
+    updateRuleInRules (index, rule) {
+      this.$set(this.rules, index, { ...rule })
+    },
+    deleteRuleInRules (index) {
+      this.rules.splice(index, 1)
+    },
+    moveRuleInRules (index, direction) {
+      moveInArray(this.rules, index, index + direction)
     },
     saveColumnSettings () {
       // This methods saves the column settings but without applying the defined rules
