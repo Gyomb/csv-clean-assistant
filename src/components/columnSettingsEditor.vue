@@ -45,6 +45,27 @@
             />
           </li>
         </ul>
+      <bulmaLevel mobile-view>
+        <h4 class="subtitle" slot="left">Highlights</h4>
+        <bulmaButton slot="right"
+          rounded class="is-small"
+          picto="plus"
+          purpose="success"
+          title="Add a new column highlight"
+          @click="highlights.push({ isRegex: true })"
+        />
+      </bulmaLevel>
+      <!-- Highlights list -->
+        <ul>
+          <li v-for="(highlightRule, index) in highlights" :key="index">
+            <highlight-editor :rule="highlightRule"
+              @update="updateItemInList(highlights, index, $event)"
+              @move:up="moveItemInList(highlights, index, -1)"
+              @move:down="moveItemInList(highlights, index, +1)"
+              @delete="deleteItemInList(highlights, index)"
+            />
+          </li>
+        </ul>
       <div class="container" slot="footer">
         <bulmaLevel mobile-view>
           <bulmaButton slot="left" purpose="primary" label="Save settings"  @click="saveColumnSettings" />
@@ -61,10 +82,12 @@
 <script>
 import { moveInArray } from '@/helpers/arrays.js'
 import ruleEditor from '@/components/ui-toolbox/ruleEditor'
+import highlightEditor from '@/components/ui-toolbox/highlightEditor'
 
 export default {
   name: 'columnSettingsEditor',
   components: {
+    highlightEditor,
     ruleEditor
   },
   data () {
@@ -72,6 +95,7 @@ export default {
       columnModalIsActive: false,
       columnIsHeading: false,
       columnPosition: this.position || 0,
+      highlights: [],
       rules: []
     }
   },
@@ -109,6 +133,7 @@ export default {
       this.$emit('save', {
         position: this.columnPosition,
         isHeading: this.columnIsHeading,
+        highlights: this.highlights,
         rules: this.rules
       })
       this.closeModal()
@@ -121,6 +146,7 @@ export default {
       this.columnIsHeading = typeof this.settings.isHeading === 'boolean' ? this.settings.isHeading : false
       this.columnPosition = this.position || 0
       this.rules = Array.isArray(this.settings.rules) ? [...this.settings.rules] : []
+      this.highlights = Array.isArray(this.settings.highlights) ? [...this.settings.highlights] : []
     }
   },
   mounted () {

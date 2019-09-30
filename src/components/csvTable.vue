@@ -54,14 +54,13 @@ export default {
       let columnHighlights = {}
       for (const column in this.columnsSettings) {
         if (this.columnsSettings.hasOwnProperty(column)) {
-          const columnRules = this.columnsSettings[column].rules || []
-          columnHighlights[column] = columnRules
-            .filter(rule => rule.action === 'highlight')
+          const columnHighlightRules = this.columnsSettings[column].highlights || []
+          columnHighlights[column] = columnHighlightRules
             .map(rule => {
               return {
                 exclude: !!rule.exclude,
                 match: rule.isRegex ? new RegExp(rule.matchPattern) : rule.matchPattern,
-                color: rule.parameters.color
+                color: rule.color
               }
             })
         }
