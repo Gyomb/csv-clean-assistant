@@ -25,27 +25,26 @@
       <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
       <bulmaLevel mobile-view>
-        <h4 class="subtitle" slot="left">Applied Rules</h4>
+        <h4 class="subtitle" slot="left">Column Modifiers</h4>
         <bulmaButton slot="right"
-            rounded class="is-small"
-            picto="plus"
-            purpose="success"
-            title="Add a new column rule"
-            @click="rules.push({ isRegex: true })"
-          />
+          rounded class="is-small"
+          picto="plus"
+          purpose="success"
+          title="Add a new column modifier"
+          @click="rules.push({ isRegex: true })"
+        />
       </bulmaLevel>
-      <!-- pattern list -->
+      <!-- Rules list -->
         <ul>
           <li v-for="(rule, index) in rules" :key="index">
             <rule-editor :rule="rule"
-              @update="updateRuleInRules(index, $event)"
-              @move:up="moveRuleInRules(index, -1)"
-              @move:down="moveRuleInRules(index, +1)"
-              @delete="deleteRuleInRules(index)"
+              @update="updateItemInList(rules, index, $event)"
+              @move:up="moveItemInList(rules, index, -1)"
+              @move:down="moveItemInList(rules, index, +1)"
+              @delete="deleteItemInList(rules, index)"
             />
           </li>
         </ul>
-      <!-- add pattern button -->
       <div class="container" slot="footer">
         <bulmaLevel mobile-view>
           <bulmaButton slot="left" purpose="primary" label="Save settings"  @click="saveColumnSettings" />
@@ -96,14 +95,14 @@ export default {
     closeModal () {
       this.columnModalIsActive = false
     },
-    updateRuleInRules (index, rule) {
-      this.$set(this.rules, index, { ...rule })
+    updateItemInList (array, index, item) {
+      this.$set(array, index, { ...item })
     },
-    deleteRuleInRules (index) {
-      this.rules.splice(index, 1)
+    deleteItemInList (array, index) {
+      array.splice(index, 1)
     },
-    moveRuleInRules (index, direction) {
-      moveInArray(this.rules, index, index + direction)
+    moveItemInList (array, index, direction) {
+      moveInArray(array, index, index + direction)
     },
     saveColumnSettings () {
       // This methods saves the column settings but without applying the defined rules
