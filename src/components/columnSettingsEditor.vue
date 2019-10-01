@@ -130,11 +130,15 @@ export default {
     },
     saveColumnSettings () {
       // This methods saves the column settings but without applying the defined rules
+      const defineIsRegex = rule => {
+        if (typeof rule.isRegex !== 'boolean') rule.isRegex = true
+        return rule
+      }
       this.$emit('save', {
         position: this.columnPosition,
         isHeading: this.columnIsHeading,
-        highlights: this.highlights,
-        rules: this.rules
+        highlights: this.highlights.map(defineIsRegex),
+        rules: this.rules.map(defineIsRegex)
       })
       this.closeModal()
     },
