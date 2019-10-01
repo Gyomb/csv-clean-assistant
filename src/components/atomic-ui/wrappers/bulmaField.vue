@@ -27,9 +27,16 @@ export default {
     let slotIndex = 0
     let fieldLabelCount = 0
 
+    const nodeContainsSomeClasses = (node, classes) => {
+      const nodeClasses = [node.data.class, node.data.staticClass].join(' ')
+      if (!Array.isArray(classes)) return console.error('classes is not an Array :', classes)
+      if (nodeClasses) return classes.some(className => nodeClasses.includes(className))
+      return false
+    }
+
     const formatLabels = (vNode) => {
-      if (vNode.data) {
-        if (vNode.data.staticClass && !vNode.data.staticClass.includes('label')) {
+      if (vNode.data && !nodeContainsSomeClasses(vNode, ['radio', 'checkbox'])) {
+        if (!nodeContainsSomeClasses(vNode, ['label'])) {
           vNode.data.staticClass = [
             'label',
             vNode.data.staticClass
@@ -40,11 +47,7 @@ export default {
           }
         }
       }
-      if (this.isHorizontal) {
-        return h('div', { class: 'field-label is-normal' }, [vNode])
-      } else {
-        return vNode
-      }
+      return vNode
     }
 
     const addField = (vNode, additionalClasses) => {
@@ -73,7 +76,10 @@ export default {
       while (nextIndex < nextSlots.length && !encounteredLabel) {
         if (nextSlots.hasOwnProperty(nextIndex)) {
           const input = nextSlots[nextIndex]
-          if (input.tag === 'label') {
+          if (
+            input.data.attrs &&
+            typeof input.data.attrs['field-label'] !== 'undefined'
+          ) {
             encounteredLabel = true
             slotIndex--
           } else {
@@ -94,13 +100,21 @@ export default {
     while (slotIndex < this.$slots.default.length) {
       if (this.$slots.default.hasOwnProperty(slotIndex)) {
         const vNode = this.$slots.default[slotIndex]
-
-        if (vNode.tag === 'label') {
-          if (this.isHorizontal && formattedSlots[fieldLabelCount].length > 1) {
+        if (vNode.tag === 'label' && !nodeContainsSomeClasses(vNode, ['radio', 'checkbox'])) {
+          if (
+            this.isHorizontal &&
+            vNode.data.attrs &&
+            typeof vNode.data.attrs['field-label'] !== 'undefined'
+          ) {
             fieldLabelCount++
-            formattedSlots.push([])
+            formattedSlots.push([
+              <div class="field-label is-normal">
+                {formatLabels(vNode)}
+              </div>
+            ])
+          } else {
+            formattedSlots[fieldLabelCount].push(formatLabels(vNode))
           }
-          formattedSlots[fieldLabelCount].push(formatLabels(vNode))
         } else {
           if (this.isHorizontal) {
             formattedSlots[fieldLabelCount].push(concatNextInputs(slotIndex, this.$slots.default))

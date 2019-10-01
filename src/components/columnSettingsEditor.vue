@@ -6,16 +6,19 @@
         <i class="fas fa-edit"></i>
       </span>
     </span>
-    <bulmaModal :is-active="columnModalIsActive" @close="closeModal">
+    <bulmaModal class="column-settings-editor" :is-active="columnModalIsActive" @close="closeModal">
       <h3 class="title" slot="header">Column "{{label}}"</h3>
       <bulmaField isHorizontal>
-        <label class="checkbox" :for="label+'is-heading'">
+        <label :for="label+'-is-heading'" field-label>
           Heading&nbsp;column
         </label>
-        <input type="checkbox" v-model="columnIsHeading" :name="label+'is-heading'">
+        <label class="checkbox">
+          <input type="checkbox" v-model="columnIsHeading" :name="label+'-is-heading'">
+          <span>This column is a heading column</span>
+        </label>
       </bulmaField>
       <bulmaField isHorizontal hasAddons>
-        <label :for="label+'-position'">Column&nbsp;position</label>
+        <label field-label :for="label+'-position'">Column&nbsp;position</label>
         <bulmaButton picto="angle-double-left" @click="columnPosition = 0" rounded />
         <bulmaButton picto="angle-left" @click="columnPosition > 0 ? columnPosition-- : 0" />
         <input type="number" :max="positionMax" class="input" :name="label+'-position'" v-model.number="columnPosition">
@@ -173,5 +176,9 @@ export default {
     &:hover {
       text-decoration: none;
     }
+  }
+
+  .column-settings-editor {
+    font-weight: normal;
   }
 </style>

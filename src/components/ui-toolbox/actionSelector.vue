@@ -21,11 +21,12 @@
         <h4 class="title is-4" slot="header">{{selectedActionLabel}}</h4>
         <!-- Action Parameters -->
         <bulmaField isHorizontal v-if="selectedAction === 'replace'">
-          <label class="label" for="replaceMatch">Replace</label>
+
+          <label field-label class="label" for="replaceMatch">Replace</label>
           <input class="input" name="replaceMatch" type="text" placeholder="pattern"
             v-model="replaceReplacementPattern"
           >
-          <label class="label" for="replaceNew">By</label>
+          <label field-label class="label" for="replaceNew">By</label>
           <input class="input" name="replaceNew" type="text" placeholder="Replacement"
             v-model="replaceReplacementString"
           >
