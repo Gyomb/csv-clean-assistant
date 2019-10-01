@@ -20,10 +20,16 @@
       >
         <h4 class="title is-4" slot="header">{{selectedActionLabel}}</h4>
         <!-- Action Parameters -->
-        <swatchSelect v-if="selectedAction === 'highlight'"
-          :options="highlightOptions"
-          v-model="highlightSelectedOption"
-        />
+        <bulmaField isHorizontal v-if="selectedAction === 'replace'">
+          <label class="label" for="replaceMatch">Replace</label>
+          <input class="input" name="replaceMatch" type="text" placeholder="pattern"
+            v-model="replaceReplacementPattern"
+          >
+          <label class="label" for="replaceNew">By</label>
+          <input class="input" name="replaceNew" type="text" placeholder="Replacement"
+            v-model="replaceReplacementString"
+          >
+        </bulmaField>
         <!-- Action Parameters END -->
         <div class="container" slot="footer">
           <bulmaLevel>
@@ -47,18 +53,8 @@
 <script>
 const actionOptions = [
   { value: 'delete', label: 'Delete' },
-  { value: 'highlight', label: 'Highlight' },
   { value: 'replace', label: 'Modify' },
   { value: 'move', label: 'Move' }
-]
-
-const highlightOptions = [
-  'primary',
-  'info',
-  'link',
-  'success',
-  'warning',
-  'danger'
 ]
 
 export default {
@@ -70,10 +66,10 @@ export default {
   data () {
     return {
       displayParameters: false,
-      selectedAction: this.action.action || 'highlight',
+      selectedAction: this.action.action || 'replace',
       actionOptions,
-      highlightOptions,
-      highlightSelectedOption: this.action.parameters.color || highlightOptions[0]
+      replaceReplacementPattern: this.action.parameters.replacementPattern || '',
+      replaceReplacementString: this.action.parameters.replacementString || ''
     }
   },
   props: {
@@ -81,7 +77,7 @@ export default {
       type: Object,
       default () {
         return {
-          action: 'highlight',
+          action: 'replace',
           parameters: {}
         }
       },
@@ -95,8 +91,22 @@ export default {
       return this.actionOptions.filter(option => option.value === this.selectedAction)[0].label
     },
     noParameters () {
+      const valuesAreDefined = (values) => {
+        let aValueIsUndefined = false
+        if (Array.isArray(values)) {
+          for (const value of values) {
+            if (typeof value === 'undefined') {
+              aValueIsUndefined = true
+              break
+            }
+          }
+        } else {
+          if (typeof values === 'undefined') aValueIsUndefined = true
+        }
+        return aValueIsUndefined
+      }
       switch (this.selectedAction) {
-        case 'highlight': return !this.highlightSelectedOption
+        case 'replace': return valuesAreDefined([this.replaceReplacementPattern, this.replaceReplacementString])
         default: return true
       }
     }
@@ -105,7 +115,9 @@ export default {
     updateSelectedAction () {
       let parameters = {}
       switch (this.selectedAction) {
-        case 'highlight': parameters.color = this.highlightSelectedOption
+        case 'replace':
+          parameters.replacementPattern = this.replaceReplacementPattern
+          parameters.replacementString = this.replaceReplacementString
       }
       this.$emit('update', {
         action: this.selectedAction,
@@ -120,7 +132,9 @@ export default {
     },
     resetParameters () {
       switch (this.selectedAction) {
-        case 'highlight': this.highlightSelectedOption = this.action.parameters.color
+        case 'replace':
+          this.replaceReplacementPattern = this.action.parameters.replacementPattern
+          this.replaceReplacementString = this.action.parameters.replacementString
       }
     }
   },

@@ -58,7 +58,7 @@ export default {
     actionAndParameters: {
       get () {
         return {
-          action: this.rule.action || 'highlight',
+          action: this.rule.action || 'replace',
           parameters: this.rule.parameters || {}
         }
       },
