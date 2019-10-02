@@ -8,6 +8,7 @@
               :settings="columnsSettings[headEntry]"
               :position="index" :position-max="header.length - 1"
               @save="$emit('colupdate', {heading: headEntry, settings: $event})"
+              @apply:rules="$emit('apply:rules', {column: headEntry})"
             />
           </th>
         </tr>

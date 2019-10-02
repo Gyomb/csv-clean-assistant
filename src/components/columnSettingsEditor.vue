@@ -147,7 +147,7 @@ export default {
     },
     saveAndApplyRules () {
       this.saveColumnSettings()
-      // Add dispatch to apply rules
+      this.$emit('apply:rules')
     },
     resetLocalData () {
       this.columnIsHeading = typeof this.settings.isHeading === 'boolean' ? this.settings.isHeading : false

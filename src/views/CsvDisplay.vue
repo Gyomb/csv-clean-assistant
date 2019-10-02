@@ -7,6 +7,7 @@
       :columns-settings="$store.state.files.list[fileUid].columns || {}"
       @cellupdate="saveCellUpdate"
       @colupdate="saveColUpdate"
+      @apply:rules="applyColRules"
     />
     <pre>{{$store.state.csv.json}}</pre>
   </div>
@@ -37,6 +38,10 @@ export default {
         heading,
         settings
       })
+    },
+    applyColRules (parameters) {
+      parameters.uid = this.fileUid
+      this.$store.dispatch('APPLY_MODIFICATION_RULES', parameters)
     }
   },
   mounted () {
