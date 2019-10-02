@@ -23,7 +23,7 @@
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
-    <actionSelector slot="right" v-model="actionAndParameters" />
+    <actionSelector slot="right" v-model="actionAndParameters" :match-excluded="exclude" />
     <span class="icon is-small has-text-grey-dark" slot="right">
       <span class="fa-stack">
         <i class="fas fa-sort-up fa-stack-2x is-clickable" @click="$emit('move:up')"></i>

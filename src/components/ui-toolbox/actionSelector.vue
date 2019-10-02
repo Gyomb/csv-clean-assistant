@@ -23,7 +23,7 @@
         <template v-if="selectedAction === 'replace'">
           <bulmaField is-horizontal>
             <label class="radio">
-              <input type="radio" v-model="replaceUseMatchPattern" :value="true"> Use match pattern
+              <input type="radio" v-model="replaceUseMatchPattern" :value="true" :disabled="matchExcluded"> Use match pattern
             </label>
             <label class="radio">
               <input type="radio" v-model="replaceUseMatchPattern" :value="false"> Use the replace pattern below
@@ -107,7 +107,7 @@ export default {
       selectedAction: this.action.action || 'replace',
       actionOptions,
       optionsValidatedOnce: false,
-      replaceUseMatchPattern: defaultIfUndefined(this.action.parameters.useMatchPattern, true),
+      replaceUseMatchPattern: defaultIfUndefined(this.action.parameters.useMatchPattern, !this.matchExcluded),
       replaceIsRegex: defaultIfUndefined(this.action.parameters.isRegex, true),
       replaceReplacementPattern: this.action.parameters.replacementPattern || '',
       replaceReplacementString: this.action.parameters.replacementString || ''
@@ -125,7 +125,8 @@ export default {
       validator (value) {
         return actionOptions.map(option => option.value).includes(value.action)
       }
-    }
+    },
+    matchExcluded: Boolean
   },
   computed: {
     selectedActionLabel () {
@@ -134,7 +135,7 @@ export default {
     noParameters () {
       switch (this.selectedAction) {
         case 'replace': return (
-          this.replaceUseMatchPattern === true &&
+          this.replaceUseMatchPattern === !this.matchExcluded &&
           this.replaceIsRegex === true &&
           this.replaceReplacementPattern === '' &&
           this.replaceReplacementString === ''
@@ -168,10 +169,10 @@ export default {
     resetParameters () {
       switch (this.selectedAction) {
         case 'replace':
-          this.replaceUseMatchPattern = this.action.parameters.useMatchPattern
-          this.replaceIsRegex = this.action.parameters.isRegex
-          this.replaceReplacementPattern = this.action.parameters.replacementPattern
-          this.replaceReplacementString = this.action.parameters.replacementString
+          this.replaceUseMatchPattern = defaultIfUndefined(this.action.parameters.useMatchPattern, !this.matchExcluded)
+          this.replaceIsRegex = defaultIfUndefined(this.action.parameters.isRegex, true)
+          this.replaceReplacementPattern = defaultIfUndefined(this.action.parameters.replacementPattern, '')
+          this.replaceReplacementString = defaultIfUndefined(this.action.parameters.replacementString, '')
       }
     }
   },

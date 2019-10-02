@@ -13,7 +13,10 @@ const state = {
   newFilename: 'document',
   newPath: path.join(remote.app.getPath('documents'), 'document.csv'),
   saveMode: 'newfile',
-  encoding: 'utf-8'
+  encoding: 'utf-8',
+  delimiter: '',
+  header: [],
+  json: []
 }
 
 const mutations = {
