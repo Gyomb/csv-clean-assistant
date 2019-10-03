@@ -20,21 +20,49 @@
     <bulmaModal :is-active="displaySource" @close="displaySource = false">
       <pre>{{$store.state.csv.json}}</pre>
     </bulmaModal>
+    <bulmaModal :is-active="dryrunIsDiplayed" @close="dryrunIsDiplayed = false">
+      <h3 class="title" slot="header">
+        <span class="icon">
+          <i class="fas fa-glasses"></i>
+        </span>
+        <span> Dry run report</span>
+      </h3>
+      <dryrunReportDisplay :report="$store.state.modifier.dryrunReport" />
+      <div class="container"  slot="footer">
+        <bulmaLevel>
+          <bulmaField slot="left">
+            <bulmaButton purpose="success"
+              picto="file-import" label="Apply"
+              @click="applyModifications"
+            />
+          </bulmaField>
+          <bulmaField slot="right">
+            <bulmaButton
+              picto="ban" label="Cancel"
+              @click="cancelModifications"
+            />
+          </bulmaField>
+        </bulmaLevel>
+      </div>
+    </bulmaModal>
   </div>
 </template>
 
 <script>
 import saveFileControls from '@/components/saveFileControls.vue'
 import csvTable from '@/components/csvTable'
+import dryrunReportDisplay from '@/components/dryrunReportDisplay.vue'
 
 export default {
   name: 'csv-display',
   components: {
     saveFileControls,
-    csvTable
+    csvTable,
+    dryrunReportDisplay
   },
   data () {
     return {
+      dryrunIsDiplayed: false,
       displaySource: false
     }
   },
@@ -57,6 +85,14 @@ export default {
     applyColRules (parameters) {
       parameters.uid = this.fileUid
       this.$store.dispatch('APPLY_MODIFICATION_RULES', parameters)
+        .then(this.dryrunIsDiplayed = true)
+    },
+    applyModifications () {
+      this.dryrunIsDiplayed = false
+      // add code to replace JSON by dryrun data
+    },
+    cancelModifications () {
+      this.dryrunIsDiplayed = false
     }
   },
   mounted () {
