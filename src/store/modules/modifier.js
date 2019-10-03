@@ -22,6 +22,7 @@ const formatRules = function (rules) {
 }
 
 const cellMatch = function (string, pattern, toExclude) {
+  string = string || ''
   const isMatch = pattern instanceof RegExp ? pattern.test(string) : string.includes(pattern)
   if (!toExclude && isMatch) return true
   if (toExclude && !isMatch) return true
@@ -89,6 +90,19 @@ const actions = {
       commit('DRYRUN_REGISTER', modifiedJson)
       commit('DRYRUN_REPORT_REGISTER', modificationReport)
       resolve()
+    })
+  },
+  PROMOTE_DRYRUN ({ state, dispatch }, uid) {
+    return new Promise((resolve, reject) => {
+      const newJson = []
+      try {
+        for (const row of state.dryrun) {
+          newJson.push({ ...row })
+        }
+      } catch (error) {
+        reject(error)
+      }
+      return dispatch('REPLACE_AND_SAVE_ROWS', { uid, newJson })
     })
   }
 }

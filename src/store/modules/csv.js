@@ -42,6 +42,9 @@ const mutations = {
   JSON_UPDATE (state, { row, col, value }) {
     Vue.set(state.json[row], col, value)
   },
+  JSON_OVERWRITE (state, json) {
+    Vue.set(state, 'json', json)
+  },
   HEADER_REPOSITION (state, { heading, newPos }) {
     const oldPos = state.header.indexOf(heading)
     if (oldPos !== newPos) moveInArray(state.header, oldPos, newPos)
@@ -82,6 +85,13 @@ const actions = {
     let { header, delimiter, json } = state
     return fsp.writeFile(importedFilePath, JSON.stringify({ header, delimiter, json }), 'utf-8')
       .catch(err => console.error(err))
+  },
+  REPLACE_AND_SAVE_ROWS ({ commit, dispatch }, { uid, newJson }) {
+    return new Promise((resolve, reject) => {
+      if (!Array.isArray(newJson)) return reject(Error('Provided data isn\t an Array of rows'))
+      commit('JSON_OVERWRITE', newJson)
+      return dispatch('SAVE_IMPORTED_CSV', uid)
+    })
   },
   EXPORT_CSV ({ state, commit }, { filename, filepath }) {
     if (filename && filepath) commit('CSV_SAVE_DATA_UPDATE', { filename, filepath })

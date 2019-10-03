@@ -89,7 +89,8 @@ export default {
     },
     applyModifications () {
       this.dryrunIsDiplayed = false
-      // add code to replace JSON by dryrun data
+      this.$store.dispatch('PROMOTE_DRYRUN', this.fileUid)
+        .then(console.log('row\'s data modified and saved!'))
     },
     cancelModifications () {
       this.dryrunIsDiplayed = false
