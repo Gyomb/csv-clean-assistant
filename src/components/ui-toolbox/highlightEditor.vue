@@ -40,7 +40,7 @@
 import highlightSelector from '@/components/ui-toolbox/highlightSelector'
 
 export default {
-  name: 'ruleEditor',
+  name: 'highlightEditor',
   components: {
     highlightSelector
   },

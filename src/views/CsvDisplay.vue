@@ -1,6 +1,14 @@
 <template>
   <div class="csv-display">
-    <saveFileControls />
+    <bulmaLevel mobile-view>
+      <saveFileControls slot="left" />
+      <bulmaField slot="right">
+        <bulmaButton rounded
+          picto="code"
+          @click="displaySource = true"
+        />
+      </bulmaField>
+    </bulmaLevel>
     <csvTable
       :header="$store.state.csv.header"
       :data="$store.state.csv.json"
@@ -9,7 +17,9 @@
       @colupdate="saveColUpdate"
       @apply:rules="applyColRules"
     />
-    <pre>{{$store.state.csv.json}}</pre>
+    <bulmaModal :is-active="displaySource" @close="displaySource = false">
+      <pre>{{$store.state.csv.json}}</pre>
+    </bulmaModal>
   </div>
 </template>
 
@@ -22,6 +32,11 @@ export default {
   components: {
     saveFileControls,
     csvTable
+  },
+  data () {
+    return {
+      displaySource: false
+    }
   },
   computed: {
     fileUid () {
