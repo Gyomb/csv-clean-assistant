@@ -3,19 +3,25 @@
 export default {
   name: 'bulmaLevel',
   props: {
-    mobileView: Boolean
+    mobileView: Boolean,
+    isCentered: Boolean
   },
   computed: {
     rootClasses () {
       let classes = ['level']
       if (this.mobileView) classes.push('is-mobile')
       return classes.join(' ')
+    },
+    itemClasses () {
+      let classes = ['level-item']
+      if (this.isCentered) classes.push('has-text-centered')
+      return classes.join(' ')
     }
   },
   render (h) {
-    function wrapItems (slot) {
+    const wrapItems = (slot) => {
       if (Array.isArray(slot)) {
-        return slot.map(vNode => h('div', { class: 'level-item' }, [vNode]))
+        return slot.map(vNode => h('div', { class: this.itemClasses }, [vNode]))
       }
       return []
     }

@@ -6,11 +6,16 @@
           <h4 class="title is-5">{{reportEntry.action}}</h4>
         </div>
         <div class="message-body">
-          <bulmaLevel>
+          <bulmaLevel is-centered>
             <template slot="left">
               <div>
                 <h5 class="subtitle is-5">Old value</h5>
-                <p>{{reportEntry.oldCell}}</p>
+                <p>
+                  {{reportEntry.oldCell}}
+                  <span class="icon" v-if="!reportEntry.oldCell">
+                    <i class="fas fa-ban"></i>
+                  </span>
+                </p>
               </div>
             </template>
             <span class="icon">
@@ -19,7 +24,12 @@
             <template slot="right">
               <div>
                 <h5 class="subtitle is-5">New value</h5>
-                <p>{{reportEntry.newCell}}</p>
+                <p>
+                  {{reportEntry.newCell}}
+                  <span class="icon" v-if="!reportEntry.newCell">
+                    <i class="fas fa-ban"></i>
+                  </span>
+                </p>
               </div>
             </template>
           </bulmaLevel>
