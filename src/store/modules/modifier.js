@@ -10,6 +10,9 @@ const formatRules = function (rules) {
           parametersToInject.replacementPattern = parameters.isRegex ? new RegExp(parameters.replacementPattern) : parameters.replacementPattern
         }
         break
+      case 'delete':
+        parametersToInject.entireRow = parameters.entireRow || false
+        break
       default: return false
     }
     return {
@@ -70,12 +73,16 @@ const actions = {
         const report = []
         const newRow = { ...row }
         let newCell = newRow[column]
+        let deleteRow = false
         for (let ruleIndex = 0; ruleIndex < rulesToApply.length; ruleIndex++) {
           const rule = rulesToApply[ruleIndex]
           if (cellMatch(newCell, rule.match, rule.exclude)) {
             let oldCell = newCell
             switch (rule.action) {
               case 'replace': newCell = replaceAction(newCell, rule)
+                break
+              case 'delete': newCell = ''
+                if (rule.entireRow) deleteRow = true
                 break
               default: console.error(`'${rule.action}' action isn't supported `)
             }
@@ -84,7 +91,7 @@ const actions = {
         }
         newRow[column] = newCell
         if (row[column] !== newCell) modificationReport.push(report)
-        modifiedJson.push(newRow)
+        if (!deleteRow) modifiedJson.push(newRow)
       })
 
       commit('DRYRUN_REGISTER', modifiedJson)

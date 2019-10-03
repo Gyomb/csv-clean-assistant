@@ -49,6 +49,14 @@
           </bulmaField>
 
         </template>
+        <template v-if="selectedAction === 'delete'">
+          <bulmaField>
+            <label class="checkbox">
+              <input type="checkbox" v-model="deleteEntireRow">
+              <span> Delete the entire row</span>
+            </label>
+          </bulmaField>
+        </template>
         <!-- Action Parameters END -->
         <div class="container" slot="footer">
           <bulmaLevel>
@@ -110,7 +118,8 @@ export default {
       replaceUseMatchPattern: defaultIfUndefined(this.action.parameters.useMatchPattern, !this.matchExcluded),
       replaceIsRegex: defaultIfUndefined(this.action.parameters.isRegex, true),
       replaceReplacementPattern: this.action.parameters.replacementPattern || '',
-      replaceReplacementString: this.action.parameters.replacementString || ''
+      replaceReplacementString: this.action.parameters.replacementString || '',
+      deleteEntireRow: defaultIfUndefined(this.action.parameters.entireRow, false)
     }
   },
   props: {
@@ -140,6 +149,7 @@ export default {
           this.replaceReplacementPattern === '' &&
           this.replaceReplacementString === ''
         ) && !this.optionsValidatedOnce
+        case 'delete': return this.deleteEntireRow === false && !this.optionsValidatedOnce
         default: return true
       }
     }
@@ -153,6 +163,10 @@ export default {
           parameters.isRegex = this.replaceIsRegex || false
           parameters.replacementPattern = this.replaceReplacementPattern
           parameters.replacementString = this.replaceReplacementString
+          break
+        case 'delete':
+          parameters.entireRow = this.deleteEntireRow || false
+          break
       }
       this.$emit('update', {
         action: this.selectedAction,
@@ -173,6 +187,10 @@ export default {
           this.replaceIsRegex = defaultIfUndefined(this.action.parameters.isRegex, true)
           this.replaceReplacementPattern = defaultIfUndefined(this.action.parameters.replacementPattern, '')
           this.replaceReplacementString = defaultIfUndefined(this.action.parameters.replacementString, '')
+          break
+        case 'delete':
+          this.deleteEntireRow = this.action.parameters.entireRow || false
+          break
       }
     }
   },

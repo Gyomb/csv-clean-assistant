@@ -2,9 +2,15 @@
   <ul>
     <li v-for="(rowReport, index) in report" :key="index">
       <div class="message" :class="actionColor[reportEntry.action]" v-for="(reportEntry, index) in rowReport" :key="index">
-        <div class="message-header">
-          <h4 class="title is-5">{{reportEntry.action}}</h4>
-        </div>
+        <bulmaLevel class="message-header">
+          <h4 class="title is-5" slot="left">{{reportEntry.action}}</h4>
+          <div slot="right" v-if="reportEntry.action === 'delete' && reportEntry.entireRow">
+            <span class="icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </span>
+            <span> This will delete the entire row</span>
+          </div>
+        </bulmaLevel>
         <div class="message-body">
           <bulmaLevel is-centered>
             <template slot="left">
