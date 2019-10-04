@@ -13,6 +13,9 @@ const formatRules = function (rules) {
       case 'delete':
         parametersToInject.entireRow = parameters.entireRow || false
         break
+      case 'move':
+        parametersToInject = { ...parameters }
+        break
       default: return false
     }
     return {
@@ -83,6 +86,12 @@ const actions = {
                 break
               case 'delete': newCell = ''
                 if (rule.entireRow) deleteRow = true
+                break
+              case 'move':
+                if (typeof row[rule.moveTo] === 'undefined' || rule.force) {
+                  newRow[rule.moveTo] = oldCell
+                  newCell = ''
+                }
                 break
               default: console.error(`'${rule.action}' action isn't supported `)
             }
