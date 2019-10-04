@@ -15,7 +15,7 @@ const state = {
 }
 
 const getters = {
-  getFileFromFileKey: (state, getters) => (fileKey) => {
+  getFileFromImportOrder: (state, getters) => (fileKey) => {
     return state.list[getters.getUniqueId(fileKey)]
   },
   getHeadColumnNames (state, getters, rootState) {

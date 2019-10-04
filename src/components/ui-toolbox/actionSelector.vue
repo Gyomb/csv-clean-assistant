@@ -83,7 +83,7 @@
         </template>
         <!-- Action Parameters END -->
         <div class="container" slot="footer">
-          <bulmaLevel>
+          <bulmaLevel mobile-view>
             <bulmaButton slot="left"
               label="Validate"
               purpose="success"
