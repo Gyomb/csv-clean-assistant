@@ -88,7 +88,7 @@ export default {
 </script>
 
 <style lang="scss">
-  th .input {
+  tbody th .input {
     font-weight: bold;
   }
   .revealonhover {

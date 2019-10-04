@@ -6,16 +6,19 @@
         <i class="fas fa-edit"></i>
       </span>
     </span>
-    <bulmaModal :is-active="columnModalIsActive" @close="closeModal">
+    <bulmaModal class="column-settings-editor" :is-active="columnModalIsActive" @close="closeModal">
       <h3 class="title" slot="header">Column "{{label}}"</h3>
       <bulmaField isHorizontal>
-        <label class="checkbox" :for="label+'is-heading'">
+        <label :for="label+'-is-heading'" field-label>
           Heading&nbsp;column
         </label>
-        <input type="checkbox" v-model="columnIsHeading" :name="label+'is-heading'">
+        <label class="checkbox">
+          <input type="checkbox" v-model="columnIsHeading" :name="label+'-is-heading'">
+          <span>This column is a heading column</span>
+        </label>
       </bulmaField>
       <bulmaField isHorizontal hasAddons>
-        <label :for="label+'-position'">Column&nbsp;position</label>
+        <label field-label :for="label+'-position'">Column&nbsp;position</label>
         <bulmaButton picto="angle-double-left" @click="columnPosition = 0" rounded />
         <bulmaButton picto="angle-left" @click="columnPosition > 0 ? columnPosition-- : 0" />
         <input type="number" :max="positionMax" class="input" :name="label+'-position'" v-model.number="columnPosition">
@@ -24,10 +27,48 @@
       </bulmaField>
       <h4 class="subtitle">Rulesets</h4>
       <!-- presets drawer -->
-      <h4 class="subtitle">Applied Rules</h4>
-      <!-- pattern list -->
-        <!-- regex => action widget -->
-      <!-- add pattern button -->
+      <bulmaLevel mobile-view>
+        <h4 class="subtitle" slot="left">Column Modifiers</h4>
+        <bulmaButton slot="right"
+          rounded class="is-small"
+          picto="plus"
+          purpose="success"
+          title="Add a new column modifier"
+          @click="rules.push({ isRegex: true })"
+        />
+      </bulmaLevel>
+      <!-- Rules list -->
+        <ul>
+          <li v-for="(rule, index) in rules" :key="index">
+            <rule-editor :rule="rule" :column-list="columnList" :current-column="label"
+              @update="updateItemInList(rules, index, $event)"
+              @move:up="moveItemInList(rules, index, -1)"
+              @move:down="moveItemInList(rules, index, +1)"
+              @delete="deleteItemInList(rules, index)"
+            />
+          </li>
+        </ul>
+      <bulmaLevel mobile-view>
+        <h4 class="subtitle" slot="left">Highlights</h4>
+        <bulmaButton slot="right"
+          rounded class="is-small"
+          picto="plus"
+          purpose="success"
+          title="Add a new column highlight"
+          @click="highlights.push({ isRegex: true })"
+        />
+      </bulmaLevel>
+      <!-- Highlights list -->
+        <ul>
+          <li v-for="(highlightRule, index) in highlights" :key="index">
+            <highlight-editor :rule="highlightRule"
+              @update="updateItemInList(highlights, index, $event)"
+              @move:up="moveItemInList(highlights, index, -1)"
+              @move:down="moveItemInList(highlights, index, +1)"
+              @delete="deleteItemInList(highlights, index)"
+            />
+          </li>
+        </ul>
       <div class="container" slot="footer">
         <bulmaLevel mobile-view>
           <bulmaButton slot="left" purpose="primary" label="Save settings"  @click="saveColumnSettings" />
@@ -42,13 +83,23 @@
 </template>
 
 <script>
+import { moveInArray } from '@/helpers/arrays.js'
+import ruleEditor from '@/components/ui-toolbox/ruleEditor'
+import highlightEditor from '@/components/ui-toolbox/highlightEditor'
+
 export default {
   name: 'columnSettingsEditor',
+  components: {
+    highlightEditor,
+    ruleEditor
+  },
   data () {
     return {
       columnModalIsActive: false,
       columnIsHeading: false,
-      columnPosition: this.position || 0
+      columnPosition: this.position || 0,
+      highlights: [],
+      rules: []
     }
   },
   props: {
@@ -61,7 +112,8 @@ export default {
     settings: {
       type: Object,
       default () { return {} }
-    }
+    },
+    columnList: Array
   },
   methods: {
     openModal () {
@@ -71,21 +123,38 @@ export default {
     closeModal () {
       this.columnModalIsActive = false
     },
+    updateItemInList (array, index, item) {
+      this.$set(array, index, { ...item })
+    },
+    deleteItemInList (array, index) {
+      array.splice(index, 1)
+    },
+    moveItemInList (array, index, direction) {
+      moveInArray(array, index, index + direction)
+    },
     saveColumnSettings () {
       // This methods saves the column settings but without applying the defined rules
+      const defineIsRegex = rule => {
+        if (typeof rule.isRegex !== 'boolean') rule.isRegex = true
+        return rule
+      }
       this.$emit('save', {
         position: this.columnPosition,
-        isHeading: this.columnIsHeading
+        isHeading: this.columnIsHeading,
+        highlights: this.highlights.map(defineIsRegex),
+        rules: this.rules.map(defineIsRegex)
       })
       this.closeModal()
     },
     saveAndApplyRules () {
-      // Add dispatch to save and apply rules
-      this.closeModal()
+      this.saveColumnSettings()
+      this.$emit('apply:rules')
     },
     resetLocalData () {
       this.columnIsHeading = typeof this.settings.isHeading === 'boolean' ? this.settings.isHeading : false
       this.columnPosition = this.position || 0
+      this.rules = Array.isArray(this.settings.rules) ? [...this.settings.rules] : []
+      this.highlights = Array.isArray(this.settings.highlights) ? [...this.settings.highlights] : []
     }
   },
   mounted () {
@@ -108,5 +177,9 @@ export default {
     &:hover {
       text-decoration: none;
     }
+  }
+
+  .column-settings-editor {
+    font-weight: normal;
   }
 </style>
