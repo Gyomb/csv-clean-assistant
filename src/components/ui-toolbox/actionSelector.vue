@@ -21,6 +21,7 @@
         <h4 class="title is-4" slot="header">{{selectedActionLabel}}</h4>
         <!-- Action Parameters -->
         <template v-if="selectedAction === 'replace'">
+          <!-- Replace parameters -->
           <bulmaField is-horizontal>
             <label class="radio">
               <input type="radio" v-model="replaceUseMatchPattern" :value="true" :disabled="matchExcluded"> Use match pattern
@@ -47,13 +48,36 @@
               v-model="replaceReplacementString"
             >
           </bulmaField>
-
         </template>
         <template v-if="selectedAction === 'delete'">
+          <!-- Delete parameters -->
           <bulmaField>
             <label class="checkbox">
               <input type="checkbox" v-model="deleteEntireRow">
               <span> Delete the entire row</span>
+            </label>
+          </bulmaField>
+        </template>
+        <template v-if="selectedAction === 'move'">
+          <!-- Move parameters -->
+          <bulmaField>
+            <label field-label>
+              Move to column
+            </label>
+            <div class="select">
+              <select v-model="moveMoveTo">
+                <option v-for="(option, index) in columnList" :key="index"
+                  :value="option" :disabled="option === currentColumn"
+                >
+                  {{option}}
+                </option>
+              </select>
+            </div>
+          </bulmaField>
+          <bulmaField>
+            <label class="checkbox">
+              <input type="checkbox" v-model="moveForce">
+              Force move action even if the destination cell is not empty
             </label>
           </bulmaField>
         </template>
@@ -119,7 +143,9 @@ export default {
       replaceIsRegex: defaultIfUndefined(this.action.parameters.isRegex, true),
       replaceReplacementPattern: this.action.parameters.replacementPattern || '',
       replaceReplacementString: this.action.parameters.replacementString || '',
-      deleteEntireRow: defaultIfUndefined(this.action.parameters.entireRow, false)
+      deleteEntireRow: defaultIfUndefined(this.action.parameters.entireRow, false),
+      moveMoveTo: defaultIfUndefined(this.action.parameters.moveTo, this.columnList.filter(column => column !== this.currentColumn)[0]),
+      moveForce: this.action.parameters.force || false
     }
   },
   props: {
@@ -135,7 +161,20 @@ export default {
         return actionOptions.map(option => option.value).includes(value.action)
       }
     },
-    matchExcluded: Boolean
+    matchExcluded: Boolean,
+    columnList: {
+      type: Array,
+      default () {
+        return []
+      },
+      validator (list) {
+        return list.every(columnName => typeof columnName === 'string')
+      }
+    },
+    currentColumn: {
+      type: String,
+      default: ''
+    }
   },
   computed: {
     selectedActionLabel () {
@@ -150,6 +189,10 @@ export default {
           this.replaceReplacementString === ''
         ) && !this.optionsValidatedOnce
         case 'delete': return this.deleteEntireRow === false && !this.optionsValidatedOnce
+        case 'move': return (
+          this.moveMoveTo === this.currentColumn &&
+          this.moveForce === false
+        ) && !this.optionsValidatedOnce
         default: return true
       }
     }
@@ -167,6 +210,11 @@ export default {
         case 'delete':
           parameters.entireRow = this.deleteEntireRow || false
           break
+        case 'move':
+          parameters.moveTo = this.moveMoveTo || this.columnList.filter(column => column !== this.currentColumn)[0]
+          parameters.force = this.moveForce || false
+          break
+        default: console.error(Error(`Cannot update parameters for '${this.selectedAction}' action`))
       }
       this.$emit('update', {
         action: this.selectedAction,
@@ -191,6 +239,11 @@ export default {
         case 'delete':
           this.deleteEntireRow = this.action.parameters.entireRow || false
           break
+        case 'move':
+          this.moveMoveTo = defaultIfUndefined(this.action.parameters.moveTo, this.columnList.filter(column => column !== this.currentColumn)[0])
+          this.moveForce = this.action.parameters.force || false
+          break
+        default: console.error(Error(`Cannot reset parameters for '${this.selectedAction}' action`))
       }
     }
   },

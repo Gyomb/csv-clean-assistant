@@ -40,7 +40,7 @@
       <!-- Rules list -->
         <ul>
           <li v-for="(rule, index) in rules" :key="index">
-            <rule-editor :rule="rule"
+            <rule-editor :rule="rule" :column-list="columnList" :current-column="label"
               @update="updateItemInList(rules, index, $event)"
               @move:up="moveItemInList(rules, index, -1)"
               @move:down="moveItemInList(rules, index, +1)"
@@ -112,7 +112,8 @@ export default {
     settings: {
       type: Object,
       default () { return {} }
-    }
+    },
+    columnList: Array
   },
   methods: {
     openModal () {

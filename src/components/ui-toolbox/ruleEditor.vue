@@ -23,7 +23,10 @@
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
-    <actionSelector slot="right" v-model="actionAndParameters" :match-excluded="exclude" />
+    <actionSelector slot="right"
+      v-model="actionAndParameters" :match-excluded="exclude"
+      :column-list="columnList" :current-column="currentColumn"
+    />
     <span class="icon is-small has-text-grey-dark" slot="right">
       <span class="fa-stack">
         <i class="fas fa-sort-up fa-stack-2x is-clickable" @click="$emit('move:up')"></i>
@@ -52,7 +55,9 @@ export default {
     rule: {
       type: Object,
       default () { return {} }
-    }
+    },
+    columnList: Array,
+    currentColumn: String
   },
   computed: {
     actionAndParameters: {
