@@ -17,6 +17,18 @@ const state = {
 const getters = {
   getFileFromFileKey: (state, getters) => (fileKey) => {
     return state.list[getters.getUniqueId(fileKey)]
+  },
+  getHeadColumnNames (state, getters, rootState) {
+    const fileData = state.list[rootState.userSettings.openedFile] || {}
+    const columnsData = fileData.columns || {}
+    const headColumns = []
+    for (const columnName in columnsData) {
+      if (columnsData.hasOwnProperty(columnName)) {
+        const column = columnsData[columnName] || {}
+        if (column.isHeading) headColumns.push(columnName)
+      }
+    }
+    return headColumns
   }
 }
 

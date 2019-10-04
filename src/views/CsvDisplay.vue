@@ -27,9 +27,9 @@
         </span>
         <span> Dry run report</span>
       </h3>
-      <dryrunReportDisplay :report="$store.state.modifier.dryrunReport" />
+      <dryrunReportDisplay :report="$store.state.modifier.dryrunReport" :head-columns="headColumns" :treated-column="$store.state.modifier.column" />
       <div class="container"  slot="footer">
-        <bulmaLevel>
+        <bulmaLevel mobile-view>
           <bulmaField slot="left">
             <bulmaButton purpose="success"
               picto="file-import" label="Apply"
@@ -69,6 +69,12 @@ export default {
   computed: {
     fileUid () {
       return this.$store.state.userSettings.openedFile
+    },
+    headColumns () {
+      const headColumnsNames = this.$store.getters.getHeadColumnNames
+      if (headColumnsNames) return headColumnsNames
+      const fileData = this.$store.state.files.list[this.fileUid] || {}
+      return fileData.columns ? fileData.columns[0] : []
     }
   },
   methods: {

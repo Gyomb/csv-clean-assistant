@@ -42,10 +42,14 @@ const replaceAction = function (string, rule) {
 
 const state = {
   dryrun: [],
-  dryrunReport: []
+  dryrunReport: [],
+  column: ''
 }
 
 const mutations = {
+  DRYRUN_COLUMN_REGISTER (state, column) {
+    state.column = column
+  },
   DRYRUN_REGISTER (state, newJson) {
     if (!Array.isArray(newJson)) return console.error(Error('Cannot store this modifed JSON (not an Array)'))
     Vue.set(state, 'dryrun', newJson)
@@ -95,14 +99,14 @@ const actions = {
                 break
               default: console.error(`'${rule.action}' action isn't supported `)
             }
-            if (row[column] !== newCell) report.push({ ...rule, oldCell, newCell })
+            if (row[column] !== newCell) report.push({ rule, oldCell, newCell, row, newRow })
           }
         }
         newRow[column] = newCell
         if (row[column] !== newCell) modificationReport.push(report)
         if (!deleteRow) modifiedJson.push(newRow)
       })
-
+      commit('DRYRUN_COLUMN_REGISTER', column)
       commit('DRYRUN_REGISTER', modifiedJson)
       commit('DRYRUN_REPORT_REGISTER', modificationReport)
       resolve()
