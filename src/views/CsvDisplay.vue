@@ -91,7 +91,7 @@ export default {
     applyColRules (parameters) {
       parameters.uid = this.fileUid
       this.$store.dispatch('APPLY_MODIFICATION_RULES', parameters)
-        .then(this.dryrunIsDiplayed = true)
+        .then(this.$router.push('csv-dryrun-report'))
     },
     applyModifications () {
       this.dryrunIsDiplayed = false

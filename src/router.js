@@ -23,6 +23,11 @@ export default new Router({
       path: '/csv-display',
       name: 'csv-display',
       component: () => import('./views/CsvDisplay.vue')
+    },
+    {
+      path: '/csv-dryrun-report',
+      name: 'csv-dryrun-report',
+      component: () => import('./views/CsvDryrunReport.vue')
     }
   ]
 })

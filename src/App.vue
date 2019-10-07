@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav" class="navbar is-spaced" role="navigation" aria-label="main navigation">
+    <div id="nav" class="navbar is-spaced is-fixed-top" role="navigation" aria-label="main navigation">
       <div class="container">
         <div class="navbar-brand">
           <div class="navbar-item">
@@ -12,12 +12,30 @@
               </button>
             </div>
           </div>
-          <div class="navbar-item">
-            <h1 class="title">CSV Clean Assistant</h1>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <div class="navbar-item">
+              <h1 class="title">CSV Clean Assistant</h1>
+            </div>
+          </div>
+          <div class="navbar-end" v-if="isDryrunReport">
+            <div class="navbar-item">
+                <bulmaField is-grouped>
+                  <bulmaButton purpose="success"
+                    picto="file-import" label="Apply"
+                    @click="applyModifications"
+                  />
+                  <bulmaButton
+                    picto="ban" label="Cancel"
+                    @click="cancelModifications"
+                  />
+                </bulmaField>
+            </div>
           </div>
         </div>
       </div>
-      </div>
+    </div>
     <section class="section view-content">
       <div class="container">
         <router-view/>
@@ -32,13 +50,24 @@ export default {
   computed: {
     isHome () {
       return this.$route.path === '/'
+    },
+    isDryrunReport () {
+      return this.$route.path === '/csv-dryrun-report'
     }
   },
   methods: {
     goHome () {
       this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: false })
       this.$router.push('/')
+    },
+    applyModifications () {
+      this.$store.dispatch('PROMOTE_DRYRUN', this.fileUid)
+        .then(this.$router.push('csv-display'))
+    },
+    cancelModifications () {
+      this.$router.push('csv-display')
     }
+
   }
 }
 </script>
@@ -49,8 +78,5 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-}
-.section.view-content {
-  padding-top: 0;
 }
 </style>
