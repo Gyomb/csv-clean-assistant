@@ -30,6 +30,7 @@ export default {
   methods: {
     activateEditMode () {
       this.editMode = true
+      this.$refs.input.focus()
     },
     deactivateEditMode () {
       this.editMode = false
@@ -50,7 +51,7 @@ export default {
         case 'Enter':
           event.preventDefault()
           if (!this.editMode) {
-            this.editMode = true
+            this.activateEditMode()
           } else {
             this.editMode = false
             this.$emit('update', this.cellInternalValue)
@@ -61,17 +62,21 @@ export default {
   render (h) {
     const Cell = this.cellType
     const template =
-    <Cell>
-      <bulmaField hasAddons>
+    <Cell class="editable-cell">
+      <span tabindex="0" role="button"
+        class={['input-like', { 'is-hidden': this.editMode }]}
+        onClick={this.activateEditMode}
+        onKeyup={this.keyupActions}
+      >{this.cellInternalValue}</span>
+      <bulmaField hasAddons class={{ 'is-hidden': !this.editMode }}>
         <input type="text" ref="input"
-          class={`input ${this.editMode ? '' : 'borderonhover is-static'}`}
+          class="input"
           isreadonly={!this.editMode}
           vModel_lazy={this.cellInternalValue}
           onBlur={this.deactivateEditModeIfInputLeft}
-          onClick={this.activateEditMode}
           onKeyup={this.keyupActions}
         />
-        <button class={`button ${this.editMode ? '' : 'revealonhover'}`} ref="button"
+        <button class="button" ref="button"
           onClick={this.switchEditMode}
           onBlur={this.deactivateEditModeIfInputLeft}
         >
@@ -88,21 +93,48 @@ export default {
 </script>
 
 <style lang="scss">
-  tbody th .input {
+
+  th.editable-cell .input {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
     font-weight: bold;
   }
-  .revealonhover {
-    opacity: 0;
-    transition: opacity .2s;
-  }
-  .field:hover {
-    .revealonhover {
-        opacity: 1;
+
+  .editable-cell {
+    $radius : 4px;
+    $border : 1px;
+    $padding-lateral: 9px;
+
+    cursor: pointer;
+
+    .field {
+      margin-left: -$padding-lateral;
     }
-    .borderonhover {
-      cursor: pointer;
-      border: #dbdbdb solid 1px;
-      padding: 5px 9px;
+
+    .input-like {
+      position: relative;
+      display: inline-block;
+      padding: 5px $padding-lateral;
+      margin-left: -$padding-lateral;
+      border: solid $border transparent;
+      border-radius: $radius;
+      &:hover, &:focus {
+        border-color: #dbdbdb;
+        background-color: #fff;
+        &:after {
+          content: "\F304";
+          font-family: 'Font Awesome 5 Free';
+          font-weight: 900;
+          display: block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          padding: 5px $padding-lateral 0 $padding-lateral;
+          height: 100%;
+          border-left: solid $border #dbdbdb;
+          border-radius: 0 $radius $radius 0;
+          background-color: #fff;
+        }
+      }
     }
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="table-container">
-    <table class="table is-hoverable is-fullwidth">
+    <table class="table is-hoverable is-fullwidth is-narrow">
       <thead>
         <tr>
           <th v-for="(headEntry, index) in header" :key="headEntry+index">
