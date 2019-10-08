@@ -12,15 +12,25 @@
               </button>
             </div>
           </div>
+          <div class="navbar-item">
+            <h1 class="title">CSV Clean Assistant</h1>
+          </div>
+          <a role="button" class="navbar-burger" aria-label="menu"
+            v-if="isDryrunReport"
+            :class="{'is-active': menuShown}"
+            :aria-expanded="menuShown.toString()"
+            @click="toggleMenu"
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
         </div>
-        <div class="navbar-menu">
+        <div class="navbar-menu" :class="{'is-active': menuShown}">
           <div class="navbar-start">
-            <div class="navbar-item">
-              <h1 class="title">CSV Clean Assistant</h1>
-            </div>
           </div>
           <div class="navbar-end" v-if="isDryrunReport">
-            <div class="navbar-item">
+            <div class="navbar-item is-pulled-right">
                 <bulmaField is-grouped>
                   <bulmaButton purpose="success"
                     picto="file-import" label="Apply"
@@ -47,6 +57,11 @@
 <script>
 export default {
   name: 'app',
+  data () {
+    return {
+      menuShown: false
+    }
+  },
   computed: {
     isHome () {
       return this.$route.path === '/'
@@ -66,6 +81,9 @@ export default {
     },
     cancelModifications () {
       this.$router.push('csv-display')
+    },
+    toggleMenu () {
+      this.menuShown = !this.menuShown
     }
 
   }
