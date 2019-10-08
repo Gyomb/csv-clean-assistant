@@ -1,103 +1,71 @@
 <template>
   <ul>
     <li v-for="(rowReport, index) in report" :key="index">
-      <ul class="columns is-multiline">
-        <li class="column is-half">
-          <div class="message">
-            <div class="message-header">
-              <span>
-                {{HeadingValues(rowReport[0].row) || 'Cell #'+index}}
+      <div class="columns is-multiline">
+        <div class="column is-4">
+          <bulmaPanel
+            :heading="HeadingValues(rowReport[0].row) || 'Cell #'+index"
+            :tabs="['original', 'modified']"
+          >
+            <tab-container>
+              <span v-for="(cellValue, name) in rowReport[0].row" :key="name">
+                <b>{{name}}</b>: {{cellValue}}
               </span>
-              <span class="icon">
-                <i class="fas fa-database"></i>
+            </tab-container>
+            <tab-container>
+              <span v-for="(cellValue, name) in rowReport[rowReport.length - 1].newRow" :key="name">
+                <b>{{name}}</b>: {{cellValue}}
               </span>
-            </div>
-            <div class="message-body">
-              <ul>
-                <li v-for="(cellValue, name) in rowReport[0].row" :key="name">
-                  <b>{{name}}</b>: {{cellValue}}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </li>
-        <li class="column is-half" v-for="(reportEntry, index) in rowReport" :key="index">
-          <div class="message" :class="actionColor[reportEntry.rule.action]">
-            <div class="message-header">
-              <span>
-                <span>
-                  {{HeadingValues(reportEntry.row) || 'Cell #'+index}}
-                </span>
-                <span class="icon">
-                  <i class="fas fa-angle-right"></i>
-                </span>
-                <span>
-                  {{actionLabel(reportEntry.rule)}}
-                </span>
-              </span>
-              <span>Action #{{index + 1}}</span>
-            </div>
-            <div class="message-body">
-              <bulmaLevel v-if="reportEntry.rule.action === 'delete' && reportEntry.rule.entireRow">
-                <span class="title is-5 has-text-danger" >
-                  <span class="icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                  </span>
-                  <span> This action will delete the entire row </span>
-                  <span class="icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                  </span>
-                </span>
-              </bulmaLevel>
-              <bulmaLevel is-centered mobile-view>
-                <template slot="left">
-                  <div>
-                    <p class="title is-6">Old value{{reportEntry.rule.action === 'move' ? 's' : ''}}</p>
-                    <p>
-                      <b>
-                        {{treatedColumn}}:
-                      </b>
-                      {{reportEntry.oldCell}}
-                      <span class="icon" v-if="!reportEntry.oldCell">
-                        <i class="fas fa-ban"></i>
-                      </span>
-                    </p>
-                    <p v-if="reportEntry.rule.action === 'move'">
-                      <b>
-                        {{reportEntry.rule.moveTo}}:
-                      </b>
-                      {{reportEntry.row[reportEntry.rule.moveTo]}}
-                      <span class="icon" v-if="!reportEntry.row[reportEntry.rule.moveTo]">
-                        <i class="fas fa-ban"></i>
-                      </span>
-                    </p>
-                  </div>
-                </template>
-                <span class="icon">
-                  <i class="fas fa-arrow-right"></i>
-                </span>
-                <template slot="right">
-                  <div>
-                    <p class="title is-6">New value{{reportEntry.rule.action === 'move' ? 's' : ''}}</p>
-                    <p>
-                      {{reportEntry.newCell}}
-                      <span class="icon" v-if="!reportEntry.newCell">
-                        <i class="fas fa-ban"></i>
-                      </span>
-                    </p>
-                    <p v-if="reportEntry.rule.action === 'move'">
-                      {{reportEntry.newRow[reportEntry.rule.moveTo]}}
-                      <span class="icon" v-if="!reportEntry.newRow[reportEntry.rule.moveTo]">
-                        <i class="fas fa-ban"></i>
-                      </span>
-                    </p>
-                  </div>
-                </template>
-              </bulmaLevel>
-            </div>
-          </div>
-        </li>
-      </ul>
+            </tab-container>
+          </bulmaPanel>
+        </div>
+        <div class="column is-8">
+          <table class="table is-fullwidth is-narrow log-table">
+            <thead>
+              <th>#</th>
+              <th>Action on "{{treatedColumn}}"</th>
+              <th>Old</th>
+              <th></th>
+              <th>New</th>
+            </thead>
+            <tbody>
+              <template v-for="(reportEntry, index) in rowReport">
+                <tr :key="index">
+                  <th :class="actionColor[reportEntry.rule.action].is">{{index}}</th>
+                  <td :class="actionColor[reportEntry.rule.action].is">
+                    {{actionLabel(reportEntry.rule)}}
+                  </td>
+                  <td>
+                    {{reportEntry.oldCell}}
+                    <span class="icon" v-if="!reportEntry.oldCell">
+                      <i class="fas fa-ban"></i>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-arrow-right"></i>
+                    </span>
+                  </td>
+                  <td>
+                    {{reportEntry.newCell}}
+                    <span class="icon" v-if="!reportEntry.newCell">
+                      <i class="fas fa-ban"></i>
+                    </span>
+                  </td>
+                </tr>
+                <tr v-if="getAlerts(reportEntry)" :key="index+'-alert'">
+                  <td :class="actionColor[reportEntry.rule.action].text" colspan="5">
+                    <span class="icon">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    {{getAlerts(reportEntry)}}
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </li>
   </ul>
 </template>
@@ -108,9 +76,9 @@ export default {
   data () {
     return {
       actionColor: {
-        replace: 'is-warning',
-        delete: 'is-danger',
-        move: 'is-info'
+        replace: { is: 'is-warning', text: 'has-text-warning' },
+        delete: { is: 'is-danger', text: 'has-text-danger' },
+        move: { is: 'is-info', text: 'has-text-info' }
       }
     }
   },
@@ -137,7 +105,27 @@ export default {
         case 'move': return `Move ${this.treatedColumn} to ${rule.moveTo}`
         default: return rule.action.split('').map((letter, id) => id === 0 ? letter.toUpperCase() : letter).join('')
       }
+    },
+    getAlerts (entry) {
+      switch (entry.rule.action) {
+        case 'replace': return false
+        case 'move':
+          const moveToCellValue = entry.row[entry.rule.moveTo]
+          if (!entry.rule.force) return false
+          if (moveToCellValue) return entry.rule.moveTo + '\'s content will be overwritten : "' + moveToCellValue + '"'
+          return false
+        case 'delete': return entry.rule.entireRow ? 'The whole row will be deleted' : false
+        default: return false
+      }
     }
   }
 }
 </script>
+
+<style lang="scss">
+  table.log-table {
+    thead th:nth-child(-n+2){
+      white-space:nowrap;
+    }
+  }
+</style>
