@@ -115,6 +115,8 @@ export default {
       display: inline-block;
       padding: 5px $padding-lateral;
       margin-left: -$padding-lateral;
+      min-width: 4 * 1rem;
+      min-height: 2 * 1rem;
       border: solid $border transparent;
       border-radius: $radius;
       &:hover, &:focus {
