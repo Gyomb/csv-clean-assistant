@@ -78,7 +78,7 @@ const actions = {
       // NOTE: forEach() is used here because it has better performances than map() over large set of data (10.000 and more)
       fileData.forEach(row => {
         const report = []
-        const newRow = { ...row }
+        let newRow = { ...row }
         let newCell = newRow[column]
         let deleteRow = false
         for (let ruleIndex = 0; ruleIndex < rulesToApply.length; ruleIndex++) {
@@ -89,7 +89,12 @@ const actions = {
               case 'replace': newCell = replaceAction(newCell, rule)
                 break
               case 'delete': newCell = ''
-                if (rule.entireRow) deleteRow = true
+                if (rule.entireRow) {
+                  deleteRow = true
+                  newRow = {}
+                  console.warn({ newRow })
+                  ruleIndex = rulesToApply.length // Break the loop (if row is deleted, there is no point continuing matching content)
+                }
                 break
               case 'move':
                 if (typeof row[rule.moveTo] === 'undefined' || rule.force) {
@@ -99,10 +104,11 @@ const actions = {
                 break
               default: console.error(`'${rule.action}' action isn't supported `)
             }
+            if (row[column] !== newCell) console.log({ newRow })
             if (row[column] !== newCell) report.push({ rule, oldCell, newCell, row, newRow })
           }
         }
-        newRow[column] = newCell
+        if (!deleteRow) newRow[column] = newCell
         if (row[column] !== newCell) modificationReport.push(report)
         if (!deleteRow) modifiedJson.push(newRow)
       })
