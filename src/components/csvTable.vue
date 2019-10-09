@@ -1,6 +1,6 @@
 <template>
   <div class="table-container">
-    <table class="table is-hoverable is-fullwidth">
+    <table class="table is-hoverable is-narrow">
       <thead>
         <tr>
           <th v-for="(headEntry, index) in header" :key="headEntry+index">
@@ -18,8 +18,7 @@
         <tr v-for="(row, rowIndex) in data" :key="rowIndex">
           <editableCell v-for="column in header" :key="rowIndex+'-'+column"
             :class="cellColor(column, row[column])"
-            :custom-prop="cellColor(column, row[column])"
-            :cellType="cellTypeIs(column)" :cellValue="row[column]"
+            :cellType="cellTypeIs(column)" :value="row[column]"
             @update="updateCell(rowIndex, column, $event)"
           />
         </tr>
@@ -75,7 +74,7 @@ export default {
       return this.thisColumnSetting(column).isHeading ? 'th' : 'td'
     },
     cellColor (column, value = '') {
-      const classPartial = ' has-background-'
+      const classPartial = ' is-'
       const thisColumnHighlights = this.columnHighlights ? (this.columnHighlights[column] || []) : []
       const colors = thisColumnHighlights
         .filter(rule => {
