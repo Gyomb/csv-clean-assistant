@@ -1,5 +1,8 @@
 <template>
-  <button class="button" :class="[buttonColor, isRounded]" @click="$emit('click')">
+  <button class="button" :class="[buttonColor, isRounded]"
+    @click="$emit('click')"
+    @blur="$emit('blur', $event)"
+  >
     <span class="icon is-small" :class="[pictoColor]" v-if="picto && !last">
         <i :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
     </span>

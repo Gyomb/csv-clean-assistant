@@ -1,6 +1,10 @@
 <script>
 export default {
   name: 'editableCell',
+  model: {
+    prop: 'value',
+    event: 'input'
+  },
   data () {
     return {
       editMode: false
@@ -14,82 +18,94 @@ export default {
         return value === 'td' || value === 'th'
       }
     },
-    cellValue: String
+    value: String
   },
   computed: {
-    cellInternalValue: {
-      get () {
-        return this.cellValue
-      },
-      set (value) {
-        this.$emit('update', value)
-      }
-
-    }
   },
   methods: {
+    getCellInternalValue () {
+      return typeof this.$refs.input === 'object' ? this.$refs.input.innerText || '' : ''
+    },
+    setCellInternalValue (value) {
+      this.$refs.input.innerText = value || ''
+    },
+    updateExternalValue () {
+      this.$emit('update', this.getCellInternalValue())
+    },
+    resetInternalValue () {
+      this.setCellInternalValue(this.value || '')
+    },
     activateEditMode () {
       this.editMode = true
       this.$refs.input.focus()
     },
     deactivateEditMode () {
       this.editMode = false
+      this.$refs.input.focus()
     },
-    switchEditMode () {
-      this.editMode = !this.editMode
-      if (this.editMode) this.$refs.input.focus()
-    },
-    deactivateEditModeIfInputLeft ({ relatedTarget }) {
+    deactivateEditModeIfInputLeft ({ srcElement, relatedTarget }) {
       switch (relatedTarget) {
         case this.$refs.input:
-        case this.$refs.button: break
-        default: this.editMode = false
+        case this.$refs.buttonValidate.$el:
+        case this.$refs.buttonCancel.$el: break
+        default:
+          if (this.editMode) this.updateAndClose()
       }
     },
-    keyupActions (event) {
+    keydownActions (event) {
       switch (event.key) {
         case 'Enter':
           event.preventDefault()
           if (!this.editMode) {
             this.activateEditMode()
           } else {
-            this.editMode = false
-            this.$emit('update', this.cellInternalValue)
+            this.updateAndClose()
           }
       }
+    },
+    resetAndClose () {
+      this.resetInternalValue()
+      this.deactivateEditMode()
+    },
+    updateAndClose () {
+      this.updateExternalValue()
+      this.deactivateEditMode()
+    }
+  },
+  mounted () {
+    this.resetInternalValue()
+  },
+  watch: {
+    value () {
+      this.resetInternalValue()
     }
   },
   render (h) {
     const Cell = this.cellType
     const template =
     <Cell class="editable-cell">
-      <span tabindex="0" role="button"
-        class={['input-like', { 'is-hidden': this.editMode }]}
+      <span tabindex="0" role={this.editMode ? 'textbox' : 'button'} ref="input"
+        class={['input-like', { 'edit-mode': this.editMode }]}
         onClick={this.activateEditMode}
-        onKeyup={this.keyupActions}
-      >{this.cellInternalValue}</span>
-      <bulmaField hasAddons class={{ 'is-hidden': !this.editMode }}>
-        <textarea class="textarea" ref="input"
-          vModel_lazy={this.cellInternalValue}
+        onKeydown={this.keydownActions}
+        onBlur={this.deactivateEditModeIfInputLeft}
+        contenteditable={this.editMode}
+      ></span>
+      <div class={['buttons', { 'is-hidden': !this.editMode }]}>
+        <bulmaButton ref="buttonValidate"
+          picto="check" purpose="success" apply-color-to="picto"
+          tabindex={this.editMode ? 0 : -1}
+          onClick={this.deactivateEditMode}
           onBlur={this.deactivateEditModeIfInputLeft}
-          onKeyup={this.keyupActions}
-        ></textarea>
-        <div class="buttons">
-          <button class="button" ref="button"
-            onClick={this.deactivateEditMode}
-            onBlur={this.deactivateEditModeIfInputLeft}
-          >
-            <span class="icon">
-              <i class="fas fa-check has-text-success" />
-            </span>
-          </button>
-          <bulmaButton
-            picto="ban"
-            purpose="danger" apply-color-to="picto"
-            onClick={this.deactivateEditMode}
-          />
-        </div>
-      </bulmaField>
+        />
+        <bulmaButton ref="buttonCancel"
+          picto="ban"
+          tabindex={this.editMode ? 0 : -1}
+          purpose="danger" apply-color-to="picto"
+          onClick={this.resetAndClose}
+          onBlur={this.deactivateEditModeIfInputLeft}
+        />
+      </div>
     </Cell>
 
     return template
@@ -99,11 +115,6 @@ export default {
 
 <style lang="scss">
 
-  th.editable-cell .input {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    font-weight: bold;
-  }
-
   .editable-cell {
     $radius : 4px;
     $border : 1px;
@@ -112,28 +123,18 @@ export default {
     cursor: pointer;
     position: relative;
 
-    .field {
-      margin-left: -$padding-lateral;
-    }
-
-    .textarea {
-      min-width: 100%;
-      padding: 0;
-      height: 100%;
-    }
-
     .buttons {
       position: absolute;
+      top: 0;
       left: 100%;
       z-index: 999;
       > .button {
         margin: 0;
-        border-top-right-radius: 0;
+        border-bottom-width: 0;
+        border-radius: 0;
         &:first-child {
           border-top-right-radius: $radius;
         }
-        border-bottom-width: 0;
-        border-bottom-right-radius: 0;
         &:last-child {
           border-bottom-width: 1px;
           border-bottom-right-radius: $radius;
@@ -151,10 +152,11 @@ export default {
       min-height: 2 * 1rem;
       border: solid $border transparent;
       border-radius: $radius;
-      &:hover, &:focus {
+      &:hover, &:focus, &.edit-mode {
         border-color: #dbdbdb;
         background-color: #fff;
-        &:after {
+        color: #000;
+        &:not(.edit-mode):after {
           content: "\F304";
           font-family: 'Font Awesome 5 Free';
           font-weight: 900;

@@ -18,8 +18,7 @@
         <tr v-for="(row, rowIndex) in data" :key="rowIndex">
           <editableCell v-for="column in header" :key="rowIndex+'-'+column"
             :class="cellColor(column, row[column])"
-            :custom-prop="cellColor(column, row[column])"
-            :cellType="cellTypeIs(column)" :cellValue="row[column]"
+            :cellType="cellTypeIs(column)" :value="row[column]"
             @update="updateCell(rowIndex, column, $event)"
           />
         </tr>
