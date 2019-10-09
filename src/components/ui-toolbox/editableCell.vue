@@ -69,21 +69,26 @@ export default {
         onKeyup={this.keyupActions}
       >{this.cellInternalValue}</span>
       <bulmaField hasAddons class={{ 'is-hidden': !this.editMode }}>
-        <input type="text" ref="input"
-          class="input"
-          isreadonly={!this.editMode}
+        <textarea class="textarea" ref="input"
           vModel_lazy={this.cellInternalValue}
           onBlur={this.deactivateEditModeIfInputLeft}
           onKeyup={this.keyupActions}
-        />
-        <button class="button" ref="button"
-          onClick={this.switchEditMode}
-          onBlur={this.deactivateEditModeIfInputLeft}
-        >
-          <span class="icon">
-            <i class={`fas fa-${this.editMode ? 'check has-text-success' : 'pen'}`} />
-          </span>
-        </button>
+        ></textarea>
+        <div class="buttons">
+          <button class="button" ref="button"
+            onClick={this.deactivateEditMode}
+            onBlur={this.deactivateEditModeIfInputLeft}
+          >
+            <span class="icon">
+              <i class="fas fa-check has-text-success" />
+            </span>
+          </button>
+          <bulmaButton
+            picto="ban"
+            purpose="danger" apply-color-to="picto"
+            onClick={this.deactivateEditMode}
+          />
+        </div>
       </bulmaField>
     </Cell>
 
@@ -105,9 +110,35 @@ export default {
     $padding-lateral: 9px;
 
     cursor: pointer;
+    position: relative;
 
     .field {
       margin-left: -$padding-lateral;
+    }
+
+    .textarea {
+      min-width: 100%;
+      padding: 0;
+      height: 100%;
+    }
+
+    .buttons {
+      position: absolute;
+      left: 100%;
+      z-index: 999;
+      > .button {
+        margin: 0;
+        border-top-right-radius: 0;
+        &:first-child {
+          border-top-right-radius: $radius;
+        }
+        border-bottom-width: 0;
+        border-bottom-right-radius: 0;
+        &:last-child {
+          border-bottom-width: 1px;
+          border-bottom-right-radius: $radius;
+        }
+      }
     }
 
     .input-like {
@@ -115,6 +146,7 @@ export default {
       display: inline-block;
       padding: 5px $padding-lateral;
       margin-left: -$padding-lateral;
+      width: calc(100% + #{2 * $padding-lateral});
       min-width: 4 * 1rem;
       min-height: 2 * 1rem;
       border: solid $border transparent;
