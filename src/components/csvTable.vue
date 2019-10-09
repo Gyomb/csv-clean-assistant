@@ -1,6 +1,6 @@
 <template>
   <div class="table-container">
-    <table class="table is-hoverable is-fullwidth is-narrow">
+    <table class="table is-hoverable is-narrow">
       <thead>
         <tr>
           <th v-for="(headEntry, index) in header" :key="headEntry+index">
@@ -74,7 +74,7 @@ export default {
       return this.thisColumnSetting(column).isHeading ? 'th' : 'td'
     },
     cellColor (column, value = '') {
-      const classPartial = ' has-background-'
+      const classPartial = ' is-'
       const thisColumnHighlights = this.columnHighlights ? (this.columnHighlights[column] || []) : []
       const colors = thisColumnHighlights
         .filter(rule => {

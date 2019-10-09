@@ -9,6 +9,14 @@ $danger-hover-override: #d00730;
   cursor: pointer;
 }
 
+.table {
+  th, td {
+    &.is-primary, &.is-info, &.is-link, &.is-success, &.is-warning, &.is-danger {
+      border-color: $grey-lighter;
+    }
+  }
+}
+
 .button {
   cursor: pointer;
   &.is-info {
