@@ -18,9 +18,15 @@ async function checkAndCreateParentFolder (filepath) {
   }
 }
 
-function checkEncoding (buffer) {
+function checkEncoding (path) {
   return new Promise((resolve, reject) => {
-    resolve(chardet.detect(buffer))
+    chardet.detectFile(path, { sampleSize: 1080 }, (err, encoding) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(encoding)
+      }
+    })
   })
 }
 
@@ -40,8 +46,8 @@ function getCsvDelimiter (header, csvString) {
 }
 
 async function openCsv (path) {
+  var encoding = await checkEncoding(path)
   var fileBuffer = await fsp.readFile(path)
-  var encoding = await checkEncoding(fileBuffer)
   return {
     file: iconv.decode(fileBuffer, encoding),
     encoding
