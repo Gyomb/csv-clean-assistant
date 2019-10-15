@@ -46,8 +46,8 @@ export default {
     deactivateEditModeIfInputLeft ({ srcElement, relatedTarget }) {
       switch (relatedTarget) {
         case this.$refs.input:
-        case this.$refs.buttonValidate.$el:
-        case this.$refs.buttonCancel.$el: break
+        case (this.$refs.buttonValidate || {}).$el:
+        case (this.$refs.buttonCancel || {}).$el: break
         default:
           if (this.editMode) this.updateAndClose()
       }
