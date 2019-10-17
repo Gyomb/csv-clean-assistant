@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { moveInArray } from '../../helpers/arrays'
 import Vue from 'vue'
+import router from '../../router'
 
 const userData = remote.app.getPath('userData')
 const userSettingsPath = path.join(userData, 'user-settings.json')
@@ -114,6 +115,17 @@ const actions = {
         reject(uid)
       }
     })
+  },
+  OPEN_FILE ({ getters, commit, rootState }, { fileKey, uid, forceImport = false }) {
+    if (!uid) {
+      uid = getters.getUniqueId(fileKey)
+    }
+    if (rootState.files.list[uid]) {
+      commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: uid })
+      router.push({ name: 'csv-display', params: { forceImport } })
+    } else {
+      console.error(`Couldn't find file with #${uid} ID.`)
+    }
   }
 }
 

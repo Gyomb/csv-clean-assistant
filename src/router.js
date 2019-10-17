@@ -20,8 +20,9 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/CsvLoading.vue')
     },
     {
-      path: '/csv-display',
+      path: '/csv-display/:forceImport',
       name: 'csv-display',
+      props: true,
       component: () => import('./views/CsvDisplay.vue')
     },
     {

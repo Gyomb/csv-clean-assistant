@@ -1,118 +1,178 @@
-import { promises as fsp } from 'fs'
+import fs from 'fs'
 import { ipcMain, app } from 'electron'
 import chardet from 'chardet'
 import iconv from 'iconv-lite'
-import csvParser from 'csvtojson'
+import csvParser from 'csv-parser'
 import path from 'path'
+import { Transform } from 'stream'
+import ReadableStreamClone from 'readable-stream-clone'
+import JSONStream from 'JSONStream'
+
+class DecodeStream extends Transform {
+  constructor (decodeTo, options) {
+    super(options)
+    this.decodeTo = decodeTo
+  }
+
+  _transform (chunk, encoding, callback) {
+    chunk = iconv.decode(chunk, this.decodeTo)
+    callback(null, chunk)
+  }
+}
 
 const userData = app.getPath('userData')
 const importedFilesFolder = path.join(userData, 'imported-files')
 
-async function checkAndCreateParentFolder (filepath) {
-  let dirname = path.dirname(filepath)
-  try {
-    if (await fsp.access(dirname)) return true
-  } catch {
-    await checkAndCreateParentFolder(dirname) // Recursive call
-    return fsp.mkdir(dirname)
-  }
-}
-
-function checkEncoding (buffer) {
-  return new Promise((resolve, reject) => {
-    resolve(chardet.detect(buffer))
-  })
-}
-
-function getCsvDelimiter (header, csvString) {
-  function trimEscapedQuote (string) {
-    return string.replace(/\\"/g, '')
-  }
-  try {
-    const trimmedString = trimEscapedQuote(csvString).replace(/"/g, '')
-    const delimiterStartIndex = trimEscapedQuote(header[0]).length
-    const delimiterEndIndex = trimmedString.indexOf(trimEscapedQuote(header[1]))
-    return trimmedString.substring(delimiterStartIndex, delimiterEndIndex)
-  } catch (err) {
-    console.error(err)
-    return ','
-  }
-}
-
-async function openCsv (path) {
-  var fileBuffer = await fsp.readFile(path)
-  var encoding = await checkEncoding(fileBuffer)
-  return {
-    file: iconv.decode(fileBuffer, encoding),
-    encoding
-  }
-}
-
-async function saveCsv (uid, content) {
-  let filepath = path.join(importedFilesFolder, uid + '-original.csv')
-  try {
-    await checkAndCreateParentFolder(filepath)
-    await fsp.writeFile(filepath, content, 'utf-8')
-    return content
-  } catch (error) {
-    return error
-  }
-}
-
-async function saveDecodedCsv (uid, content) {
-  let filepath = path.join(importedFilesFolder, uid + '-decoded.json')
-  try {
-    await checkAndCreateParentFolder(filepath)
-    await fsp.writeFile(filepath, JSON.stringify(content, null, 2), 'utf-8')
-    return content
-  } catch (error) {
-    return error
-  }
-}
-
-async function decodeCsv (csvString, delimiter) {
-  const csvData = {}
-  const params = {
-    ignoreEmpty: true,
-    delimiter: [';', ',', '|']
-  }
-  if (delimiter) {
-    params.delimiter = delimiter
-    csvData.delimiter = delimiter
-  }
-  return csvParser(params)
-    .on('header', header => { csvData.header = header })
-    .fromString(csvString)
-    .then(json => {
-      if (!csvData.delimiter) csvData.delimiter = getCsvDelimiter(csvData.header, csvString)
-      csvData.json = json
-      return csvData
-    })
-}
-
 const init = function () {
-  ipcMain.on('analyzeCsv', (event, { uid, filepath }) => {
-    var csvData = {}
-    openCsv(filepath)
-      .then(data => {
-        csvData = data
-        return saveCsv(uid, data.file) // Returns only the file content
-      })
-      .then(filecontent => {
-        return decodeCsv(filecontent)
-      })
+  ipcMain.on('analyzeCsv', (event, { uid, filepath, parameters }) => {
+    openAndDecodeStream(filepath, uid, parameters)
       .then(decodedData => {
-        return saveDecodedCsv(uid, decodedData)
-      })
-      .then(decodedData => {
-        csvData = { ...csvData, ...decodedData }
-        event.reply('analyzedCsv', csvData)
+        event.reply('analyzedCsv', decodedData)
       })
       .catch(err => {
         console.error('An error occurred reading the file :' + err)
         event.reply('csvReadError', err)
       })
   })
+}
+
+function checkAndCreateParentFolderSync (filepath) {
+  let dirname = path.dirname(filepath)
+  try {
+    fs.accessSync(dirname)
+    return true
+  } catch (err) {
+    if (checkAndCreateParentFolderSync(dirname)) { // Recursive call
+      return fs.mkdirSync(dirname)
+    }
+    return err
+  }
+}
+
+async function assertDelimiter (filepath, delimiterList) {
+  try {
+    let firstChunck = ''
+    const csvPreReadStream = fs.createReadStream(filepath, 'utf-8')
+    csvPreReadStream.on('data', chunk => {
+      firstChunck += chunk
+      console.log({ firstChunck })
+      if (firstChunck.length > 100) csvPreReadStream.close()
+    })
+    const gotFirstChunk = new Promise((resolve, reject) => {
+      csvPreReadStream.on('end', () => resolve(true))
+      csvPreReadStream.on('error', error => {
+        csvPreReadStream.close()
+        reject(error)
+      })
+    })
+    const delimiterRelevance = await gotFirstChunk ? delimiterList.map(delimiter => {
+      return {
+        delimiter,
+        relevance: firstChunck.split(delimiter).length
+      }
+    }) : []
+    const relevantDelimiter = delimiterRelevance.reduce((delimiterCandidate, delimiter) => {
+      return delimiterCandidate.relevance > delimiter.relevance ? delimiterCandidate : delimiter
+    }) || {}
+    console.log({ delimiterList, relevantDelimiter })
+    return relevantDelimiter.delimiter || delimiterList[0]
+  } catch (error) {
+    throw error
+  }
+}
+
+async function openAndDecodeStream (filepath, uid, { delimiter, noHeader }) {
+  try {
+    // SET PARAMETERS
+    const csvOutputPath = path.join(importedFilesFolder, uid + '-original.csv')
+    const jsonOutputPath = path.join(importedFilesFolder, uid + '-decoded.json')
+    checkAndCreateParentFolderSync(csvOutputPath)
+    // let csvString = ''
+    let csvData = {}
+    const csvEncoding = chardet.detectFileSync(filepath, { sampleSize: 1080 }) || 'utf-8'
+    const delimiterList = [';', ',', '\t', '|']
+    let existingHeaders = []
+    const dedupesValue = (value, referenceList) => {
+      if (referenceList.includes(value)) {
+        const dedupePattern = /(?:-(\d+))|$/
+        const dedupeIndex = Number(value.match(dedupePattern)[1]) + 1 || 1
+        return dedupesValue(value.replace(dedupePattern, '-' + dedupeIndex), referenceList)
+      }
+      referenceList.push(value)
+      return value
+    }
+    const csvParserParams = {
+      separator: ';',
+      mapHeaders: ({ header, index }) => {
+        let safeHeader = header.replace(/[^\w\u00C0-\u017F -]/g, '')
+        return dedupesValue(safeHeader, existingHeaders)
+      }
+    }
+    let noHeaderFirstRowDuplicate = {}
+    if (noHeader) {
+      csvParserParams.mapHeaders = ({ header, index }) => {
+        let colName = 'column-' + (index + 1)
+        noHeaderFirstRowDuplicate[colName] = header
+        return colName
+      }
+    }
+    csvParserParams.separator = delimiter || await assertDelimiter(filepath, delimiterList)
+    console.log(csvParserParams)
+    // SET READING/WRITING STREAMS
+    const csvReadStream = fs.createReadStream(filepath)
+    const csvReadStreamForCsvCopy = new ReadableStreamClone(csvReadStream)
+    const csvReadStreamForJson = new ReadableStreamClone(csvReadStream)
+    const csvWriteStreamToCsv = fs.createWriteStream(csvOutputPath, 'utf-8')
+    const csvWriteStreamToJson = fs.createWriteStream(jsonOutputPath, 'utf-8')
+
+    const finalData = new Promise((resolve, reject) => {
+      csvWriteStreamToJson
+        .on('finish', () => {
+          fs.appendFileSync(jsonOutputPath, '\n}')
+          resolve(csvData)
+        })
+        .on('error', error => reject(error))
+    })
+
+    // READ/WRITE CSV
+    csvReadStreamForCsvCopy.on('data', chunk => {
+      // csvData.file += chunk
+      csvWriteStreamToCsv.write(chunk)
+    })
+
+    // READ CSV / CONVERT / WRITE JSON
+    csvReadStreamForJson
+      .pipe(new DecodeStream(csvEncoding))
+      .pipe(csvParser(csvParserParams))
+      .on('headers', (header) => {
+        csvWriteStreamToJson.write('{\n"header": ' + JSON.stringify(header))
+        csvWriteStreamToJson.write(`,\n"encoding": "${csvEncoding}"`)
+        csvWriteStreamToJson.write(`,\n"delimiter": "${csvParserParams.separator}"`)
+        csvWriteStreamToJson.write(',\n"json": ')
+        csvData = {
+          ...csvData,
+          encoding: csvEncoding,
+          delimiter: csvParserParams.separator,
+          header,
+          json: []
+        }
+        if (noHeader) {
+          csvWriteStreamToJson.write('[\n' + JSON.stringify(noHeaderFirstRowDuplicate))
+          csvData.json.push(noHeaderFirstRowDuplicate)
+        }
+      })
+      .on('data', data => csvData.json.push(data))
+      .pipe(JSONStream.stringify(
+        noHeader ? ',' : '[\n',
+        ',\n',
+        '\n]\n'
+      ))
+      .pipe(csvWriteStreamToJson)
+    return await finalData
+  } catch (err) {
+    console.error(err)
+    throw err
+  }
 }
 
 export default {
