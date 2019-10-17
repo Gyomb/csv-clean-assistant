@@ -66,6 +66,9 @@ export default {
       displaySource: false
     }
   },
+  props: {
+    forceImport: [String, Boolean]
+  },
   computed: {
     fileUid () {
       return this.$store.state.userSettings.openedFile
@@ -103,14 +106,18 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch('OPEN_IMPORTED_CSV', this.fileUid)
-      .catch(error => {
-        if (error.code) {
-          this.$store.dispatch('IMPORT_CSV', this.fileUid)
-        } else {
-          console.error(error)
-        }
-      })
+    if (this.forceImport === true) { // Ignore if this.forceImport is a String (only happens if the page is realoaded)
+      this.$store.dispatch('IMPORT_CSV', this.fileUid)
+    } else {
+      this.$store.dispatch('OPEN_IMPORTED_CSV', this.fileUid)
+        .catch(error => {
+          if (error.code) {
+            this.$store.dispatch('IMPORT_CSV', this.fileUid)
+          } else {
+            console.error(error)
+          }
+        })
+    }
   }
 }
 </script>

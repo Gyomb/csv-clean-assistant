@@ -49,6 +49,7 @@ export default {
       })
     },
     launchImport () {
+      this.$store.dispatch('OPEN_FILE', { uid: this.importSettingsUid, forceImport: true })
     }
   },
   mounted () {

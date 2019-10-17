@@ -35,14 +35,7 @@ export default {
       this.$store.dispatch('DEL_AND_UNLOG_FILE', fileKey)
     },
     useFile (fileKey) {
-      let uid = this.$store.getters.getUniqueId(fileKey)
-      let file = this.$store.state.files.list[uid]
-      if (file) {
-        this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: uid })
-        this.$router.push('/csv-display')
-      } else {
-        console.error(`File #${fileKey} doesn't exist.`)
-      }
+      this.$store.dispatch('OPEN_FILE', { fileKey })
     },
     displayImportSettings (fileKey) {
       let uid = this.$store.getters.getUniqueId(fileKey)
