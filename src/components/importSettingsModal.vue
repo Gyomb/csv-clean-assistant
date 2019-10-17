@@ -8,6 +8,18 @@
         No headers (in the CSV file)
       </label>
     </bulmaField>
+    <label class="subtitle">Set Delimiter</label>
+    <bulmaField is-grouped>
+      <label class="radio">
+        <input type="radio" v-model="manuallySetDelimiter" :value="false">
+        Auto
+      </label>
+      <label class="radio">
+        <input type="radio" v-model="manuallySetDelimiter" :value="true">
+        Manually
+      </label>
+      <input type="text" class="input" v-model="displayedDelimiter" :disabled="disableDelimiterInput">
+    </bulmaField>
     <div class="container" slot="footer">
         <bulmaLevel mobile-view>
           <bulmaButton slot="left" purpose="primary" label="Save settings"  @click="saveSettings" />
@@ -23,7 +35,9 @@ export default {
   name: 'importSettingsModal',
   data () {
     return {
-      noHeader: (this.fileProperties.importParameters || {}).noHeader || false
+      noHeader: (this.fileProperties.importParameters || {}).noHeader || false,
+      delimiter: (this.fileProperties.importParameters || {}).delimiter || false,
+      disableDelimiterInput: !this.delimiter
     }
   },
   props: {
@@ -35,11 +49,35 @@ export default {
       }
     }
   },
+  computed: {
+    displayedDelimiter: {
+      get () {
+        return this.delimiter || ''
+      },
+      set (value) {
+        this.delimiter = value
+      }
+    },
+    manuallySetDelimiter: {
+      get () {
+        if (this.delimiter) {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.disableDelimiterInput = false
+          return true
+        }
+        return !this.disableDelimiterInput
+      },
+      set (value) {
+        this.disableDelimiterInput = !value
+      }
+    }
+  },
   methods: {
     saveSettings () {
       this.$emit('update', {
         ...this.fileProperties.importParameters,
-        noHeader: this.noHeader || false
+        noHeader: this.noHeader || false,
+        delimiter: this.delimiter || false
       })
       this.close()
     },
@@ -54,6 +92,11 @@ export default {
   watch: {
     fileProperties () {
       this.noHeader = (this.fileProperties.importParameters || {}).noHeader || false
+      this.delimiter = (this.fileProperties.importParameters || {}).delimiter || false
+      this.disableDelimiterInput = !this.delimiter
+    },
+    disableDelimiterInput () {
+      if (this.disableDelimiterInput) this.delimiter = false
     }
   }
 }

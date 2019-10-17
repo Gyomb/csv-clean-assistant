@@ -17,7 +17,6 @@ const mutations = {
     Vue.set(state, id + 'Parameters', parameters)
   },
   MODAL_CLOSE (state, id) {
-    console.log(state)
     state[id + 'Opened'] = false
   }
 }
