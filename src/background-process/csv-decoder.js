@@ -24,8 +24,8 @@ const userData = app.getPath('userData')
 const importedFilesFolder = path.join(userData, 'imported-files')
 
 const init = function () {
-  ipcMain.on('analyzeCsv', (event, { uid, filepath }) => {
-    openAndDecodeStream(filepath, uid)
+  ipcMain.on('analyzeCsv', (event, { uid, filepath, parameters }) => {
+    openAndDecodeStream(filepath, uid, parameters)
       .then(decodedData => {
         event.reply('analyzedCsv', decodedData)
       })
@@ -49,10 +49,10 @@ function checkAndCreateParentFolderSync (filepath) {
   }
 }
 
-const openAndDecodeStream = (filepath, uid, delimiter) => {
+const openAndDecodeStream = (filepath, uid, { delimiter, noHeader }) => {
   return new Promise((resolve, reject) => {
-    // SET PARAMETERS
     try {
+      // SET PARAMETERS
       const csvOutputPath = path.join(importedFilesFolder, uid + '-original.csv')
       const jsonOutputPath = path.join(importedFilesFolder, uid + '-decoded.json')
       checkAndCreateParentFolderSync(csvOutputPath)
@@ -76,6 +76,14 @@ const openAndDecodeStream = (filepath, uid, delimiter) => {
           return dedupesValue(safeHeader, existingHeaders)
         }
       }
+      let noHeaderFirstRowDuplicate = {}
+      if (noHeader) {
+        csvParserParams.mapHeaders = ({ header, index }) => {
+          let colName = 'column-' + (index + 1)
+          noHeaderFirstRowDuplicate[colName] = header
+          return colName
+        }
+      }
       if (delimiter) {
         csvParserParams.separator = delimiter
       }
@@ -88,9 +96,6 @@ const openAndDecodeStream = (filepath, uid, delimiter) => {
       const csvWriteStreamToJson = fs.createWriteStream(jsonOutputPath, 'utf-8')
 
       csvWriteStreamToJson
-        .on('ready', () => {
-          if (csvWriteStreamToJson.bytesWritten === 0) csvWriteStreamToJson.write('{\n')
-        })
         .on('finish', () => {
           fs.appendFileSync(jsonOutputPath, '\n}')
           resolve(csvData)
@@ -101,12 +106,18 @@ const openAndDecodeStream = (filepath, uid, delimiter) => {
         csvWriteStreamToCsv.write(chunk)
       })
 
+      // const stringifyJsonStream = JSONStream.stringify(
+      //   '[\n' + (noHeader ? JSON.stringify(noHeaderFirstRowDuplicate) + ',' : ''),
+      //   ',\n',
+      //   '\n]\n'
+      // )
+
       // READ CSV / CONVERT / WRITE JSON
       csvReadStreamForJson
         .pipe(new DecodeStream(csvEncoding))
         .pipe(csvParser(csvParserParams))
         .on('headers', (header) => {
-          csvWriteStreamToJson.write('"header": ' + JSON.stringify(header))
+          csvWriteStreamToJson.write('{\n"header": ' + JSON.stringify(header))
           csvWriteStreamToJson.write(`,\n"encoding": "${csvEncoding}"`)
           csvWriteStreamToJson.write(`,\n"delimiter": "${csvParserParams.separator}"`)
           csvWriteStreamToJson.write(',\n"json": ')
@@ -117,9 +128,17 @@ const openAndDecodeStream = (filepath, uid, delimiter) => {
             header,
             json: []
           }
+          if (noHeader) {
+            csvWriteStreamToJson.write('[\n' + JSON.stringify(noHeaderFirstRowDuplicate))
+            csvData.json.push(noHeaderFirstRowDuplicate)
+          }
         })
         .on('data', data => csvData.json.push(data))
-        .pipe(JSONStream.stringify())
+        .pipe(JSONStream.stringify(
+          noHeader ? ',' : '[\n',
+          ',\n',
+          '\n]\n'
+        ))
         .pipe(csvWriteStreamToJson)
     } catch (err) {
       console.error(err)

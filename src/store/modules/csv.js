@@ -58,6 +58,7 @@ const actions = {
   },
   IMPORT_CSV ({ commit, rootState }, uid) {
     let filepath = rootState.files.list[uid].path
+    let parameters = rootState.files.list[uid].importParameters || {}
     commit('CSV_STATUS_UPDATE', 'analyzing')
     ipcRenderer.once('analyzedCsv', (event, content) => {
       commit('CSV_CONTENT_UPDATE', content)
@@ -67,7 +68,7 @@ const actions = {
       console.error({ csvReadError: msg })
       commit('CSV_STATUS_UPDATE', msg)
     })
-    ipcRenderer.send('analyzeCsv', { uid, filepath })
+    ipcRenderer.send('analyzeCsv', { uid, filepath, parameters })
   },
   OPEN_IMPORTED_CSV ({ commit }, uid) {
     let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
