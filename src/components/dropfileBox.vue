@@ -8,6 +8,7 @@
         :filedata="getFileData(fileUid)"
         @delete="removeFile(key)"
         @play="useFile(key)"
+        @settings="displayImportSettings(key)"
       />
     </ul>
   </div>
@@ -43,13 +44,18 @@ export default {
         console.error(`File #${fileKey} doesn't exist.`)
       }
     },
-    loading () {
-      this.$router.push({
-        name: 'csv-loading',
-        params: {
-          msg: 'Please wait while I analyze this file'
-        }
-      })
+    displayImportSettings (fileKey) {
+      let uid = this.$store.getters.getUniqueId(fileKey)
+      if (this.$store.state.files.list[uid]) {
+        this.$store.commit('MODAL_OPEN', {
+          id: 'fileImportSettings',
+          parameters: {
+            uid
+          }
+        })
+      } else {
+        console.error(`No data for file #${fileKey}.`)
+      }
     }
   },
   mounted () {

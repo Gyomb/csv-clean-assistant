@@ -8,6 +8,7 @@
       <p class="filesize level-item">{{filesizeFormated}}</p>
       <div class="level-item">
         <p class="buttons">
+          <bulmaButton class="is-small" purpose="" picto="cog" @click="$emit('settings')" rounded />
           <bulmaButton class="is-small" purpose="info" picto="play" @click="$emit('play')" rounded />
           <bulmaButton class="is-small" purpose="" picto="times" @click="$emit('delete')" rounded />
         </p>

@@ -47,6 +47,12 @@ const mutations = {
       Vue.set(state.list[uid].columns, heading, settings)
     }
     saveFilesState()
+  },
+  UPDATE_FILE_IMPORT_SETTINGS (state, { uid, settings }) {
+    if (state.list[uid]) {
+      Vue.set(state.list[uid], 'importParameters', settings)
+    }
+    saveFilesState()
   }
 }
 
