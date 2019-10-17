@@ -119,6 +119,7 @@ export default {
     $radius : 4px;
     $border : 1px;
     $padding-lateral: 9px;
+    $padding-vertical: 5px;
 
     cursor: pointer;
     position: relative;
@@ -145,8 +146,10 @@ export default {
     .input-like {
       position: relative;
       display: inline-block;
-      padding: 5px $padding-lateral;
+      padding: $padding-vertical $padding-lateral;
       margin-left: -$padding-lateral;
+      margin-top: -$padding-vertical;
+      margin-bottom: -$padding-vertical;
       width: calc(100% + #{2 * $padding-lateral});
       min-width: 4 * 1rem;
       min-height: 2 * 1rem;
