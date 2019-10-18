@@ -7,7 +7,7 @@
           <div class="modal-card-title" v-if="hasHeader">
             <slot name="header"></slot>
           </div>
-          <button class="delete" aria-label="close" @click="close()"></button>
+          <button v-if="!noCloseButtons" class="delete" aria-label="close" @click="close()"></button>
         </header>
         <section class="modal-card-body">
           <slot></slot>
@@ -20,7 +20,7 @@
         <slot></slot>
       </div>
     </div>
-    <button v-if="!isCard" class="modal-close is-large" aria-label="close" @click="close()"></button>
+    <button v-if="!isCard && !noCloseButtons" class="modal-close is-large" aria-label="close" @click="close()"></button>
   </div>
 </template>
 
@@ -31,12 +31,15 @@ export default {
     isActive: Boolean,
     noBox: Boolean,
     noOverlay: Boolean,
-    isSmall: Boolean
+    isSmall: Boolean,
+    noCloseButtons: Boolean,
+    fitContent: Boolean
   },
   computed: {
     modalClasses () {
       return {
-        'is-active': this.isActive
+        'is-active': this.isActive,
+        'no-close-buttons': this.noCloseButtons
       }
     },
     modalContentClasses () {
@@ -45,7 +48,8 @@ export default {
         {
           'box': !this.isCard && !this.noBox,
           'thick-border': !this.noBox && this.noOverlay,
-          'is-small': this.isSmall
+          'is-small': this.isSmall && !this.fitContent,
+          'fit-content': this.fitContent
         }
       ]
     },
@@ -61,7 +65,7 @@ export default {
   },
   methods: {
     close () {
-      this.$emit('close')
+      if (!this.noCloseButtons) this.$emit('close')
     }
   }
 }
@@ -70,7 +74,7 @@ export default {
 <style lang="scss">
   @import "bulma/sass/utilities/mixins.sass";
 
-  .modal-background {
+  .modal:not(.no-close-buttons) .modal-background {
     cursor: pointer;
   }
 
@@ -85,6 +89,9 @@ export default {
       @include tablet {
         width: 480px;
       }
+    }
+    &.fit-content {
+      width: fit-content;
     }
   }
 </style>
