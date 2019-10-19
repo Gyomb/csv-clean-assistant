@@ -84,10 +84,12 @@ export default {
       this.$router.push('/')
     },
     applyModifications () {
+      this.menuShown = false
       this.$store.dispatch('PROMOTE_DRYRUN', this.fileUid)
         .then(this.$router.push({ name: 'csv-display', params: { alreadyOpen: true } }))
     },
     cancelModifications () {
+      this.menuShown = false
       this.$router.push({ name: 'csv-display', params: { alreadyOpen: true } })
     },
     toggleMenu () {
