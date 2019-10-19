@@ -69,6 +69,9 @@ export default {
     }
   },
   computed: {
+    fileUid () {
+      return this.$store.state.userSettings.openedFile
+    },
     isHome () {
       return this.$route.name === 'home'
     },
@@ -82,10 +85,10 @@ export default {
     },
     applyModifications () {
       this.$store.dispatch('PROMOTE_DRYRUN', this.fileUid)
-        .then(this.$router.push('csv-display'))
+        .then(this.$router.push({ name: 'csv-display', params: { alreadyOpen: true } }))
     },
     cancelModifications () {
-      this.$router.push('csv-display')
+      this.$router.push({ name: 'csv-display', params: { alreadyOpen: true } })
     },
     toggleMenu () {
       this.menuShown = !this.menuShown

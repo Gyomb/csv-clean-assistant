@@ -37,7 +37,7 @@ const router = new Router({
       component: Home
     },
     {
-      path: '/csv-display/:forceImport:alreadyOpened',
+      path: '/csv-display/:forceImport?/:alreadyOpened?',
       name: 'csv-display',
       beforeEnter (to, from, next) {
         if (csvDisplayFirstLoad) {
