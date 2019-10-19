@@ -70,7 +70,7 @@ export default {
   },
   computed: {
     isHome () {
-      return this.$route.path === '/'
+      return this.$route.name === 'home'
     },
     isDryrunReport () {
       return this.$route.path === '/csv-dryrun-report'
@@ -78,7 +78,6 @@ export default {
   },
   methods: {
     goHome () {
-      this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: false })
       this.$router.push('/')
     },
     applyModifications () {
