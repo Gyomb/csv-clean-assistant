@@ -61,6 +61,12 @@ const mutations = {
 
 const actions = {
   APPLY_MODIFICATION_RULES ({ commit, rootState }, { dryrunActivated = true, uid, column }) {
+    commit('MODAL_OPEN', {
+      id: 'loading',
+      parameters: {
+        message: `Applying modifications to a copy of ${rootState.files.list[uid].name}…`
+      }
+    })
     return new Promise((resolve, reject) => {
       const modifiedJson = []
       const modificationReport = []
@@ -113,6 +119,7 @@ const actions = {
       commit('DRYRUN_COLUMN_REGISTER', column)
       commit('DRYRUN_REGISTER', modifiedJson)
       commit('DRYRUN_REPORT_REGISTER', modificationReport)
+      commit('MODAL_CLOSE', 'loading')
       resolve()
     })
   },

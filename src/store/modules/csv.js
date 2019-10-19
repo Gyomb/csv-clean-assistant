@@ -99,11 +99,21 @@ const actions = {
         })
     })
   },
-  SAVE_IMPORTED_CSV ({ state }, uid) {
+  SAVE_IMPORTED_CSV ({ state, commit, rootState }, uid) {
     let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
     let { header, delimiter, json } = state
+    commit('MODAL_OPEN', {
+      id: 'loading',
+      parameters: {
+        message: `Saving modifications to ${rootState.files.list[uid].name}…`
+      }
+    })
     return fsp.writeFile(importedFilePath, JSON.stringify({ header, delimiter, json }), 'utf-8')
-      .catch(err => console.error(err))
+      .then(commit('MODAL_CLOSE', 'loading'))
+      .catch(err => {
+        commit('MODAL_CLOSE', 'loading')
+        console.error(err)
+      })
   },
   REPLACE_AND_SAVE_ROWS ({ commit, dispatch }, { uid, newJson }) {
     return new Promise((resolve, reject) => {
