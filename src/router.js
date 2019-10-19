@@ -57,12 +57,12 @@ const router = new Router({
           openImportedCsvAndContinue(next)
         }
       },
-      component: () => import('./views/CsvDisplay.vue')
+      component: require('./views/CsvDisplay').default
     },
     {
       path: '/csv-dryrun-report',
       name: 'csv-dryrun-report',
-      component: () => import('./views/CsvDryrunReport.vue')
+      component: require('./views/CsvDryrunReport').default
     }
   ]
 })
