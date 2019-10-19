@@ -27,10 +27,10 @@ export default {
   },
   computed: {
     importSettingsModalIsActive () {
-      return this.$store.state.modalBus.fileImportSettingsOpened
+      return this.$store.state.commonModals.fileImportSettingsOpened
     },
     importSettingsUid () {
-      return this.$store.state.modalBus.fileImportSettingsParameters.uid || ''
+      return this.$store.state.commonModals.fileImportSettingsParameters.uid || ''
     },
     importSettingsFile () {
       return this.$store.state.files.list[this.importSettingsUid] || {}

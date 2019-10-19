@@ -51,12 +51,18 @@
         <router-view/>
       </div>
     </section>
+    <loadingSpinner />
   </div>
 </template>
 
 <script>
+import loadingSpinner from '@/components/commonModals/loadingSpinner.vue'
+
 export default {
   name: 'app',
+  components: {
+    loadingSpinner
+  },
   data () {
     return {
       menuShown: false
