@@ -20,45 +20,18 @@
     <bulmaModal :is-active="displaySource" @close="displaySource = false">
       <pre>{{$store.state.csv.json}}</pre>
     </bulmaModal>
-    <bulmaModal :is-active="dryrunIsDiplayed" @close="dryrunIsDiplayed = false">
-      <h3 class="title" slot="header">
-        <span class="icon">
-          <i class="fas fa-glasses"></i>
-        </span>
-        <span> Dry run report</span>
-      </h3>
-      <dryrunReportDisplay :report="$store.state.modifier.dryrunReport" :head-columns="headColumns" :treated-column="$store.state.modifier.column" />
-      <div class="container"  slot="footer">
-        <bulmaLevel mobile-view>
-          <bulmaField slot="left">
-            <bulmaButton purpose="success"
-              picto="file-import" label="Apply"
-              @click="applyModifications"
-            />
-          </bulmaField>
-          <bulmaField slot="right">
-            <bulmaButton
-              picto="ban" label="Cancel"
-              @click="cancelModifications"
-            />
-          </bulmaField>
-        </bulmaLevel>
-      </div>
-    </bulmaModal>
   </div>
 </template>
 
 <script>
 import saveFileControls from '@/components/saveFileControls.vue'
 import csvTable from '@/components/csvTable'
-import dryrunReportDisplay from '@/components/dryrunReportDisplay.vue'
 
 export default {
   name: 'csv-display',
   components: {
     saveFileControls,
-    csvTable,
-    dryrunReportDisplay
+    csvTable
   },
   data () {
     return {
@@ -91,15 +64,7 @@ export default {
     applyColRules (parameters) {
       parameters.uid = this.fileUid
       this.$store.dispatch('APPLY_MODIFICATION_RULES', parameters)
-        .then(this.$router.push('csv-dryrun-report'))
-    },
-    applyModifications () {
-      this.dryrunIsDiplayed = false
-      this.$store.dispatch('PROMOTE_DRYRUN', this.fileUid)
-        .then(console.log('row\'s data modified and saved!'))
-    },
-    cancelModifications () {
-      this.dryrunIsDiplayed = false
+        .then(this.$router.push('/csv-dryrun-report'))
     }
   },
   mounted () {
