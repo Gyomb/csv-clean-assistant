@@ -60,25 +60,43 @@ const actions = {
     let filepath = rootState.files.list[uid].path
     let parameters = rootState.files.list[uid].importParameters || {}
     commit('CSV_STATUS_UPDATE', 'analyzing')
+    commit('MODAL_OPEN', {
+      id: 'loading',
+      parameters: {
+        message: `Importing ${rootState.files.list[uid].name}…`
+      }
+    })
     ipcRenderer.once('analyzedCsv', (event, content) => {
       commit('CSV_CONTENT_UPDATE', content)
       commit('CSV_STATUS_UPDATE', 'ready')
+      commit('MODAL_CLOSE', 'loading')
     })
     ipcRenderer.once('csvReadError', (event, msg) => {
       console.error({ csvReadError: msg })
       commit('CSV_STATUS_UPDATE', msg)
+      commit('MODAL_CLOSE', 'loading')
     })
     ipcRenderer.send('analyzeCsv', { uid, filepath, parameters })
   },
-  OPEN_IMPORTED_CSV ({ commit }, uid) {
+  OPEN_IMPORTED_CSV ({ commit, rootState }, uid) {
+    commit('MODAL_OPEN', {
+      id: 'loading',
+      parameters: {
+        message: `Opening ${rootState.files.list[uid].name}…`
+      }
+    })
     let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
     return new Promise((resolve, reject) => {
       fsp.readFile(importedFilePath, 'utf-8')
         .then(content => {
           commit('CSV_CONTENT_UPDATE', { ...JSON.parse(content) })
+          commit('MODAL_CLOSE', 'loading')
           resolve(content)
         })
-        .catch(err => reject(err))
+        .catch(err => {
+          commit('MODAL_CLOSE', 'loading')
+          reject(err)
+        })
     })
   },
   SAVE_IMPORTED_CSV ({ state }, uid) {
