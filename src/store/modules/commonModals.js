@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 const modalRegistry = [
   'fileImportSettings',
+  'columnSettingsEditor',
   'loading'
 ]
 

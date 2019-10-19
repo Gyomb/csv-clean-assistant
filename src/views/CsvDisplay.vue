@@ -14,24 +14,26 @@
       :data="$store.state.csv.json"
       :columns-settings="$store.state.files.list[fileUid].columns || {}"
       @cellupdate="saveCellUpdate"
-      @colupdate="saveColUpdate"
-      @apply:rules="applyColRules"
+      @open:colsettings="openColSettings"
     />
     <bulmaModal :is-active="displaySource" @close="displaySource = false">
       <pre>{{$store.state.csv.json}}</pre>
     </bulmaModal>
+    <columnSettingsEditor />
   </div>
 </template>
 
 <script>
 import saveFileControls from '@/components/saveFileControls.vue'
 import csvTable from '@/components/csvTable'
+import columnSettingsEditor from '@/components/commonModals/columnSettingsEditor'
 
 export default {
   name: 'csv-display',
   components: {
     saveFileControls,
-    csvTable
+    csvTable,
+    columnSettingsEditor
   },
   data () {
     return {
@@ -54,17 +56,11 @@ export default {
     saveCellUpdate ({ row, col, value }) {
       this.$store.dispatch('MODIFY_CELL', { row, col, value })
     },
-    saveColUpdate ({ heading, settings }) {
-      this.$store.dispatch('SAVE_AND_APPLY_COL_SETTINGS_WO_RULES', {
-        uid: this.fileUid,
-        heading,
-        settings
+    openColSettings (columnName) {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'columnSettingsEditor',
+        parameters: { columnName }
       })
-    },
-    applyColRules (parameters) {
-      parameters.uid = this.fileUid
-      this.$store.dispatch('APPLY_MODIFICATION_RULES', parameters)
-        .then(this.$router.push('/csv-dryrun-report'))
     }
   },
   mounted () {

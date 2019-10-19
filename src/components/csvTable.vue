@@ -4,16 +4,11 @@
       <thead>
         <tr>
           <th>#</th>
-          <th v-for="(headEntry, index) in header" :key="headEntry+index">
-            <columnSettingsEditor class="cell-nobreak"
-              :label="headEntry"
-              :settings="columnsSettings[headEntry]"
-              :position="index" :position-max="header.length - 1"
-              :column-list="header"
-              @save="$emit('colupdate', {heading: headEntry, settings: $event})"
-              @apply:rules="$emit('apply:rules', {column: headEntry})"
-            />
-          </th>
+          <columnHead class="cell-nobreak"
+            v-for="(headEntry, index) in header" :key="headEntry+index"
+            :label="headEntry"
+            @click="$emit('open:colsettings', headEntry)"
+          />
         </tr>
       </thead>
       <tbody>
@@ -47,13 +42,13 @@
 </template>
 
 <script>
-import columnSettingsEditor from '@/components/columnSettingsEditor'
+import columnHead from '@/components/ui-toolbox/columnHead'
 import editableCell from '@/components/ui-toolbox/editableCell'
 
 export default {
   name: 'csvTable',
   components: {
-    columnSettingsEditor,
+    columnHead,
     editableCell
   },
   data () {
