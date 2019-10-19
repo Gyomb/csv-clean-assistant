@@ -4,7 +4,15 @@ import Home from './views/Home.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const currentViewStorageKey = 'currentView'
+let firstLoad = true
+
+const keepTracksOf = [
+  'home',
+  'csv-display'
+]
+
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -12,15 +20,7 @@ export default new Router({
       component: Home
     },
     {
-      path: '/csv-loading',
-      name: 'csv-loading',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/CsvLoading.vue')
-    },
-    {
-      path: '/csv-display/:forceImport',
+      path: '/csv-display/:forceImport:alreadyOpened',
       name: 'csv-display',
       props: true,
       component: () => import('./views/CsvDisplay.vue')
@@ -32,3 +32,23 @@ export default new Router({
     }
   ]
 })
+
+router.afterEach(to => {
+  if (keepTracksOf.includes(to.name)) localStorage.setItem(currentViewStorageKey, to.name)
+})
+
+// RELOAD CURRENT VIEW BEFORE RELOAD / QUIT
+router.beforeEach((to, from, next) => {
+  const lastRouteName = localStorage.getItem(currentViewStorageKey)
+
+  const shouldRedirect = Boolean(
+    to.name === 'home' &&
+    lastRouteName &&
+    firstLoad
+  )
+  firstLoad = false
+  if (shouldRedirect) next({ name: lastRouteName })
+  else next()
+})
+
+export default router

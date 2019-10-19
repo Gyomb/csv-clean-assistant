@@ -67,7 +67,8 @@ export default {
     }
   },
   props: {
-    forceImport: [String, Boolean]
+    forceImport: [String, Boolean],
+    alreadyOpened: [String, Boolean]
   },
   computed: {
     fileUid () {
@@ -108,7 +109,7 @@ export default {
   mounted () {
     if (this.forceImport === true) { // Ignore if this.forceImport is a String (only happens if the page is realoaded)
       this.$store.dispatch('IMPORT_CSV', this.fileUid)
-    } else {
+    } else if (this.alreadyOpened === false) { // Ignore if this.alreadyOpened is a String (only happens if the page is realoaded)
       this.$store.dispatch('OPEN_IMPORTED_CSV', this.fileUid)
         .catch(error => {
           if (error.code) {
