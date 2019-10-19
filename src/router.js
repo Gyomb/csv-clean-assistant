@@ -73,16 +73,18 @@ router.afterEach(to => {
 
 // RELOAD CURRENT VIEW BEFORE RELOAD / QUIT
 router.beforeEach((to, from, next) => {
-  const lastRouteName = localStorage.getItem(currentViewStorageKey)
-
-  const shouldRedirect = Boolean(
-    to.name === 'home' &&
-    lastRouteName &&
-    firstLoad
-  )
-  firstLoad = false
-  if (shouldRedirect) next({ name: lastRouteName })
-  else next()
+  if (firstLoad) {
+    const lastRouteName = localStorage.getItem(currentViewStorageKey)
+    const shouldRedirect = Boolean(
+      to.name === 'home' &&
+      lastRouteName
+    )
+    firstLoad = false
+    if (shouldRedirect) next({ name: lastRouteName })
+    else next()
+  } else {
+    next()
+  }
 })
 
 export default router
