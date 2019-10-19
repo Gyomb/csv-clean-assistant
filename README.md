@@ -32,11 +32,11 @@ src/
 -+ assets/ # folder to store static assets
 -+ background-process/ # folder for js modules destined for the background process
 -+ components/    # all Vue components (components, not templates) will be stored here
----+ commonModals/  # components in this folder are coupled to the commonModals store
 ---+ atomic-ui/     # all the components inside this folder are registered globally and accessible in any other component without explicit declaration
 -----+ atoms/         # smallest unit, no logic except for some event emitting (don't call the $store!)
 -----+ molecules/     # more complex unit (often composed of atom components). Still no logic
 -----+ wrappers/      # not an atomic concept. Those components' purpose is to "dress" their content with some extra markup.
+---+ commonModals/  # components in this folder are coupled to the commonModals store
 ---+ ui-toolbox/    # Utility components may contain logic but shouldn't depend on the $store
 ---- …              # Other components are stored at the root of the components/ folder. They should make use of the $store
 -+ global-scss/   # this folder contains the scss source files that should be applied to all the app
