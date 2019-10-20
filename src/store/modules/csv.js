@@ -118,18 +118,36 @@ const actions = {
     })
   },
   EXPORT_CSV ({ state, commit, getters }, uid) {
+    const exportDetails = getters.getFileExportDetails(uid)
     commit('CSV_STATUS_UPDATE', 'exporting')
+    commit('MODAL_OPEN', {
+      id: 'loading',
+      parameters: {
+        message: `Exporting to ${exportDetails.exportPath} (${exportDetails.exportMode})…`
+      }
+    })
     ipcRenderer.once('exportedCsv', (event, content) => {
       commit('CSV_STATUS_UPDATE', 'exported')
       commit('CSV_STATUS_UPDATE', 'ready')
+      commit('MODAL_CLOSE', 'loading')
     })
     ipcRenderer.once('csvExportError', (event, msg) => {
       console.error('csvExportError:', msg)
       commit('CSV_STATUS_UPDATE', msg)
+      commit('MODAL_CLOSE', 'loading')
+      commit('MODAL_OPEN', {
+        id: 'alert',
+        parameters: {
+          source: 'CSV export failed',
+          message: msg.code === 'EEXIST'
+            ? `Cannot write on ${msg.path} (${msg.code})`
+            : msg
+        }
+      })
     })
     ipcRenderer.send('exportCsv', {
       ...state,
-      ...getters.getFileExportDetails(uid)
+      ...exportDetails
     })
   }
 }

@@ -51,17 +51,20 @@
         <router-view/>
       </div>
     </section>
+    <alertMessage />
     <loadingSpinner />
   </div>
 </template>
 
 <script>
 import loadingSpinner from '@/components/commonModals/loadingSpinner.vue'
+import alertMessage from '@/components/commonModals/alertMessage.vue'
 
 export default {
   name: 'app',
   components: {
-    loadingSpinner
+    loadingSpinner,
+    alertMessage
   },
   data () {
     return {

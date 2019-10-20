@@ -20,7 +20,7 @@
         <slot></slot>
       </div>
     </div>
-    <button v-if="!isCard && !noCloseButtons" class="modal-close is-large" aria-label="close" @click="close()"></button>
+    <button v-if="!(isCard || noOverlayCross) && !noCloseButtons" class="modal-close is-large" aria-label="close" @click="close()"></button>
   </div>
 </template>
 
@@ -31,6 +31,7 @@ export default {
     isActive: Boolean,
     noBox: Boolean,
     noOverlay: Boolean,
+    noOverlayCross: Boolean,
     isSmall: Boolean,
     noCloseButtons: Boolean,
     fitContent: Boolean

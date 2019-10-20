@@ -4,6 +4,7 @@ const modalRegistry = [
   'fileImportSettings',
   'columnSettingsEditor',
   'exportSettings',
+  'alert',
   'loading'
 ]
 
