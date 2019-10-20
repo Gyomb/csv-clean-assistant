@@ -9,7 +9,12 @@ export default {
   props: {
     isGrouped: defaultBoolean,
     hasAddons: defaultBoolean,
-    isHorizontal: defaultBoolean
+    isHorizontal: defaultBoolean,
+    expands: {
+      type: Array,
+      default: () => [],
+      validator: (arr) => arr.every(item => typeof item === 'number')
+    }
   },
   render (h) {
     const rootNodeClass = () => {
@@ -55,13 +60,12 @@ export default {
       return h('div', { class: 'field' + addition }, [vNode])
     }
 
-    const addControl = vNode => {
-      return h('p', { class: 'control' }, [vNode])
+    const addControl = (vNode, index) => {
+      const isExpanded = this.expands.includes(index) ? ' is-expanded' : ''
+      return h('p', { class: 'control' + isExpanded }, [vNode])
     }
 
-    const formatInput = input => {
-      return addField(addControl(input))
-    }
+    const formatInput = (input, index) => addField(addControl(input, index))
 
     const concatNextInputs = (nodeIndex, slots) => {
       let fieldBodyClass = ''
@@ -91,8 +95,8 @@ export default {
       }
 
       const formattedInputs = fieldBodyClass === ''
-        ? concatenatedInput.map(vNode => formatInput(vNode))
-        : [addField(concatenatedInput.map(vNode => addControl(vNode)), fieldBodyClass)]
+        ? concatenatedInput.map((vNode, index) => formatInput(vNode, index))
+        : [addField(concatenatedInput.map((vNode, index) => addControl(vNode, index)), fieldBodyClass)]
 
       return h('div', { class: 'field-body' }, formattedInputs)
     }
@@ -119,7 +123,7 @@ export default {
           if (this.isHorizontal) {
             formattedSlots[fieldLabelCount].push(concatNextInputs(slotIndex, this.$slots.default))
           } else {
-            formattedSlots[fieldLabelCount].push(addControl(vNode))
+            formattedSlots[fieldLabelCount].push(addControl(vNode, slotIndex))
           }
         }
       }
