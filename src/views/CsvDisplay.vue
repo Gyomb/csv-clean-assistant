@@ -1,7 +1,12 @@
 <template>
   <div class="csv-display">
     <bulmaLevel mobile-view>
-      <saveFileControls slot="left" />
+      <exportSettingsInvite slot="left"
+        :export-filename="exportFilename"
+        :export-filepath="exportFilepath"
+        @openModal="openExportModal"
+        @exportCsv="exportCsv"
+      />
       <bulmaField slot="right">
         <bulmaButton rounded
           picto="code"
@@ -20,20 +25,21 @@
       <pre>{{$store.state.csv.json}}</pre>
     </bulmaModal>
     <columnSettingsEditor />
+    <exportSettings />
   </div>
 </template>
 
 <script>
-import saveFileControls from '@/components/saveFileControls.vue'
 import csvTable from '@/components/csvTable'
 import columnSettingsEditor from '@/components/commonModals/columnSettingsEditor'
+import exportSettings from '@/components/commonModals/exportSettings'
 
 export default {
   name: 'csv-display',
   components: {
-    saveFileControls,
     csvTable,
-    columnSettingsEditor
+    columnSettingsEditor,
+    exportSettings
   },
   data () {
     return {
@@ -50,6 +56,16 @@ export default {
       if (headColumnsNames) return headColumnsNames
       const fileData = this.$store.state.files.list[this.fileUid] || {}
       return fileData.columns ? fileData.columns[0] : []
+    },
+    exportParameters () {
+      const fileData = this.$store.state.files.list[this.fileUid] || {}
+      return fileData.exportParameters || {}
+    },
+    exportFilename () {
+      return this.exportParameters.exportFilename || ''
+    },
+    exportFilepath () {
+      return this.exportParameters.exportPath || ''
     }
   },
   methods: {
@@ -61,9 +77,17 @@ export default {
         id: 'columnSettingsEditor',
         parameters: { columnName }
       })
+    },
+    openExportModal () {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'exportSettings'
+      })
+    },
+    exportCsv () {
+      if (typeof this.exportFilepath === 'string' && this.exportFilepath !== '') {
+        this.$store.dispatch('EXPORT_CSV', this.fileUid)
+      }
     }
-  },
-  mounted () {
   }
 }
 </script>

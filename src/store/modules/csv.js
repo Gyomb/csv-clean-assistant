@@ -34,11 +34,6 @@ const mutations = {
       Vue.set(state, 'content', content)
     }
   },
-  CSV_SAVE_DATA_UPDATE (state, { filename, filepath, saveMode }) {
-    if (filename) state.newFilename = filename
-    if (filepath) state.newPath = filepath
-    if (saveMode) state.saveMode = saveMode
-  },
   JSON_UPDATE (state, { row, col, value }) {
     Vue.set(state.json[row], col, value)
   },
@@ -122,18 +117,20 @@ const actions = {
       return dispatch('SAVE_IMPORTED_CSV', uid)
     })
   },
-  EXPORT_CSV ({ state, commit }, { filename, filepath }) {
-    if (filename && filepath) commit('CSV_SAVE_DATA_UPDATE', { filename, filepath })
-    commit('CSV_STATUS_UPDATE', 'saving')
-    ipcRenderer.once('savedCsv', (event, content) => {
-      commit('CSV_STATUS_UPDATE', 'saved')
+  EXPORT_CSV ({ state, commit, getters }, uid) {
+    commit('CSV_STATUS_UPDATE', 'exporting')
+    ipcRenderer.once('exportedCsv', (event, content) => {
+      commit('CSV_STATUS_UPDATE', 'exported')
       commit('CSV_STATUS_UPDATE', 'ready')
     })
-    ipcRenderer.once('csvSaveError', (event, msg) => {
-      console.error({ csvSaveError: msg })
+    ipcRenderer.once('csvExportError', (event, msg) => {
+      console.error('csvExportError:', msg)
       commit('CSV_STATUS_UPDATE', msg)
     })
-    ipcRenderer.send('saveCsv', state)
+    ipcRenderer.send('exportCsv', {
+      ...state,
+      ...getters.getFileExportDetails(uid)
+    })
   }
 }
 
