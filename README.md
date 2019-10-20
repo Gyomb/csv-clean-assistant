@@ -36,6 +36,7 @@ src/
 -----+ atoms/         # smallest unit, no logic except for some event emitting (don't call the $store!)
 -----+ molecules/     # more complex unit (often composed of atom components). Still no logic
 -----+ wrappers/      # not an atomic concept. Those components' purpose is to "dress" their content with some extra markup.
+---+ commonModals/  # components in this folder are coupled to the commonModals store
 ---+ ui-toolbox/    # Utility components may contain logic but shouldn't depend on the $store
 ---- …              # Other components are stored at the root of the components/ folder. They should make use of the $store
 -+ global-scss/   # this folder contains the scss source files that should be applied to all the app
@@ -50,8 +51,10 @@ src/
 ### Details on the Vuex store modules
 The Vuex store in this project is split in different modules, each one with its own purpose:
 
-1. **csv.js** This module stores the data for the currently opened csv and manages the calls to the decode/encode background processes
-2. **files.js** This module stores the imported file list
-3. **userSettings.js** This module stores data related to user preferences (last opened files, display order of the imported files, etc.) and provides the methods to manipulate it
+1. **commonModals.js** This module is used as a bus event for displaying and closing modals. To add a new modal, in the projet, its ID has to be declared in the modalRegistry array of strings
+2. **csv.js** This module stores the data for the currently opened csv and manages the calls to the decode/encode background processes
+3. **files.js** This module stores the imported file list
+4. **modifier.js** This module executes and stores a dry run for bulk modifications operated on the the currently opened file
+5. **userSettings.js** This module stores data related to user preferences (last opened files, display order of the imported files, etc.) and provides the methods to manipulate it 
 
 The files and userSettings store both save their state in the app's local user folder and import it back at app's reload.

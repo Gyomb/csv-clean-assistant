@@ -116,13 +116,18 @@ const actions = {
       }
     })
   },
-  OPEN_FILE ({ getters, commit, rootState }, { fileKey, uid, forceImport = false }) {
+  OPEN_FILE ({ state, getters, commit, rootState }, { fileKey, uid, forceImport = false }) {
     if (!uid) {
       uid = getters.getUniqueId(fileKey)
     }
+    let alreadyOpened = false
     if (rootState.files.list[uid]) {
-      commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: uid })
-      router.push({ name: 'csv-display', params: { forceImport } })
+      if (state.openedFile === uid) {
+        alreadyOpened = true
+      } else {
+        commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: uid })
+      }
+      router.push({ name: 'csv-display', params: { forceImport, alreadyOpened } })
     } else {
       console.error(`Couldn't find file with #${uid} ID.`)
     }

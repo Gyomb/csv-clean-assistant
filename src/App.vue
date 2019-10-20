@@ -51,20 +51,32 @@
         <router-view/>
       </div>
     </section>
+    <alertMessage />
+    <loadingSpinner />
   </div>
 </template>
 
 <script>
+import loadingSpinner from '@/components/commonModals/loadingSpinner.vue'
+import alertMessage from '@/components/commonModals/alertMessage.vue'
+
 export default {
   name: 'app',
+  components: {
+    loadingSpinner,
+    alertMessage
+  },
   data () {
     return {
       menuShown: false
     }
   },
   computed: {
+    fileUid () {
+      return this.$store.state.userSettings.openedFile
+    },
     isHome () {
-      return this.$route.path === '/'
+      return this.$route.name === 'home'
     },
     isDryrunReport () {
       return this.$route.path === '/csv-dryrun-report'
@@ -72,15 +84,16 @@ export default {
   },
   methods: {
     goHome () {
-      this.$store.commit('SETTINGS_SET_PROP', { prop: 'openedFile', value: false })
       this.$router.push('/')
     },
     applyModifications () {
+      this.menuShown = false
       this.$store.dispatch('PROMOTE_DRYRUN', this.fileUid)
-        .then(this.$router.push('csv-display'))
+        .then(this.$router.push({ name: 'csv-display', params: { alreadyOpen: true } }))
     },
     cancelModifications () {
-      this.$router.push('csv-display')
+      this.menuShown = false
+      this.$router.push({ name: 'csv-display', params: { alreadyOpen: true } })
     },
     toggleMenu () {
       this.menuShown = !this.menuShown

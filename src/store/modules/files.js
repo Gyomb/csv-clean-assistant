@@ -18,6 +18,13 @@ const getters = {
   getFileFromImportOrder: (state, getters) => (fileKey) => {
     return state.list[getters.getUniqueId(fileKey)]
   },
+  getFileExportDetails: (state, getters) => (uid) => {
+    const fileData = (state.list[uid] || {}).exportParameters || {}
+    return {
+      exportMode: fileData.exportMode || 'newfile',
+      exportPath: fileData.exportPath
+    }
+  },
   getHeadColumnNames (state, getters, rootState) {
     const fileData = state.list[rootState.userSettings.openedFile] || {}
     const columnsData = fileData.columns || {}
@@ -53,6 +60,38 @@ const mutations = {
       Vue.set(state.list[uid], 'importParameters', settings)
     }
     saveFilesState()
+  },
+  UPDATE_FILE_EXPORT_SETTINGS (state, { uid, settings }) {
+    function addExtension (path) {
+      return path.replace(/(?:\.csv)*$/, '.csv')
+    }
+    if (state.list[uid]) {
+      let exportPath = ''
+      let exportFilename = ''
+      switch (settings.exportMode) {
+        case 'overwrite' :
+          let overwritePath = (settings.overwriteFile || {}).path
+          exportPath = overwritePath ? addExtension(overwritePath) : ''
+          exportFilename = settings.overwriteFilename
+          break
+        case 'newfile' :
+          let newfilePath = (settings.newfileFile || {}).path
+          if (newfilePath && settings.newfileFilename) {
+            let pathDelimiter = newfilePath.includes('\\') ? `\\` : '/' // use 'slash' as folder ending, except on windows, if the fullpath was provided
+            exportPath = addExtension(newfilePath + pathDelimiter + settings.newfileFilename)
+          }
+          exportFilename = settings.newfileFilename
+          break
+      }
+      Vue.set(state.list[uid], 'exportParameters', {
+        ...settings,
+        exportPath,
+        exportFilename
+      })
+      saveFilesState()
+    } else {
+      console.error(`UPDATE_FILE_EXPORT_SETTINGS: ${uid} file isn't registered`)
+    }
   }
 }
 

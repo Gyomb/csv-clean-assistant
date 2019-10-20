@@ -55,11 +55,12 @@ async function assertDelimiter (filepath, delimiterList) {
     const csvPreReadStream = fs.createReadStream(filepath, 'utf-8')
     csvPreReadStream.on('data', chunk => {
       firstChunck += chunk
-      console.log({ firstChunck })
       if (firstChunck.length > 100) csvPreReadStream.close()
     })
     const gotFirstChunk = new Promise((resolve, reject) => {
-      csvPreReadStream.on('end', () => resolve(true))
+      csvPreReadStream.on('close', () => {
+        resolve(true)
+      })
       csvPreReadStream.on('error', error => {
         csvPreReadStream.close()
         reject(error)
@@ -74,7 +75,6 @@ async function assertDelimiter (filepath, delimiterList) {
     const relevantDelimiter = delimiterRelevance.reduce((delimiterCandidate, delimiter) => {
       return delimiterCandidate.relevance > delimiter.relevance ? delimiterCandidate : delimiter
     }) || {}
-    console.log({ delimiterList, relevantDelimiter })
     return relevantDelimiter.delimiter || delimiterList[0]
   } catch (error) {
     throw error
@@ -117,7 +117,6 @@ async function openAndDecodeStream (filepath, uid, { delimiter, noHeader }) {
       }
     }
     csvParserParams.separator = delimiter || await assertDelimiter(filepath, delimiterList)
-    console.log(csvParserParams)
     // SET READING/WRITING STREAMS
     const csvReadStream = fs.createReadStream(filepath)
     const csvReadStreamForCsvCopy = new ReadableStreamClone(csvReadStream)

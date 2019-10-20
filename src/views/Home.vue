@@ -27,10 +27,10 @@ export default {
   },
   computed: {
     importSettingsModalIsActive () {
-      return this.$store.state.modalBus.fileImportSettingsOpened
+      return this.$store.state.commonModals.fileImportSettingsOpened
     },
     importSettingsUid () {
-      return this.$store.state.modalBus.fileImportSettingsParameters.uid || ''
+      return this.$store.state.commonModals.fileImportSettingsParameters.uid || ''
     },
     importSettingsFile () {
       return this.$store.state.files.list[this.importSettingsUid] || {}
@@ -53,10 +53,6 @@ export default {
     }
   },
   mounted () {
-    let wasAfileAlreadyOpened = this.$store.state.userSettings.openedFile || this.$store.state.userSettings.openedFile === 0
-    if (wasAfileAlreadyOpened) {
-      this.$router.push('/csv-display')
-    }
   }
 }
 </script>

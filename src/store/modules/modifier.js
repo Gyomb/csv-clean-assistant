@@ -61,6 +61,12 @@ const mutations = {
 
 const actions = {
   APPLY_MODIFICATION_RULES ({ commit, rootState }, { dryrunActivated = true, uid, column }) {
+    commit('MODAL_OPEN', {
+      id: 'loading',
+      parameters: {
+        message: `Applying modifications to a copy of ${rootState.files.list[uid].name}…`
+      }
+    })
     return new Promise((resolve, reject) => {
       const modifiedJson = []
       const modificationReport = []
@@ -92,7 +98,6 @@ const actions = {
                 if (rule.entireRow) {
                   deleteRow = true
                   newRow = {}
-                  console.warn({ newRow })
                   ruleIndex = rulesToApply.length // Break the loop (if row is deleted, there is no point continuing matching content)
                 }
                 break
@@ -104,17 +109,17 @@ const actions = {
                 break
               default: console.error(`'${rule.action}' action isn't supported `)
             }
-            if (row[column] !== newCell) console.log({ newRow })
-            if (row[column] !== newCell) report.push({ rule, oldCell, newCell, row, newRow })
+            if (deleteRow || row[column] !== newCell) report.push({ rule, oldCell, newCell, row, newRow })
           }
         }
         if (!deleteRow) newRow[column] = newCell
-        if (row[column] !== newCell) modificationReport.push(report)
+        if (deleteRow || row[column] !== newCell) modificationReport.push(report)
         if (!deleteRow) modifiedJson.push(newRow)
       })
       commit('DRYRUN_COLUMN_REGISTER', column)
       commit('DRYRUN_REGISTER', modifiedJson)
       commit('DRYRUN_REPORT_REGISTER', modificationReport)
+      commit('MODAL_CLOSE', 'loading')
       resolve()
     })
   },

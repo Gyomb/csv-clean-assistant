@@ -1,7 +1,11 @@
 import Vue from 'vue'
 
 const modalRegistry = [
-  'fileImportSettings'
+  'fileImportSettings',
+  'columnSettingsEditor',
+  'exportSettings',
+  'alert',
+  'loading'
 ]
 
 const state = {}
@@ -12,9 +16,12 @@ modalRegistry.forEach(modalName => {
 })
 
 const mutations = {
-  MODAL_OPEN (state, { id, parameters }) {
+  MODAL_OPEN (state, options) {
+    let { id, parameters } = options
+    if (!id) id = options
+    if (typeof id !== 'string') return
     state[id + 'Opened'] = true
-    Vue.set(state, id + 'Parameters', parameters)
+    Vue.set(state, id + 'Parameters', parameters || {})
   },
   MODAL_CLOSE (state, id) {
     state[id + 'Opened'] = false
