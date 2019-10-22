@@ -21,14 +21,14 @@
     <h4 class="subtitle">Rulesets</h4>
     <!-- presets drawer -->
     <bulmaLevel mobile-view>
-      <h4 class="subtitle" slot="left">Column Modifiers</h4>
-      <bulmaButton slot="right"
+      <bulmaButton slot="left"
         rounded class="is-small"
         picto="plus"
-        purpose="success"
+        purpose="info"
         title="Add a new column modifier"
         @click="rules.push({ isRegex: true })"
       />
+      <h4 class="subtitle" slot="left">Column Modifiers</h4>
     </bulmaLevel>
     <!-- Rules list -->
       <ul>
@@ -42,14 +42,14 @@
         </li>
       </ul>
     <bulmaLevel mobile-view>
-      <h4 class="subtitle" slot="left">Highlights</h4>
-      <bulmaButton slot="right"
+      <bulmaButton slot="left"
         rounded class="is-small"
         picto="plus"
-        purpose="success"
+        purpose="info"
         title="Add a new column highlight"
         @click="highlights.push({ isRegex: true })"
       />
+      <h4 class="subtitle" slot="left">Highlights</h4>
     </bulmaLevel>
     <!-- Highlights list -->
       <ul>
