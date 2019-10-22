@@ -92,6 +92,40 @@ export default {
       set (value) {
         this.$emit('update', { ...this.rule, matchPattern: value })
       }
+    },
+    matchOptions: {
+      get () { return this.rule.matchOptions || {} },
+      set (value) {
+        this.$emit('update', { ...this.rule, matchOptions: value })
+      }
+    }
+  },
+  methods: {
+    updateMatchPatternLocalData ({ exclude, isRegex, pattern, global, caseSensitive }) {
+      this.$emit('update', {
+        ...this.rule,
+        exclude,
+        isRegex,
+        matchPattern: pattern,
+        matchOptions: {
+          global,
+          caseSensitive
+        }
+      })
+    },
+    selectMatchPattern () {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'matchPattern',
+        parameters: {
+          data: {
+            exclude: this.exclude,
+            isRegex: this.isRegex,
+            pattern: this.matchPattern,
+            ...this.matchOptions
+          },
+          callback: this.updateMatchPatternLocalData
+        }
+      })
     }
   }
 }

@@ -26,6 +26,7 @@
     </bulmaModal>
     <columnSettingsEditor />
     <exportSettings />
+    <matchPattern />
   </div>
 </template>
 
@@ -33,13 +34,15 @@
 import csvTable from '@/components/csvTable'
 import columnSettingsEditor from '@/components/commonModals/columnSettingsEditor'
 import exportSettings from '@/components/commonModals/exportSettings'
+import matchPattern from '@/components/commonModals/matchPattern'
 
 export default {
   name: 'csv-display',
   components: {
     csvTable,
     columnSettingsEditor,
-    exportSettings
+    exportSettings,
+    matchPattern
   },
   data () {
     return {
