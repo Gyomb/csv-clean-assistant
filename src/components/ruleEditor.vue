@@ -1,25 +1,16 @@
 <template>
   <bulmaLevel class="level rule-editor" mobile-view>
-    <bulmaField slot="left">
-      <bulmaButton
-        :picto="exclude ? 'not-equal' : 'equals'"
-        :purpose="exclude ? 'danger' : 'success'"
-        apply-color-to="border"
-        :title="exclude ? 'Do not match' : 'Match'"
-        @click="exclude = !exclude"
-      />
-    </bulmaField>
-    <bulmaField has-addons slot="left">
-      <bulmaButton
-        :label="isRegex ? 'Reg' : 'Str'"
-        :title="isRegex ? 'Compare to a regular expression' : 'Compare to a character string'"
-        @click="isRegex = !isRegex"
-      />
-      <input type="text" class="input"
-        :placeholder="isRegex ? 'Regular Expression' : 'Character string'"
-        v-model="matchPattern"
-      >
-    </bulmaField>
+    <matchSummup slot="left"
+      :exclude="exclude"
+      :is-regex="isRegex"
+      :match-pattern="matchPattern"
+      :match-options="matchOptions"
+    />
+    <bulmaButton slot="left"
+      label="…" rounded
+      picto="pen" last
+      @click="selectMatchPattern"
+    />
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
@@ -41,11 +32,13 @@
 
 <script>
 import actionSelector from '@/components/ui-toolbox/actionSelector'
+import matchSummup from '@/components/ui-toolbox/matchSummup'
 
 export default {
   name: 'ruleEditor',
   components: {
-    actionSelector
+    actionSelector,
+    matchSummup
   },
   model: {
     prop: 'rule',
