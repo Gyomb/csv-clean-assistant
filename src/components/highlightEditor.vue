@@ -1,29 +1,20 @@
 <template>
   <bulmaLevel class="level rule-editor" mobile-view>
-    <bulmaField slot="left">
-      <bulmaButton
-        :picto="exclude ? 'not-equal' : 'equals'"
-        :purpose="exclude ? 'danger' : 'success'"
-        apply-color-to="border"
-        :title="exclude ? 'Do not match' : 'Match'"
-        @click="exclude = !exclude"
-      />
-    </bulmaField>
-    <bulmaField has-addons slot="left">
-      <bulmaButton
-        :label="isRegex ? 'Reg' : 'Str'"
-        :title="isRegex ? 'Compare to a regular expression' : 'Compare to a character string'"
-        @click="isRegex = !isRegex"
-      />
-      <input type="text" class="input"
-        :placeholder="isRegex ? 'Regular Expression' : 'Character string'"
-        v-model="matchPattern"
-      >
-    </bulmaField>
+   <matchSummup slot="left"
+      :exclude="exclude"
+      :is-regex="isRegex"
+      :match-pattern="matchPattern"
+      :match-options="matchOptions"
+    />
+    <bulmaButton slot="left"
+      label="…" rounded
+      picto="pen" last
+      @click="selectMatchPattern"
+    />
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
-    <highlightSelector v-model="color" />
+    <highlightSelector v-model="color" slot="right" />
     <span class="icon is-small has-text-grey-dark" slot="right">
       <span class="fa-stack">
         <i class="fas fa-sort-up fa-stack-2x is-clickable" @click="$emit('move:up')"></i>
@@ -38,11 +29,13 @@
 
 <script>
 import highlightSelector from '@/components/ui-toolbox/highlightSelector'
+import matchSummup from '@/components/ui-toolbox/matchSummup'
 
 export default {
   name: 'highlightEditor',
   components: {
-    highlightSelector
+    highlightSelector,
+    matchSummup
   },
   model: {
     prop: 'rule',
@@ -93,6 +86,40 @@ export default {
       set (value) {
         this.$emit('update', { ...this.rule, matchPattern: value })
       }
+    },
+    matchOptions: {
+      get () { return this.rule.matchOptions || {} },
+      set (value) {
+        this.$emit('update', { ...this.rule, matchOptions: value })
+      }
+    }
+  },
+  methods: {
+    updateMatchPatternLocalData ({ exclude, isRegex, pattern, global, caseSensitive }) {
+      this.$emit('update', {
+        ...this.rule,
+        exclude,
+        isRegex,
+        matchPattern: pattern,
+        matchOptions: {
+          global,
+          caseSensitive
+        }
+      })
+    },
+    selectMatchPattern () {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'matchPattern',
+        parameters: {
+          data: {
+            exclude: this.exclude,
+            isRegex: this.isRegex,
+            pattern: this.matchPattern,
+            ...this.matchOptions
+          },
+          callback: this.updateMatchPatternLocalData
+        }
+      })
     }
   }
 }

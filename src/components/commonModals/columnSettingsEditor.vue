@@ -77,7 +77,7 @@
 <script>
 import { moveInArray } from '@/helpers/arrays.js'
 import ruleEditor from '@/components/ruleEditor'
-import highlightEditor from '@/components/ui-toolbox/highlightEditor'
+import highlightEditor from '@/components/highlightEditor'
 
 export default {
   name: 'columnSettingsEditor',
