@@ -26,6 +26,7 @@
     </bulmaModal>
     <columnSettingsEditor />
     <exportSettings />
+    <actionSelector />
     <matchPattern />
   </div>
 </template>
@@ -34,6 +35,7 @@
 import csvTable from '@/components/csvTable'
 import columnSettingsEditor from '@/components/commonModals/columnSettingsEditor'
 import exportSettings from '@/components/commonModals/exportSettings'
+import actionSelector from '@/components/commonModals/actionSelector'
 import matchPattern from '@/components/commonModals/matchPattern'
 
 export default {
@@ -42,6 +44,7 @@ export default {
     csvTable,
     columnSettingsEditor,
     exportSettings,
+    actionSelector,
     matchPattern
   },
   data () {

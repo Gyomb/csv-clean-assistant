@@ -5,6 +5,7 @@ const modalRegistry = [
   'columnSettingsEditor',
   'exportSettings',
   'matchPattern',
+  'actionSelector',
   'alert',
   'loading'
 ]

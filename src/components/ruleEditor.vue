@@ -7,16 +7,21 @@
       :match-options="matchOptions"
     />
     <bulmaButton slot="left"
-      label="…" rounded
+      rounded
       picto="pen" last
       @click="selectMatchPattern"
     />
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
-    <actionSelector slot="right"
-      v-model="actionAndParameters" :match-excluded="exclude"
-      :column-list="columnList" :current-column="currentColumn"
+    <bulmaButton slot="right"
+      rounded
+      picto="pen" last
+      @click="selectAction"
+    />
+    <actionSummup
+      :action="rule.action"
+      :parameters="rule.parameters"
     />
     <span class="icon is-small has-text-grey-dark" slot="right">
       <span class="fa-stack">
@@ -31,14 +36,14 @@
 </template>
 
 <script>
-import actionSelector from '@/components/ui-toolbox/actionSelector'
 import matchSummup from '@/components/ui-toolbox/matchSummup'
+import actionSummup from '@/components/ui-toolbox/actionSummup'
 
 export default {
   name: 'ruleEditor',
   components: {
-    actionSelector,
-    matchSummup
+    matchSummup,
+    actionSummup
   },
   model: {
     prop: 'rule',
@@ -53,21 +58,6 @@ export default {
     currentColumn: String
   },
   computed: {
-    actionAndParameters: {
-      get () {
-        return {
-          action: this.rule.action || 'replace',
-          parameters: this.rule.parameters || {}
-        }
-      },
-      set (value) {
-        this.$emit('update', {
-          ...this.rule,
-          action: value.action,
-          parameters: value.parameters
-        })
-      }
-    },
     exclude: {
       get () { return this.rule.exclude || false },
       set (value) {
@@ -106,6 +96,13 @@ export default {
         }
       })
     },
+    updateActionLocalData ({ action, parameters }) {
+      this.$emit('update', {
+        ...this.rule,
+        action,
+        parameters
+      })
+    },
     selectMatchPattern () {
       this.$store.commit('MODAL_OPEN', {
         id: 'matchPattern',
@@ -117,6 +114,21 @@ export default {
             ...this.matchOptions
           },
           callback: this.updateMatchPatternLocalData
+        }
+      })
+    },
+    selectAction () {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'actionSelector',
+        parameters: {
+          data: {
+            action: this.rule.action || '',
+            parameters: this.rule.parameters || {},
+            columnList: this.columnList || '',
+            currentColumn: this.currentColumn || '',
+            matchExcluded: this.exclude
+          },
+          callback: this.updateActionLocalData
         }
       })
     }
