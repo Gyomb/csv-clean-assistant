@@ -19,28 +19,40 @@
     <!-- Action Parameters -->
     <template v-if="selectedAction === 'replace'">
       <!-- Replace parameters -->
+      <bulmaField>
+        <label field-label class="label">Use</label>
+      </bulmaField>
       <bulmaField is-horizontal>
         <label class="radio" :disabled="matchExcluded">
-          <input type="radio" v-model="replaceUseMatchPattern" :value="true" :disabled="matchExcluded"> Use match pattern
+          <input type="radio" v-model="replaceUseMatchPattern" :value="true" :disabled="matchExcluded"> the initial match pattern
         </label>
         <label class="radio">
-          <input type="radio" v-model="replaceUseMatchPattern" :value="false"> Use the replace pattern below
+          <input type="radio" v-model="replaceUseMatchPattern" :value="false"> another replace pattern
         </label>
       </bulmaField>
-      <bulmaField is-horizontal has-addons>
-        <label field-label class="label" for="replaceMatch">Replace</label>
-        <bulmaButton
-          :label="replaceIsRegex ? 'Reg' : 'Str'"
-          :title="replaceIsRegex ? 'Compare to a regular expression' : 'Compare to a character string'"
-          @click="replaceIsRegex = !replaceIsRegex"
+      <div v-if="!replaceUseMatchPattern">
+        <label field-label class="label" for="replaceMatch">To replace</label>
+        <div class="tabs is-centered is-small is-boxed">
+          <ul>
+            <li :class="{'is-active': !replaceIsRegex}"><a href="#" @click="setIsRegexOnClick($event, false)">String</a></li>
+            <li :class="{'is-active': replaceIsRegex}"><a href="#" @click="setIsRegexOnClick($event, true)">Regular Expression</a></li>
+          </ul>
+        </div>
+        <regexInput v-if="replaceIsRegex"
+          placeholder="this regular expression"
+          v-model="replaceReplacementRegexPattern"
         />
-        <input type="text" class="input" name="replaceMatch"
-          :placeholder="replaceIsRegex ? 'Regular Expression' : 'Character string'"
-          v-model="replaceReplacementPattern"
-        >
+        <template v-else>
+          <bulmaField>
+            <input type="text" class="input" v-model="replaceReplacementStringPattern" placeholder="this word">
+          </bulmaField>
+        </template>
+        <hr>
+      </div>
+      <bulmaField>
+        <label field-label class="label" for="replaceNew">{{replaceUseMatchPattern ? 'To replace b' : 'B'}}y</label>
       </bulmaField>
-      <bulmaField is-horizontal>
-        <label field-label class="label" for="replaceNew">By</label>
+      <bulmaField>
         <input class="input" name="replaceNew" type="text" placeholder="Replacement"
           v-model="replaceReplacementString"
         >
@@ -98,6 +110,7 @@
 </template>
 
 <script>
+
 const actionOptions = [
   { value: 'delete', label: 'Delete' },
   { value: 'replace', label: 'Modify' },
@@ -136,6 +149,7 @@ export default {
       replaceUseMatchPattern: false,
       replaceIsRegex: true,
       replaceReplacementPattern: '',
+      replaceReplacementOptions: {},
       replaceReplacementString: '',
       deleteEntireRow: false,
       moveMoveTo: '',
@@ -157,6 +171,24 @@ export default {
     },
     matchExcluded () {
       return this.actionSelectorData.matchExcluded
+    },
+    replaceReplacementRegexPattern: {
+      get () {
+        return {
+          pattern: this.replaceReplacementPattern,
+          ...this.replaceReplacementOptions
+        }
+      },
+      set ({ pattern, ...options }) {
+        this.replaceReplacementPattern = pattern
+        this.replaceReplacementOptions = options
+      }
+    },
+    replaceReplacementStringPattern: {
+      get () { return this.replaceReplacementPattern },
+      set (stringPattern) {
+        this.replaceReplacementPattern = stringPattern
+      }
     },
     columnList () {
       const list = this.actionSelectorData.columnList
@@ -206,11 +238,15 @@ export default {
     setMoveToDefault () {
       this.moveTo = this.parameters.columnList.filter(column => column !== this.currentColumn)[0]
     },
+    setIsRegexOnClick (event, value) {
+      event.preventDefault()
+      this.replaceIsRegex = value
+    },
     resetParameters () {
       switch (this.selectedAction) {
         case 'replace':
           this.replaceUseMatchPattern = defaultIfUndefined(this.actionSelectorParameters.useMatchPattern, !this.matchExcluded)
-          this.replaceIsRegex = defaultIfUndefined(this.actionSelectorParameters.isRegex, true)
+          this.replaceIsRegex = defaultIfUndefined(this.actionSelectorParameters.isRegex, false)
           this.replaceReplacementPattern = defaultIfUndefined(this.actionSelectorParameters.replacementPattern, '')
           this.replaceReplacementString = defaultIfUndefined(this.actionSelectorParameters.replacementString, '')
           break
