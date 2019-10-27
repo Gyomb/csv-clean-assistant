@@ -109,7 +109,8 @@ export default {
               return {
                 exclude: !!rule.exclude,
                 match: rule.isRegex ? new RegExp(rule.matchPattern) : rule.matchPattern,
-                color: rule.color
+                color: rule.color,
+                options: rule.matchOptions || {}
               }
             })
         }
@@ -130,7 +131,14 @@ export default {
       const thisColumnHighlights = this.columnHighlights ? (this.columnHighlights[column] || []) : []
       const colors = thisColumnHighlights
         .filter(rule => {
-          const isMatch = rule.match instanceof RegExp ? rule.match.test(value) : value.includes(rule.match)
+          let isMatch = false
+          if (rule.match instanceof RegExp) {
+            isMatch = rule.match.test(value)
+          } else if (rule.options && rule.options.exactMatch) {
+            isMatch = value === rule.match
+          } else {
+            isMatch = value.includes(rule.match)
+          }
           if (!rule.exclude && isMatch) return true
           if (rule.exclude && !isMatch) return true
           return false

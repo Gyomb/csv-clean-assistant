@@ -84,7 +84,7 @@ export default {
     }
   },
   methods: {
-    updateMatchPatternLocalData ({ exclude, isRegex, pattern, global, caseSensitive }) {
+    updateMatchPatternLocalData ({ exclude, isRegex, pattern, global, caseSensitive, exactMatch }) {
       this.$emit('update', {
         ...this.rule,
         exclude,
@@ -92,7 +92,8 @@ export default {
         matchPattern: pattern,
         matchOptions: {
           global,
-          caseSensitive
+          caseSensitive,
+          exactMatch
         }
       })
     },

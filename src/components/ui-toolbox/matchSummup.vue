@@ -1,5 +1,5 @@
 <template>
-  <div class="match-summup" :class="{'pure-sentence-display': isEmpty || !matchPattern}">
+  <div class="match-summup" :class="{'pure-sentence-display': isEmpty || !matchOptions.exactMatch}">
     <div v-if="!matchPattern">
       Please select a criteria
     </div>
@@ -9,11 +9,15 @@
         <u class="has-text-danger"><span v-if="exclude"> not</span> empty</u>
       </span>
       <span v-else>
-        <span class="icon is-medium" :class="exclude ? 'has-text-danger' : 'has-text-success'">
+        <span v-if="matchOptions.exactMatch" class="icon is-medium" :class="exclude ? 'has-text-danger' : 'has-text-success'">
           <span class="fa-stack fa-xs">
             <i class="far fa-circle fa-stack-2x"></i>
             <i class="fas fa-stack-1x" :class="exclude ? 'fa-not-equal' : 'fa-equals'"></i>
           </span>
+        </span>
+        <span v-else :class="exclude ? 'has-text-danger' : 'has-text-success'">
+          {{exclude ? 'do not' : ''}}
+          contain
         </span>
         <span :class="isRegex ? 'regex-display has-text-grey' : 'text-display'">
           <span>{{this.matchPattern}}</span>

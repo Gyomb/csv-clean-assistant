@@ -19,7 +19,15 @@
         This rule will apply to any {{exclude ? 'non-' : ''}}empty cell
       </p>
       <template slot="string">
-        <p>This rule will apply to any cells {{exclude ? 'not' : ''}} containing:</p>
+        <p>This rule will apply to any cells:</p>
+        <bulmaField is-horizontal>
+          <label class="radio">
+            <input type="radio" v-model="stringExactMatch" :value="false"> {{exclude ? 'not' : ''}} containing
+          </label>
+          <label class="radio">
+            <input type="radio" v-model="stringExactMatch" :value="true"> {{exclude ? 'not' : ''}} exactly equal to
+          </label>
+        </bulmaField>
         <bulmaField>
           <input type="text" class="input" v-model="stringPattern" placeholder="this word">
         </bulmaField>
@@ -54,6 +62,7 @@ export default {
       exclude: false,
       inputType: 'regex',
       stringPattern: '',
+      stringExactMatch: false,
       regexPattern: {
         global: true
       }
@@ -85,6 +94,7 @@ export default {
       switch (this.inputType) {
         case 'string': isRegex = false
           stringPattern.pattern = this.stringPattern
+          stringPattern.exactMatch = this.stringExactMatch
           break
         case 'isempty':
           regexPattern = {
@@ -104,7 +114,7 @@ export default {
     matchPatternIsActive: {
       handler () {
         if (this.matchPatternIsActive) {
-          const { exclude, isRegex, pattern, global, caseSensitive } = this.matchPatternParameters.data
+          const { exclude, isRegex, pattern, global, caseSensitive, exactMatch } = this.matchPatternParameters.data
           this.exclude = exclude
           if (isRegex || typeof isRegex !== 'boolean') {
             switch (pattern) {
@@ -124,21 +134,9 @@ export default {
           } else {
             this.inputType = 'string'
             this.stringPattern = pattern
+            this.stringExactMatch = exactMatch || false
             this.resetRegexPattern()
           }
-
-          // let patternFrom = this.ruleParameters
-          // if (this.matchPatternParameters.matchPurpose === 'replace') {
-          //   patternFrom = this.ruleParameters
-          // }
-          // inputType
-          // regexPattern
-          //   get () {
-          //     return {
-          //       pattern: this..pattern || '',
-          //       global: typeof this..global === 'undefined' ? true : this..global,
-          //       caseSensitive: this..caseSensitive || false
-          //     }
         }
       },
       immediate: true
