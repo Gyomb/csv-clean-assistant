@@ -14,7 +14,7 @@
         <span v-if="!parameters.useMatchPattern">
           <span :class="parameters.isRegex ? 'regex-display has-text-grey' : 'text-display'">
             <span>{{parameters.replacementPattern}}</span>
-            <!-- <span v-if="parameters.isRegex" class="flags">{{flags}}</span> -->
+            <span v-if="parameters.isRegex" class="flags">{{flags}}</span>
           </span>
         </span>
         <span v-else>
@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import { formatFlags } from '@/helpers/matchLogics'
+
 export default {
   name: 'actionSummup',
   props: {
@@ -41,6 +43,10 @@ export default {
     }
   },
   computed: {
+    flags () {
+      const matchOptions = this.parameters.replacementOptions || {}
+      return formatFlags(matchOptions)
+    }
   }
 }
 </script>

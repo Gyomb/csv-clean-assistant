@@ -14,14 +14,14 @@
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
+    <actionSummup
+      :action="rule.action"
+      :parameters="rule.parameters"
+    />
     <bulmaButton slot="right"
       rounded
       picto="pen" last
       @click="selectAction"
-    />
-    <actionSummup
-      :action="rule.action"
-      :parameters="rule.parameters"
     />
     <span class="icon is-small has-text-grey-dark" slot="right">
       <span class="fa-stack">

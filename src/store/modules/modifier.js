@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { formatFlags } from '@/helpers/matchLogics'
 
 const formatRules = function (rules) {
   return rules.map(({ exclude = false, isRegex = true, matchPattern, matchOptions, action, parameters }) => {
@@ -7,7 +8,7 @@ const formatRules = function (rules) {
       case 'replace':
         parametersToInject.replacementString = parameters.replacementString
         if (!parameters.useMatchPattern) {
-          parametersToInject.replacementPattern = parameters.isRegex ? new RegExp(parameters.replacementPattern) : parameters.replacementPattern
+          parametersToInject.replacementPattern = parameters.isRegex ? new RegExp(parameters.replacementPattern, formatFlags(parameters.replacementOptions)) : parameters.replacementPattern
         }
         break
       case 'delete':
@@ -20,7 +21,7 @@ const formatRules = function (rules) {
     }
     return {
       exclude: !!exclude,
-      match: isRegex ? new RegExp(matchPattern) : matchPattern,
+      match: isRegex ? new RegExp(matchPattern, formatFlags(matchOptions)) : matchPattern,
       action: action,
       options: matchOptions || {},
       ...parametersToInject

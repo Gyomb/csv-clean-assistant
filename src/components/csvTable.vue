@@ -44,6 +44,7 @@
 <script>
 import columnHead from '@/components/ui-toolbox/columnHead'
 import editableCell from '@/components/ui-toolbox/editableCell'
+import { formatFlags } from '@/helpers/matchLogics'
 
 export default {
   name: 'csvTable',
@@ -108,7 +109,7 @@ export default {
             .map(rule => {
               return {
                 exclude: !!rule.exclude,
-                match: rule.isRegex ? new RegExp(rule.matchPattern) : rule.matchPattern,
+                match: rule.isRegex ? new RegExp(rule.matchPattern, formatFlags(rule.matchOptions)) : rule.matchPattern,
                 color: rule.color,
                 options: rule.matchOptions || {}
               }

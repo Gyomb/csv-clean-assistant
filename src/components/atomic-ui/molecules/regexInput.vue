@@ -20,9 +20,9 @@
         label="/i"
         :title="caseSensistiveTitle"
         :on-state="{
-          purpose: 'danger',
         }"
         :off-state="{
+          purpose: 'success',
         }"
       />
     </bulmaField>

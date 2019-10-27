@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { formatFlags } from '@/helpers/matchLogics'
+
 export default {
   name: 'matchSummup',
   props: {
@@ -45,15 +47,7 @@ export default {
       return this.isRegex && this.matchPattern === '^$'
     },
     flags () {
-      const supportedFlags = [
-        ['caseSensitive', 'i'],
-        ['global', 'g']
-      ]
-      let flags = []
-      supportedFlags.forEach(flag => {
-        if (this.matchOptions[flag[0]]) flags.push(flag[1])
-      })
-      return flags.join('')
+      return formatFlags(this.matchOptions)
     }
   }
 }

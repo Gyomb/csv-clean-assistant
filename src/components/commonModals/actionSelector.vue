@@ -220,6 +220,7 @@ export default {
           parameters.isRegex = this.replaceIsRegex || false
           parameters.replacementPattern = this.replaceReplacementPattern
           parameters.replacementString = this.replaceReplacementString
+          parameters.replacementOptions = this.replaceReplacementOptions
           break
         case 'delete':
           parameters.entireRow = this.deleteEntireRow || false
@@ -248,6 +249,7 @@ export default {
           this.replaceUseMatchPattern = defaultIfUndefined(this.actionSelectorParameters.useMatchPattern, !this.matchExcluded)
           this.replaceIsRegex = defaultIfUndefined(this.actionSelectorParameters.isRegex, false)
           this.replaceReplacementPattern = defaultIfUndefined(this.actionSelectorParameters.replacementPattern, '')
+          this.replaceReplacementOptions = defaultIfUndefined(this.actionSelectorParameters.replacementOptions, false)
           this.replaceReplacementString = defaultIfUndefined(this.actionSelectorParameters.replacementString, '')
           break
         case 'delete':
