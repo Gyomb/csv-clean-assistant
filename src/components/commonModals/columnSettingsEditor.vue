@@ -31,7 +31,7 @@
       <h4 class="subtitle" slot="left">Column Modifiers</h4>
     </bulmaLevel>
     <!-- Rules list -->
-      <ul>
+      <ul class="rule-list">
         <li v-for="(rule, index) in rules" :key="index">
           <rule-editor :rule="rule" :column-list="columnList" :current-column="columnName"
             @update="updateItemInList(rules, index, $event)"
@@ -178,5 +178,15 @@ export default {
 <style lang="scss">
   .column-settings-editor {
     font-weight: normal;
+  }
+  .rule-list {
+    display: grid;
+    li, .rule-editor {
+      display: contents;
+    }
+    $picto-col-width: 28px;
+    $max-sumup-width: fit-content(42%);
+    grid-template-columns: $max-sumup-width 1fr $max-sumup-width $picto-col-width $picto-col-width;
+    align-items: center;
   }
 </style>

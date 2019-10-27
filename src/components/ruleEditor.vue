@@ -1,38 +1,42 @@
 <template>
-  <bulmaLevel class="level rule-editor" mobile-view>
-    <matchSummup slot="left"
-      :exclude="exclude"
-      :is-regex="isRegex"
-      :match-pattern="matchPattern"
-      :match-options="matchOptions"
-    />
-    <bulmaButton slot="left"
-      rounded
-      picto="pen" last
-      @click="selectMatchPattern"
-    />
+  <div class="rule-editor">
+    <button class="button no-button sumup-button"
+        @click="selectMatchPattern"
+    >
+      <matchSummup
+        :exclude="exclude"
+        :is-regex="isRegex"
+        :match-pattern="matchPattern"
+        :match-options="matchOptions"
+      />
+      <span class="icon is-small">
+        <i class="fas fa-edit"></i>
+      </span>
+    </button>
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
-    <actionSummup
-      :action="rule.action"
-      :parameters="rule.parameters"
-    />
-    <bulmaButton slot="right"
-      rounded
-      picto="pen" last
+    <button class="button no-button sumup-button"
       @click="selectAction"
-    />
-    <span class="icon is-small has-text-grey-dark" slot="right">
+    >
+      <actionSummup
+        :action="rule.action"
+        :parameters="rule.parameters"
+      />
+      <span class="icon is-small">
+        <i class="fas fa-edit"></i>
+      </span>
+    </button>
+    <span class="icon is-small has-text-grey-dark right">
       <span class="fa-stack">
         <i class="fas fa-sort-up fa-stack-2x is-clickable" @click="$emit('move:up')"></i>
         <i class="fas fa-sort-down fa-stack-2x is-clickable" @click="$emit('move:down')"></i>
       </span>
     </span>
-    <span class="icon has-text-danger is-small is-clickable" slot="right" @click="$emit('delete')">
+    <span class="icon has-text-danger is-small is-clickable right" @click="$emit('delete')">
       <i class="fas fa-times fa-lg"></i>
     </span>
-  </bulmaLevel>
+  </div>
 </template>
 
 <script>
@@ -140,5 +144,16 @@ export default {
 <style lang="scss">
   .rule-editor {
     margin-bottom: .5rem;
+    > .icon, > .center {
+      justify-self: center;
+    }
+    > .right {
+      justify-self: right;
+    }
+    button.button.sumup-button {
+      justify-content: space-between;
+      white-space: normal;
+      height: 100%;
+    }
   }
 </style>

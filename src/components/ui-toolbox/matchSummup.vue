@@ -9,12 +9,14 @@
         <u class="has-text-danger"><span v-if="exclude"> not</span> empty</u>
       </span>
       <span v-else>
-        <span v-if="matchOptions.exactMatch" class="icon is-medium" :class="exclude ? 'has-text-danger' : 'has-text-success'">
-          <span class="fa-stack fa-xs">
-            <i class="far fa-circle fa-stack-2x"></i>
-            <i class="fas fa-stack-1x" :class="exclude ? 'fa-not-equal' : 'fa-equals'"></i>
+        <template v-if="matchOptions.exactMatch">
+          &nbsp;<span class="icon is-medium" :class="exclude ? 'has-text-danger' : 'has-text-success'">
+            <span class="fa-stack fa-xs">
+              <i class="far fa-circle fa-stack-2x"></i>
+              <i class="fas fa-stack-1x" :class="exclude ? 'fa-not-equal' : 'fa-equals'"></i>
+            </span>
           </span>
-        </span>
+        </template>
         <span v-else :class="exclude ? 'has-text-danger' : 'has-text-success'">
           {{exclude ? 'do not' : ''}}
           contain
