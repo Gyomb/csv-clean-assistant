@@ -57,11 +57,6 @@ export default {
 
 <style lang="scss">
   .match-summup {
-    margin-top: -.4rem;
-    margin-bottom: 0.4rem;
-    &.pure-sentence-display {
-      margin-top: .3rem;
-    }
     .icon i {
       top: .4rem;
     }

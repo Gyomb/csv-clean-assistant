@@ -33,11 +33,14 @@
     <!-- Rules list -->
       <ul class="rule-list">
         <li v-for="(rule, index) in rules" :key="index">
+          <b>#{{index}}</b>
           <rule-editor :rule="rule" :column-list="columnList" :current-column="columnName"
+            :force-close-edit-menu="ruleCurentlyOpenedEditorKey !== index"
             @update="updateItemInList(rules, index, $event)"
             @move:up="moveItemInList(rules, index, -1)"
             @move:down="moveItemInList(rules, index, +1)"
             @delete="deleteItemInList(rules, index)"
+            @openmenu="ruleCurentlyOpenedEditorKey = index"
           />
         </li>
       </ul>
@@ -89,6 +92,7 @@ export default {
     return {
       columnIsHeading: false,
       columnPosition: this.position || 0,
+      ruleCurentlyOpenedEditorKey: false,
       highlights: [],
       rules: []
     }
@@ -181,12 +185,13 @@ export default {
   }
   .rule-list {
     display: grid;
-    li, .rule-editor {
+    li, .rule-editor, .rule-details {
       display: contents;
     }
     $picto-col-width: 28px;
+    $max-sumup-width: calc((100vw - 40px - #{$picto-col-width * 3}) / 2);
     $max-sumup-width: fit-content(42%);
-    grid-template-columns: $max-sumup-width 1fr $max-sumup-width $picto-col-width $picto-col-width;
+    grid-template-columns: $picto-col-width $max-sumup-width 1fr $max-sumup-width $picto-col-width;
     align-items: center;
   }
 </style>
