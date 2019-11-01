@@ -1,30 +1,49 @@
 <template>
-  <bulmaLevel class="level rule-editor" mobile-view>
-   <matchSummup slot="left"
-      :exclude="exclude"
-      :is-regex="isRegex"
-      :match-pattern="matchPattern"
-      :match-options="matchOptions"
-    />
-    <bulmaButton slot="left"
-      label="…" rounded
-      picto="pen" last
+  <div class="rule-editor">
+    <button class="button no-button sumup-button"
       @click="selectMatchPattern"
-    />
+      title="Edit the matching settings for this highlight"
+    >
+      <matchSummup
+        :exclude="exclude"
+        :is-regex="isRegex"
+        :match-pattern="matchPattern"
+        :match-options="matchOptions"
+      />
+      <span class="icon is-small">
+        <i class="fas fa-edit"></i>
+      </span>
+    </button>
     <span class="icon">
       <i class="fas fa-arrow-right"></i>
     </span>
-    <highlightSelector v-model="color" slot="right" />
-    <span class="icon is-small has-text-grey-dark" slot="right">
-      <span class="fa-stack">
-        <i class="fas fa-sort-up fa-stack-2x is-clickable" @click="$emit('move:up')"></i>
-        <i class="fas fa-sort-down fa-stack-2x is-clickable" @click="$emit('move:down')"></i>
-      </span>
-    </span>
-    <span class="icon has-text-danger is-small is-clickable" slot="right" @click="$emit('delete')">
-      <i class="fas fa-times fa-lg"></i>
-    </span>
-  </bulmaLevel>
+    <highlightSelector class="highlight-selector" v-model="color" />
+    <div class="edit-menu-container right">
+      <button class="button no-button" @click="toggleEditMenu">
+        <span class="icon is-small">
+          <i class="fas fa-ellipsis-v"></i>
+        </span>
+      </button>
+      <div class="edit-menu" :class="{'is-active': displayEditMenu}">
+        <bulmaButton class="is-fullwidth"
+          label="Move Up"
+          picto="angle-up" last
+          @click="closeEditMenuAndEmit('move:up')"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Move Down"
+          picto="angle-down" last
+          @click="closeEditMenuAndEmit('move:down')"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Delete"
+          purpose="danger" apply-color-to="picto"
+          picto="times" last
+          @click="closeEditMenuAndEmit('delete')"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -41,11 +60,15 @@ export default {
     prop: 'rule',
     event: 'update'
   },
+  data: () => ({
+    displayEditMenu: false
+  }),
   props: {
     rule: {
       type: Object,
       default () { return {} }
-    }
+    },
+    forceCloseEditMenu: Boolean
   },
   computed: {
     actionAndParameters: {
@@ -121,6 +144,21 @@ export default {
           callback: this.updateMatchPatternLocalData
         }
       })
+    },
+    toggleEditMenu () {
+      this.displayEditMenu = !this.displayEditMenu
+      if (this.displayEditMenu) this.$emit('openmenu')
+    },
+    closeEditMenuAndEmit (eventName) {
+      this.displayEditMenu = false
+      this.$emit(eventName)
+    }
+  },
+  watch: {
+    forceCloseEditMenu (forceClose) {
+      if (forceClose && this.displayEditMenu) {
+        this.displayEditMenu = false
+      }
     }
   }
 }
@@ -129,5 +167,51 @@ export default {
 <style lang="scss">
   .rule-editor {
     margin-bottom: .5rem;
+    &, .rule-details {
+      > .icon, > .center {
+        justify-self: center;
+      }
+      > .right {
+        justify-self: right;
+      }
+    }
+    .highlight-selector.field {
+      margin-bottom: .25rem;
+      margin-top: .25rem;
+    }
+    button.button.sumup-button {
+      justify-content: space-between;
+      white-space: normal;
+      height: 100%;
+    }
+    .rule-sumup {
+      grid-column: 2 / -2
+    }
+    .edit-menu-container {
+      position: relative;
+    }
+    .edit-menu {
+      position: absolute;
+      display: none;
+      top: 50%; right: 1em;
+      transform: translateY(-50%);
+      z-index: 999;
+      background: #fff;
+      &.is-active {
+        display: block;
+      }
+      button {
+        justify-content: space-between;
+      }
+      .button:not(:last-child):not(:only-child) {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+      .button + .button {
+        border-top: none;
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+      }
+    }
   }
 </style>

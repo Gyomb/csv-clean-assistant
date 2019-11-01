@@ -72,13 +72,16 @@
       <h4 class="subtitle" slot="left">Highlights</h4>
     </bulmaLevel>
     <!-- Highlights list -->
-      <ul>
+      <ul class="highlight-list">
         <li v-for="(highlightRule, index) in highlights" :key="index">
+          <b>#{{index}}</b>
           <highlight-editor :rule="highlightRule"
+            :force-close-edit-menu="highlightCurentlyOpenedEditorKey !== index"
             @update="updateItemInList(highlights, index, $event)"
             @move:up="moveItemInList(highlights, index, -1)"
             @move:down="moveItemInList(highlights, index, +1)"
             @delete="deleteItemInList(highlights, index)"
+            @openmenu="highlightCurentlyOpenedEditorKey = index"
           />
         </li>
       </ul>
@@ -111,6 +114,7 @@ export default {
       columnPosition: this.position || 0,
       ruleCurentlyOpenedEditorKey: false,
       ruleCurrentDisplay: 'sumup',
+      highlightCurentlyOpenedEditorKey: false,
       highlights: [],
       rules: []
     }
@@ -198,18 +202,24 @@ export default {
 </script>
 
 <style lang="scss">
+  $picto-col-width: 28px;
   .column-settings-editor {
     font-weight: normal;
   }
   .rule-list {
+    margin-bottom: 1.5rem;
+  }
+  .rule-list, .highlight-list {
     display: grid;
     li, .rule-editor, .rule-details {
       display: contents;
     }
-    $picto-col-width: 28px;
     $max-sumup-width: calc((100vw - 40px - #{$picto-col-width * 3}) / 2);
     $max-sumup-width: fit-content(42%);
     grid-template-columns: $picto-col-width $max-sumup-width 1fr $max-sumup-width $picto-col-width;
     align-items: center;
+  }
+  .highlight-list {
+    grid-template-columns: $picto-col-width 1fr 1fr 1fr $picto-col-width;
   }
 </style>
