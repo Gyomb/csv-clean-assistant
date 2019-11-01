@@ -29,15 +29,35 @@
         @click="rules.push({ isRegex: true })"
       />
       <h4 class="subtitle" slot="left">Column Modifiers</h4>
+      <div class="buttons has-addons" slot="right">
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': ruleCurrentDisplay === 'sumup'}"
+          picto="bars"
+          title="Show the summary view"
+          @click="ruleCurrentDisplay = 'sumup'"
+        />
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': ruleCurrentDisplay === 'details'}"
+          picto="list-alt"
+          title="Show the detailed view"
+          @click="ruleCurrentDisplay = 'details'"
+        />
+      </div>
     </bulmaLevel>
     <!-- Rules list -->
-      <ul>
+      <ul class="rule-list">
         <li v-for="(rule, index) in rules" :key="index">
+          <b>#{{index}}</b>
           <rule-editor :rule="rule" :column-list="columnList" :current-column="columnName"
+            :force-close-edit-menu="ruleCurentlyOpenedEditorKey !== index"
+            :default-display="ruleCurrentDisplay"
             @update="updateItemInList(rules, index, $event)"
             @move:up="moveItemInList(rules, index, -1)"
             @move:down="moveItemInList(rules, index, +1)"
             @delete="deleteItemInList(rules, index)"
+            @openmenu="ruleCurentlyOpenedEditorKey = index"
           />
         </li>
       </ul>
@@ -89,6 +109,8 @@ export default {
     return {
       columnIsHeading: false,
       columnPosition: this.position || 0,
+      ruleCurentlyOpenedEditorKey: false,
+      ruleCurrentDisplay: 'sumup',
       highlights: [],
       rules: []
     }
@@ -178,5 +200,16 @@ export default {
 <style lang="scss">
   .column-settings-editor {
     font-weight: normal;
+  }
+  .rule-list {
+    display: grid;
+    li, .rule-editor, .rule-details {
+      display: contents;
+    }
+    $picto-col-width: 28px;
+    $max-sumup-width: calc((100vw - 40px - #{$picto-col-width * 3}) / 2);
+    $max-sumup-width: fit-content(42%);
+    grid-template-columns: $picto-col-width $max-sumup-width 1fr $max-sumup-width $picto-col-width;
+    align-items: center;
   }
 </style>

@@ -1,38 +1,76 @@
 <template>
-  <bulmaLevel class="level rule-editor" mobile-view>
-    <matchSummup slot="left"
-      :exclude="exclude"
-      :is-regex="isRegex"
-      :match-pattern="matchPattern"
-      :match-options="matchOptions"
-    />
-    <bulmaButton slot="left"
-      rounded
-      picto="pen" last
-      @click="selectMatchPattern"
-    />
-    <span class="icon">
-      <i class="fas fa-arrow-right"></i>
-    </span>
-    <actionSummup
-      :action="rule.action"
-      :parameters="rule.parameters"
-    />
-    <bulmaButton slot="right"
-      rounded
-      picto="pen" last
-      @click="selectAction"
-    />
-    <span class="icon is-small has-text-grey-dark" slot="right">
-      <span class="fa-stack">
-        <i class="fas fa-sort-up fa-stack-2x is-clickable" @click="$emit('move:up')"></i>
-        <i class="fas fa-sort-down fa-stack-2x is-clickable" @click="$emit('move:down')"></i>
+  <div class="rule-editor">
+    <h5 class="rule-sumup" v-if="displaySumup">
+      {{rule.title}}
+    </h5>
+    <div class="rule-details" v-else>
+      <button class="button no-button sumup-button"
+          @click="selectMatchPattern"
+          title="Edit the matching settings for this rule"
+      >
+        <matchSummup
+          :exclude="exclude"
+          :is-regex="isRegex"
+          :match-pattern="matchPattern"
+          :match-options="matchOptions"
+        />
+        <span class="icon is-small">
+          <i class="fas fa-edit"></i>
+        </span>
+      </button>
+      <span class="icon">
+        <i class="fas fa-arrow-right"></i>
       </span>
-    </span>
-    <span class="icon has-text-danger is-small is-clickable" slot="right" @click="$emit('delete')">
-      <i class="fas fa-times fa-lg"></i>
-    </span>
-  </bulmaLevel>
+      <button class="button no-button sumup-button"
+        @click="selectAction"
+      >
+        <actionSummup
+          :action="rule.action"
+          :parameters="rule.parameters"
+          title="Edit the action settings for this rule"
+        />
+        <span class="icon is-small">
+          <i class="fas fa-edit"></i>
+        </span>
+      </button>
+    </div>
+    <div class="edit-menu-container right">
+      <button class="button no-button" @click="toggleEditMenu">
+        <span class="icon is-small">
+          <i class="fas fa-ellipsis-v"></i>
+        </span>
+      </button>
+      <div class="edit-menu" :class="{'is-active': displayEditMenu}">
+        <bulmaButton class="is-fullwidth"
+          :label="displaySumup ? 'Show details' : 'Show descr.'"
+          :title="displaySumup ? 'Show details' : 'Show summary -description'"
+          picto="eye" last
+          @click="displayEditMenu = false; displaySumup = !displaySumup"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Edit rule"
+          picto="edit" last
+          @click="displayEditMenu = false; openRuleCompleteEditor()"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Move Up"
+          picto="angle-up" last
+          @click="closeEditMenuAndEmit('move:up')"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Move Down"
+          picto="angle-down" last
+          @click="closeEditMenuAndEmit('move:down')"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Delete"
+          purpose="danger" apply-color-to="picto"
+          picto="times" last
+          @click="closeEditMenuAndEmit('delete')"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -49,13 +87,22 @@ export default {
     prop: 'rule',
     event: 'update'
   },
+  data: () => ({
+    displaySumup: false,
+    displayEditMenu: false
+  }),
   props: {
     rule: {
       type: Object,
       default () { return {} }
     },
     columnList: Array,
-    currentColumn: String
+    currentColumn: String,
+    defaultDisplay: {
+      type: String,
+      default: 'sumup'
+    },
+    forceCloseEditMenu: Boolean
   },
   computed: {
     exclude: {
@@ -84,6 +131,12 @@ export default {
     }
   },
   methods: {
+    updateAllLocalData (value) {
+      this.$emit('update', {
+        ...this.rule,
+        ...value
+      })
+    },
     updateMatchPatternLocalData ({ exclude, isRegex, pattern, global, caseSensitive, exactMatch }) {
       this.$emit('update', {
         ...this.rule,
@@ -132,6 +185,46 @@ export default {
           callback: this.updateActionLocalData
         }
       })
+    },
+    openRuleCompleteEditor () {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'ruleCompleteEditor',
+        parameters: {
+          callback: this.updateAllLocalData,
+          data: {
+            rule: { ...this.rule },
+            columnList: [...this.columnList]
+          }
+        }
+      })
+    },
+    toggleEditMenu () {
+      this.displayEditMenu = !this.displayEditMenu
+      if (this.displayEditMenu) this.$emit('openmenu')
+    },
+    closeEditMenuAndEmit (eventName) {
+      this.displayEditMenu = false
+      this.$emit(eventName)
+    }
+  },
+  watch: {
+    forceCloseEditMenu (forceClose) {
+      if (forceClose && this.displayEditMenu) {
+        this.displayEditMenu = false
+      }
+    },
+    defaultDisplay: {
+      handler (newDisplay, oldDisplay) {
+        if (newDisplay !== oldDisplay) {
+          switch (newDisplay) {
+            case 'sumup': this.displaySumup = true
+              break
+            case 'details':
+            default: this.displaySumup = false
+          }
+        }
+      },
+      immediate: true
     }
   }
 }
@@ -140,5 +233,47 @@ export default {
 <style lang="scss">
   .rule-editor {
     margin-bottom: .5rem;
+    &, .rule-details {
+      > .icon, > .center {
+        justify-self: center;
+      }
+      > .right {
+        justify-self: right;
+      }
+    }
+    button.button.sumup-button {
+      justify-content: space-between;
+      white-space: normal;
+      height: 100%;
+    }
+    .rule-sumup {
+      grid-column: 2 / -2
+    }
+    .edit-menu-container {
+      position: relative;
+    }
+    .edit-menu {
+      position: absolute;
+      display: none;
+      top: 50%; right: 1em;
+      transform: translateY(-50%);
+      z-index: 999;
+      background: #fff;
+      &.is-active {
+        display: block;
+      }
+      button {
+        justify-content: space-between;
+      }
+      .button:not(:last-child):not(:only-child) {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+      .button + .button {
+        border-top: none;
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+      }
+    }
   }
 </style>
