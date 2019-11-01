@@ -1,6 +1,9 @@
 <template>
   <div class="rule-editor">
-    <div class="rule-details">
+    <h5 class="rule-sumup" v-if="displaySumup">
+      {{rule.title}}
+    </h5>
+    <div class="rule-details" v-else>
       <button class="button no-button sumup-button"
           @click="selectMatchPattern"
           title="Edit the matching settings for this rule"
@@ -39,6 +42,17 @@
       </button>
       <div class="edit-menu" :class="{'is-active': displayEditMenu}">
         <bulmaButton class="is-fullwidth"
+          :label="displaySumup ? 'Show details' : 'Show descr.'"
+          :title="displaySumup ? 'Show details' : 'Show summary -description'"
+          picto="eye" last
+          @click="displayEditMenu = false; displaySumup = !displaySumup"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Edit rule"
+          picto="edit" last
+          @click="displayEditMenu = false; openRuleCompleteEditor()"
+        />
+        <bulmaButton class="is-fullwidth"
           label="Move Up"
           picto="angle-up" last
           @click="closeEditMenuAndEmit('move:up')"
@@ -74,6 +88,7 @@ export default {
     event: 'update'
   },
   data: () => ({
+    displaySumup: false,
     displayEditMenu: false
   }),
   props: {
@@ -112,6 +127,12 @@ export default {
     }
   },
   methods: {
+    updateAllLocalData (value) {
+      this.$emit('update', {
+        ...this.rule,
+        ...value
+      })
+    },
     updateMatchPatternLocalData ({ exclude, isRegex, pattern, global, caseSensitive, exactMatch }) {
       this.$emit('update', {
         ...this.rule,
@@ -158,6 +179,18 @@ export default {
             matchExcluded: this.exclude
           },
           callback: this.updateActionLocalData
+        }
+      })
+    },
+    openRuleCompleteEditor () {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'ruleCompleteEditor',
+        parameters: {
+          callback: this.updateAllLocalData,
+          data: {
+            rule: { ...this.rule },
+            columnList: [...this.columnList]
+          }
         }
       })
     },
