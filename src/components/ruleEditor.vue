@@ -98,6 +98,10 @@ export default {
     },
     columnList: Array,
     currentColumn: String,
+    defaultDisplay: {
+      type: String,
+      default: 'sumup'
+    },
     forceCloseEditMenu: Boolean
   },
   computed: {
@@ -208,6 +212,19 @@ export default {
       if (forceClose && this.displayEditMenu) {
         this.displayEditMenu = false
       }
+    },
+    defaultDisplay: {
+      handler (newDisplay, oldDisplay) {
+        if (newDisplay !== oldDisplay) {
+          switch (newDisplay) {
+            case 'sumup': this.displaySumup = true
+              break
+            case 'details':
+            default: this.displaySumup = false
+          }
+        }
+      },
+      immediate: true
     }
   }
 }

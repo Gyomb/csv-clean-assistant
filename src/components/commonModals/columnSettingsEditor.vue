@@ -29,6 +29,22 @@
         @click="rules.push({ isRegex: true })"
       />
       <h4 class="subtitle" slot="left">Column Modifiers</h4>
+      <div class="buttons has-addons" slot="right">
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': ruleCurrentDisplay === 'sumup'}"
+          picto="bars"
+          title="Show the summary view"
+          @click="ruleCurrentDisplay = 'sumup'"
+        />
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': ruleCurrentDisplay === 'details'}"
+          picto="list-alt"
+          title="Show the detailed view"
+          @click="ruleCurrentDisplay = 'details'"
+        />
+      </div>
     </bulmaLevel>
     <!-- Rules list -->
       <ul class="rule-list">
@@ -36,6 +52,7 @@
           <b>#{{index}}</b>
           <rule-editor :rule="rule" :column-list="columnList" :current-column="columnName"
             :force-close-edit-menu="ruleCurentlyOpenedEditorKey !== index"
+            :default-display="ruleCurrentDisplay"
             @update="updateItemInList(rules, index, $event)"
             @move:up="moveItemInList(rules, index, -1)"
             @move:down="moveItemInList(rules, index, +1)"
@@ -93,6 +110,7 @@ export default {
       columnIsHeading: false,
       columnPosition: this.position || 0,
       ruleCurentlyOpenedEditorKey: false,
+      ruleCurrentDisplay: 'sumup',
       highlights: [],
       rules: []
     }
