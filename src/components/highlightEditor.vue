@@ -1,6 +1,7 @@
 <template>
   <div class="rule-editor">
     <h5 class="rule-sumup" v-if="displaySumup">
+      <span class="small-swatch" :class="[`has-background-${this.color}`]"></span>
       {{rule.title}}
     </h5>
     <div class="rule-details" v-else>
@@ -263,6 +264,14 @@ export default {
         border-top-right-radius: 0;
         border-top-left-radius: 0;
       }
+    }
+    .small-swatch {
+      padding-left: 1.25rem;
+      margin: 0 .5rem;
+      &:first-child {
+        margin-left: 0;
+      }
+      border-radius: 4px;
     }
   }
 </style>
