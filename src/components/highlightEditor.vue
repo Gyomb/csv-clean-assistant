@@ -1,23 +1,28 @@
 <template>
   <div class="rule-editor">
-    <button class="button no-button sumup-button"
-      @click="selectMatchPattern"
-      title="Edit the matching settings for this highlight"
-    >
-      <matchSummup
-        :exclude="exclude"
-        :is-regex="isRegex"
-        :match-pattern="matchPattern"
-        :match-options="matchOptions"
-      />
-      <span class="icon is-small">
-        <i class="fas fa-edit"></i>
+    <h5 class="rule-sumup" v-if="displaySumup">
+      {{rule.title}}
+    </h5>
+    <div class="rule-details" v-else>
+      <button class="button no-button sumup-button"
+        @click="selectMatchPattern"
+        title="Edit the matching settings for this highlight"
+      >
+        <matchSummup
+          :exclude="exclude"
+          :is-regex="isRegex"
+          :match-pattern="matchPattern"
+          :match-options="matchOptions"
+        />
+        <span class="icon is-small">
+          <i class="fas fa-edit"></i>
+        </span>
+      </button>
+      <span class="icon">
+        <i class="fas fa-arrow-right"></i>
       </span>
-    </button>
-    <span class="icon">
-      <i class="fas fa-arrow-right"></i>
-    </span>
-    <highlightSelector class="highlight-selector" v-model="color" />
+      <highlightSelector class="highlight-selector" v-model="color" />
+    </div>
     <div class="edit-menu-container right">
       <button class="button no-button" @click="toggleEditMenu">
         <span class="icon is-small">
@@ -25,6 +30,17 @@
         </span>
       </button>
       <div class="edit-menu" :class="{'is-active': displayEditMenu}">
+        <bulmaButton class="is-fullwidth"
+          :label="displaySumup ? 'Show details' : 'Show descr.'"
+          :title="displaySumup ? 'Show details' : 'Show summary -description'"
+          picto="eye" last
+          @click="displayEditMenu = false; displaySumup = !displaySumup"
+        />
+        <bulmaButton class="is-fullwidth"
+          label="Edit rule"
+          picto="edit" last
+          @click="displayEditMenu = false; openHighlightCompleteEditor()"
+        />
         <bulmaButton class="is-fullwidth"
           label="Move Up"
           picto="angle-up" last
@@ -61,12 +77,17 @@ export default {
     event: 'update'
   },
   data: () => ({
+    displaySumup: false,
     displayEditMenu: false
   }),
   props: {
     rule: {
       type: Object,
       default () { return {} }
+    },
+    defaultDisplay: {
+      type: String,
+      default: 'sumup'
     },
     forceCloseEditMenu: Boolean
   },
@@ -118,6 +139,12 @@ export default {
     }
   },
   methods: {
+    updateAllLocalData (value) {
+      this.$emit('update', {
+        ...this.rule,
+        ...value
+      })
+    },
     updateMatchPatternLocalData ({ exclude, isRegex, pattern, global, caseSensitive, exactMatch }) {
       this.$emit('update', {
         ...this.rule,
@@ -145,6 +172,17 @@ export default {
         }
       })
     },
+    openHighlightCompleteEditor () {
+      this.$store.commit('MODAL_OPEN', {
+        id: 'highlightCompleteEditor',
+        parameters: {
+          callback: this.updateAllLocalData,
+          data: {
+            rule: { ...this.rule }
+          }
+        }
+      })
+    },
     toggleEditMenu () {
       this.displayEditMenu = !this.displayEditMenu
       if (this.displayEditMenu) this.$emit('openmenu')
@@ -159,6 +197,19 @@ export default {
       if (forceClose && this.displayEditMenu) {
         this.displayEditMenu = false
       }
+    },
+    defaultDisplay: {
+      handler (newDisplay, oldDisplay) {
+        if (newDisplay !== oldDisplay) {
+          switch (newDisplay) {
+            case 'sumup': this.displaySumup = true
+              break
+            case 'details':
+            default: this.displaySumup = false
+          }
+        }
+      },
+      immediate: true
     }
   }
 }

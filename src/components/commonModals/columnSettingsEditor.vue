@@ -70,6 +70,22 @@
         @click="highlights.push({ isRegex: true })"
       />
       <h4 class="subtitle" slot="left">Highlights</h4>
+      <div class="buttons has-addons" slot="right">
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': highlightCurrentDisplay === 'sumup'}"
+          picto="bars"
+          title="Show the summary view"
+          @click="highlightCurrentDisplay = 'sumup'"
+        />
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': highlightCurrentDisplay === 'details'}"
+          picto="list-alt"
+          title="Show the detailed view"
+          @click="highlightCurrentDisplay = 'details'"
+        />
+      </div>
     </bulmaLevel>
     <!-- Highlights list -->
       <ul class="highlight-list">
@@ -77,6 +93,7 @@
           <b>#{{index}}</b>
           <highlight-editor :rule="highlightRule"
             :force-close-edit-menu="highlightCurentlyOpenedEditorKey !== index"
+            :default-display="highlightCurrentDisplay"
             @update="updateItemInList(highlights, index, $event)"
             @move:up="moveItemInList(highlights, index, -1)"
             @move:down="moveItemInList(highlights, index, +1)"
@@ -115,6 +132,7 @@ export default {
       ruleCurentlyOpenedEditorKey: false,
       ruleCurrentDisplay: 'sumup',
       highlightCurentlyOpenedEditorKey: false,
+      highlightCurrentDisplay: 'sumup',
       highlights: [],
       rules: []
     }

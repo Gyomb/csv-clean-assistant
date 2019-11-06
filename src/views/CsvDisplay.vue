@@ -27,6 +27,7 @@
     <columnSettingsEditor />
     <exportSettings />
     <ruleCompleteEditor />
+    <highlightCompleteEditor />
     <actionSelector />
     <matchPattern />
   </div>
@@ -37,6 +38,7 @@ import csvTable from '@/components/csvTable'
 import columnSettingsEditor from '@/components/commonModals/columnSettingsEditor'
 import exportSettings from '@/components/commonModals/exportSettings'
 import ruleCompleteEditor from '@/components/commonModals/ruleCompleteEditor'
+import highlightCompleteEditor from '@/components/commonModals/highlightCompleteEditor'
 import actionSelector from '@/components/commonModals/actionSelector'
 import matchPattern from '@/components/commonModals/matchPattern'
 
@@ -47,6 +49,7 @@ export default {
     columnSettingsEditor,
     exportSettings,
     ruleCompleteEditor,
+    highlightCompleteEditor,
     actionSelector,
     matchPattern
   },
