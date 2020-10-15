@@ -1,9 +1,13 @@
 <template>
   <div class="rule-editor">
-    <h5 class="rule-sumup" v-if="displaySumup">
-      <span class="small-swatch" :class="[`has-background-${this.color}`]"></span>
-      {{rule.title}}
-    </h5>
+    <div class="rule-sumup" v-if="displaySumup">
+      <div class="icon-container">
+        <span class="small-swatch" :class="[`has-background-${this.color}`]"></span>
+      </div>
+      <h5 class="rule-title">
+        {{rule.title}}
+      </h5>
+    </div>
     <div class="rule-details" v-else>
       <button class="button no-button sumup-button"
         @click="selectMatchPattern"
@@ -237,7 +241,16 @@ export default {
       height: 100%;
     }
     .rule-sumup {
-      grid-column: 2 / -2
+      grid-column: 2 / -2;
+      display:grid;
+      grid-template-columns: 1.75rem 1fr;
+      > *:not(.icon-container) {
+        grid-column: 2 / -1;
+      }
+      > .icon-container {
+        grid-row: span 2;
+        align-self: center;
+      }
     }
     .edit-menu-container {
       position: relative;
