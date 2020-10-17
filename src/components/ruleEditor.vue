@@ -1,10 +1,10 @@
 <template>
   <div class="rule-editor">
-    <div class="rule-sumup" v-if="displaySumup">
+    <vertically-centered-icon-with-content class="rule-sumup" v-if="displaySumup">
       <h5 class="rule-title">
         {{rule.title}}
       </h5>
-    </div>
+    </vertically-centered-icon-with-content>
     <div class="rule-details" v-else>
       <button class="button no-button sumup-button"
           @click="selectMatchPattern"
@@ -250,15 +250,6 @@ export default {
     }
     .rule-sumup {
       grid-column: 2 / -2;
-      display:grid;
-      grid-template-columns: 1.75rem 1fr;
-      > *:not(.icon-container) {
-        grid-column: 2 / -1;
-      }
-      > .icon-container {
-        grid-row: span 2;
-        align-self: center;
-      }
     }
     .edit-menu-container {
       position: relative;
