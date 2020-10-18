@@ -7,7 +7,7 @@
           <columnHead class="cell-nobreak"
             v-for="(headEntry, index) in header" :key="headEntry+index"
             :label="headEntry"
-            @click="$emit('open:colsettings', headEntry)"
+            @click="$emit('open-col-settings', headEntry)"
           />
         </tr>
       </thead>

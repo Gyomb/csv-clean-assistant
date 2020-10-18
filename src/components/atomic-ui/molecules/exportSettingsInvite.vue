@@ -1,6 +1,6 @@
 <template>
   <bulmaField has-addons>
-    <bulma-button picto="file-export" purpose="success" @click="exportCsv" :disabled="!exportFilepath" rounded />
+    <bulma-button class="picto-extra-margin-left" picto="file-export" purpose="success" @click="exportCsv" :disabled="!exportFilepath" rounded />
     <bulma-button picto="sliders-h" @click="openModal" rounded />
     <span class="button is-rounded" @click="openModal">{{exportFilename}}</span>
   </bulmaField>

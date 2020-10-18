@@ -3,11 +3,11 @@
     v-on="listeners"
   >
     <span class="icon is-small" :class="[pictoColor]" v-if="picto && !last">
-        <i :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
+        <i :class="[iconClass]"></i>
     </span>
     <span :class="[textColor]" v-if="label">{{label}}</span>
     <span class="icon is-small" :class="[pictoColor]" v-if="picto && last">
-        <i :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
+        <i :class="[iconClass]"></i>
     </span>
   </button>
 </template>

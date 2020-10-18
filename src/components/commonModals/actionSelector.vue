@@ -138,10 +138,6 @@ const defaultIfUndefined = (value, defaultValue) => {
 
 export default {
   name: 'actionSelector',
-  model: {
-    prop: 'action',
-    event: 'update'
-  },
   data () {
     return {
       selectedAction: '',

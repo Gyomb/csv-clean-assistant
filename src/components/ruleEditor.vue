@@ -7,8 +7,8 @@
     </vertically-centered-icon-with-content>
     <div class="rule-details" v-else>
       <button class="button no-button sumup-button"
-          @click="selectMatchPattern"
-          title="Edit the matching settings for this rule"
+        @click="selectMatchPattern"
+        title="Edit the matching settings for this rule"
       >
         <matchSummup
           :exclude="exclude"

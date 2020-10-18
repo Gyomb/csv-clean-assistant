@@ -29,7 +29,7 @@ This project uses webpack to compile the code and eslint (standard settings) to 
 The project's source code is stored in the src/ folder and is structured as follows:
 ```
 src/
--+ assets/ # folder to store static assets
+-+ assets/        # folder to store static assets
 -+ background-process/ # folder for js modules destined for the background process
 -+ components/    # all Vue components (components, not templates) will be stored here
 ---+ atomic-ui/     # all the components inside this folder are registered globally and accessible in any other component without explicit declaration

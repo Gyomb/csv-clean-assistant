@@ -19,7 +19,7 @@
       :data="$store.state.csv.json"
       :columns-settings="$store.state.files.list[fileUid].columns || {}"
       @cellupdate="saveCellUpdate"
-      @open:colsettings="openColSettings"
+      @open-col-settings="openColSettings"
     />
     <bulmaModal :is-active="displaySource" @close="displaySource = false">
       <pre>{{$store.state.csv.json}}</pre>
