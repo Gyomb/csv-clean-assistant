@@ -1,7 +1,6 @@
 <template>
-  <button class="button" :class="[buttonColor, isRounded]"
-    @click="$emit('click')"
-    @blur="$emit('blur', $event)"
+  <button type=“button” class="button" :class="[buttonColor, isRounded]"
+    v-on="listeners"
   >
     <span class="icon is-small" :class="[pictoColor]" v-if="picto && !last">
         <i :class="[iconClass, {'fa-inverse': hasColoredBackground}]"></i>
@@ -28,6 +27,11 @@ export default {
     last: Boolean
   },
   computed: {
+    listeners () {
+      return {
+        ...this.$listeners
+      }
+    },
     iconClass () {
       if (typeof this.picto === 'string') return 'fas fa-' + this.picto
       if (this.picto.icon) {
@@ -65,3 +69,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  button.button.picto-extra-margin-left .icon:nth-child(1) {
+    margin-left: 0;
+  }
+</style>

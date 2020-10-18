@@ -21,44 +21,84 @@
     <h4 class="subtitle">Rulesets</h4>
     <!-- presets drawer -->
     <bulmaLevel mobile-view>
-      <h4 class="subtitle" slot="left">Column Modifiers</h4>
-      <bulmaButton slot="right"
+      <bulmaButton slot="left"
         rounded class="is-small"
         picto="plus"
-        purpose="success"
+        purpose="info"
         title="Add a new column modifier"
         @click="rules.push({ isRegex: true })"
       />
+      <h4 class="subtitle" slot="left">Column Modifiers</h4>
+      <div class="buttons has-addons" slot="right">
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': ruleCurrentDisplay === 'sumup'}"
+          picto="bars"
+          title="Show the summary view"
+          @click="ruleCurrentDisplay = 'sumup'"
+        />
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': ruleCurrentDisplay === 'details'}"
+          picto="list-alt"
+          title="Show the detailed view"
+          @click="ruleCurrentDisplay = 'details'"
+        />
+      </div>
     </bulmaLevel>
     <!-- Rules list -->
-      <ul>
+      <ul class="rule-list">
         <li v-for="(rule, index) in rules" :key="index">
+          <b>#{{index}}</b>
           <rule-editor :rule="rule" :column-list="columnList" :current-column="columnName"
+            :force-close-edit-menu="ruleCurentlyOpenedEditorKey !== index"
+            :default-display="ruleCurrentDisplay"
             @update="updateItemInList(rules, index, $event)"
             @move:up="moveItemInList(rules, index, -1)"
             @move:down="moveItemInList(rules, index, +1)"
             @delete="deleteItemInList(rules, index)"
+            @openmenu="ruleCurentlyOpenedEditorKey = index"
           />
         </li>
       </ul>
     <bulmaLevel mobile-view>
-      <h4 class="subtitle" slot="left">Highlights</h4>
-      <bulmaButton slot="right"
+      <bulmaButton slot="left"
         rounded class="is-small"
         picto="plus"
-        purpose="success"
+        purpose="info"
         title="Add a new column highlight"
         @click="highlights.push({ isRegex: true })"
       />
+      <h4 class="subtitle" slot="left">Highlights</h4>
+      <div class="buttons has-addons" slot="right">
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': highlightCurrentDisplay === 'sumup'}"
+          picto="bars"
+          title="Show the summary view"
+          @click="highlightCurrentDisplay = 'sumup'"
+        />
+        <bulmaButton rounded
+          class="is-small"
+          :class="{'is-active is-info': highlightCurrentDisplay === 'details'}"
+          picto="list-alt"
+          title="Show the detailed view"
+          @click="highlightCurrentDisplay = 'details'"
+        />
+      </div>
     </bulmaLevel>
     <!-- Highlights list -->
-      <ul>
+      <ul class="highlight-list">
         <li v-for="(highlightRule, index) in highlights" :key="index">
+          <b>#{{index}}</b>
           <highlight-editor :rule="highlightRule"
+            :force-close-edit-menu="highlightCurentlyOpenedEditorKey !== index"
+            :default-display="highlightCurrentDisplay"
             @update="updateItemInList(highlights, index, $event)"
             @move:up="moveItemInList(highlights, index, -1)"
             @move:down="moveItemInList(highlights, index, +1)"
             @delete="deleteItemInList(highlights, index)"
+            @openmenu="highlightCurentlyOpenedEditorKey = index"
           />
         </li>
       </ul>
@@ -76,8 +116,8 @@
 
 <script>
 import { moveInArray } from '@/helpers/arrays.js'
-import ruleEditor from '@/components/ui-toolbox/ruleEditor'
-import highlightEditor from '@/components/ui-toolbox/highlightEditor'
+import ruleEditor from '@/components/ruleEditor'
+import highlightEditor from '@/components/highlightEditor'
 
 export default {
   name: 'columnSettingsEditor',
@@ -89,6 +129,10 @@ export default {
     return {
       columnIsHeading: false,
       columnPosition: this.position || 0,
+      ruleCurentlyOpenedEditorKey: false,
+      ruleCurrentDisplay: 'sumup',
+      highlightCurentlyOpenedEditorKey: false,
+      highlightCurrentDisplay: 'sumup',
       highlights: [],
       rules: []
     }
@@ -176,7 +220,24 @@ export default {
 </script>
 
 <style lang="scss">
+  $picto-col-width: 28px;
   .column-settings-editor {
     font-weight: normal;
+  }
+  .rule-list {
+    margin-bottom: 1.5rem;
+  }
+  .rule-list, .highlight-list {
+    display: grid;
+    li, .rule-editor, .rule-details {
+      display: contents;
+    }
+    $max-sumup-width: calc((100vw - 40px - #{$picto-col-width * 3}) / 2);
+    $max-sumup-width: fit-content(42%);
+    grid-template-columns: $picto-col-width $max-sumup-width 1fr $max-sumup-width $picto-col-width;
+    align-items: center;
+  }
+  .highlight-list {
+    grid-template-columns: $picto-col-width 1fr 1fr 1fr $picto-col-width;
   }
 </style>

@@ -29,6 +29,10 @@ button.no-button {
     text-align: inherit;
     -webkit-appearance: none;
     -moz-appearance: none;
+    &.button {
+      justify-content: left;
+      background: none;
+    }
 }
 
 .button {

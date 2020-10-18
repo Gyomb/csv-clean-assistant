@@ -1,13 +1,14 @@
 import Vue from 'vue'
+import { formatFlags } from '@/helpers/matchLogics'
 
 const formatRules = function (rules) {
-  return rules.map(({ exclude = false, isRegex = true, matchPattern, action, parameters }) => {
+  return rules.map(({ exclude = false, isRegex = true, matchPattern, matchOptions, action, parameters }) => {
     let parametersToInject = {}
     switch (action) {
       case 'replace':
         parametersToInject.replacementString = parameters.replacementString
         if (!parameters.useMatchPattern) {
-          parametersToInject.replacementPattern = parameters.isRegex ? new RegExp(parameters.replacementPattern) : parameters.replacementPattern
+          parametersToInject.replacementPattern = parameters.isRegex ? new RegExp(parameters.replacementPattern, formatFlags(parameters.replacementOptions)) : parameters.replacementPattern
         }
         break
       case 'delete':
@@ -20,16 +21,24 @@ const formatRules = function (rules) {
     }
     return {
       exclude: !!exclude,
-      match: isRegex ? new RegExp(matchPattern) : matchPattern,
+      match: isRegex ? new RegExp(matchPattern, formatFlags(matchOptions)) : matchPattern,
       action: action,
+      options: matchOptions || {},
       ...parametersToInject
     }
   })
 }
 
-const cellMatch = function (string, pattern, toExclude) {
+const cellMatch = function (string, pattern, toExclude, options = {}) {
   string = string || ''
-  const isMatch = pattern instanceof RegExp ? pattern.test(string) : string.includes(pattern)
+  let isMatch = false
+  if (pattern instanceof RegExp) {
+    isMatch = pattern.test(string)
+  } else if (options.exactMatch) {
+    isMatch = string === pattern
+  } else {
+    isMatch = string.includes(pattern)
+  }
   if (!toExclude && isMatch) return true
   if (toExclude && !isMatch) return true
   return false
@@ -89,7 +98,7 @@ const actions = {
         let deleteRow = false
         for (let ruleIndex = 0; ruleIndex < rulesToApply.length; ruleIndex++) {
           const rule = rulesToApply[ruleIndex]
-          if (cellMatch(newCell, rule.match, rule.exclude)) {
+          if (cellMatch(newCell, rule.match, rule.exclude, rule.options)) {
             let oldCell = newCell
             switch (rule.action) {
               case 'replace': newCell = replaceAction(newCell, rule)

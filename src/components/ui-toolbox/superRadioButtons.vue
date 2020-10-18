@@ -121,35 +121,36 @@ export default {
 
 <style lang="scss">
   $background-color: white;
-$link-color: #3273dc;
-$deselected-color: #4a4a4a;
-.super-radio-button {
-  cursor: pointer;
-  .super-option {
-    &.is-selected {
-      box-shadow: 0 2px 3px rgba(50,115,220,.1), 0 0 0 1px rgba(50,115,220,.75);
-      .super-option-label {
-        .button.is-outlined {
-          border-color: $link-color;
-          color: $link-color;
-        }
-      }
-      &:hover {
-        box-shadow: 0 2px 3px rgba(#4a4a4a, .1), 0 0 0 1px #4a4a4a;
+  $link-color: #3273dc;
+  $deselected-color: #4a4a4a;
+  .super-radio-button {
+    cursor: pointer;
+    margin-top: 2.5rem;
+    .super-option {
+      &.is-selected {
+        box-shadow: 0 2px 3px rgba(50,115,220,.1), 0 0 0 1px rgba(50,115,220,.75);
         .super-option-label {
-        .button.is-outlined {
-          border-color: $deselected-color;
-          color: $deselected-color;
+          .button.is-outlined {
+            border-color: $link-color;
+            color: $link-color;
+          }
+        }
+        &:hover {
+          box-shadow: 0 2px 3px rgba(#4a4a4a, .1), 0 0 0 1px #4a4a4a;
+          .super-option-label {
+          .button.is-outlined {
+            border-color: $deselected-color;
+            color: $deselected-color;
+          }
+        }
         }
       }
+      .super-option-label {
+        margin-top: -2.4rem;
       }
-    }
-    .super-option-label {
-      margin-top: -2.4rem;
-    }
-    .button.is-outlined {
-      background-color: $background-color;
+      .button.is-outlined {
+        background-color: $background-color;
+      }
     }
   }
-}
 </style>
