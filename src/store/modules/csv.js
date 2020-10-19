@@ -73,7 +73,7 @@ const actions = {
     })
     ipcRenderer.send('analyzeCsv', { uid, filepath, parameters })
   },
-  OPEN_IMPORTED_CSV ({ commit, rootState }, uid) {
+  OPEN_IMPORTED_CSV ({ commit, rootState, dispatch }, uid) {
     commit('MODAL_OPEN', {
       id: 'loading',
       parameters: {
@@ -86,7 +86,10 @@ const actions = {
         .then(content => {
           commit('CSV_CONTENT_UPDATE', { ...JSON.parse(content) })
           commit('MODAL_CLOSE', 'loading')
-          resolve(content)
+          return content
+        })
+        .then(content => {
+          return dispatch('METADATA_INITIALIZE', { csvJson: JSON.parse(content).json }).then(resolve(content))
         })
         .catch(err => {
           commit('MODAL_CLOSE', 'loading')
