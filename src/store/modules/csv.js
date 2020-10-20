@@ -51,7 +51,7 @@ const actions = {
     commit('JSON_UPDATE', { row, col, value })
     dispatch('SAVE_IMPORTED_CSV', rootState.userSettings.openedFile)
   },
-  IMPORT_CSV ({ commit, rootState }, uid) {
+  IMPORT_CSV ({ commit, rootState, dispatch }, uid) {
     let filepath = rootState.files.list[uid].path
     let parameters = rootState.files.list[uid].importParameters || {}
     commit('CSV_STATUS_UPDATE', 'analyzing')
@@ -62,6 +62,7 @@ const actions = {
       }
     })
     ipcRenderer.once('analyzedCsv', (event, content) => {
+      dispatch('METADATA_INITIALIZE', { csvJson: content.json })
       commit('CSV_CONTENT_UPDATE', content)
       commit('CSV_STATUS_UPDATE', 'ready')
       commit('MODAL_CLOSE', 'loading')
