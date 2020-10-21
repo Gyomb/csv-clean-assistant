@@ -33,6 +33,13 @@ const mutations = {
     } else {
       Vue.set(state.metadata[columnName], 'cells', columnCells)
     }
+  },
+  METADATA_SET_CELLVALUE (state, { columnName, rowIndex, value }) {
+    if (typeof state.metadata?.[columnName]?.cells?.[rowIndex] !== 'undefined') {
+      state.metadata[columnName].cells[rowIndex] = value
+    } else {
+      return console.error('METADATA_SET_CELLVALUE: Please provide a valid columnName (' + columnName + ') and rowIndex (' + rowIndex + ')')
+    }
   }
 }
 
