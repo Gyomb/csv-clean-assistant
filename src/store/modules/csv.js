@@ -49,6 +49,7 @@ const mutations = {
 const actions = {
   MODIFY_CELL ({ commit, dispatch, rootState }, { row, col, value }) {
     commit('JSON_UPDATE', { row, col, value })
+    commit('METADATA_SET_CELLVALUE', { columnName: col, rowIndex: row, value }, { root: true })
     dispatch('SAVE_IMPORTED_CSV', rootState.userSettings.openedFile)
   },
   IMPORT_CSV ({ commit, rootState, dispatch }, uid) {
