@@ -95,7 +95,7 @@ export default {
         <bulmaButton ref="buttonValidate"
           picto="check" purpose="success" apply-color-to="picto"
           tabindex={this.editMode ? 0 : -1}
-          onClick={this.deactivateEditMode}
+          onClick={this.updateAndClose}
           onBlur={this.deactivateEditModeIfInputLeft}
         />
         <bulmaButton ref="buttonCancel"

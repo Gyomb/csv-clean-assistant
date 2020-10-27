@@ -49,9 +49,10 @@ const mutations = {
 const actions = {
   MODIFY_CELL ({ commit, dispatch, rootState }, { row, col, value }) {
     commit('JSON_UPDATE', { row, col, value })
+    commit('METADATA_SET_CELLVALUE', { columnName: col, rowIndex: row, value }, { root: true })
     dispatch('SAVE_IMPORTED_CSV', rootState.userSettings.openedFile)
   },
-  IMPORT_CSV ({ commit, rootState }, uid) {
+  IMPORT_CSV ({ commit, rootState, dispatch }, uid) {
     let filepath = rootState.files.list[uid].path
     let parameters = rootState.files.list[uid].importParameters || {}
     commit('CSV_STATUS_UPDATE', 'analyzing')
@@ -62,6 +63,7 @@ const actions = {
       }
     })
     ipcRenderer.once('analyzedCsv', (event, content) => {
+      dispatch('METADATA_INITIALIZE', { csvJson: content.json })
       commit('CSV_CONTENT_UPDATE', content)
       commit('CSV_STATUS_UPDATE', 'ready')
       commit('MODAL_CLOSE', 'loading')
@@ -73,7 +75,7 @@ const actions = {
     })
     ipcRenderer.send('analyzeCsv', { uid, filepath, parameters })
   },
-  OPEN_IMPORTED_CSV ({ commit, rootState }, uid) {
+  OPEN_IMPORTED_CSV ({ commit, rootState, dispatch }, uid) {
     commit('MODAL_OPEN', {
       id: 'loading',
       parameters: {
@@ -86,7 +88,11 @@ const actions = {
         .then(content => {
           commit('CSV_CONTENT_UPDATE', { ...JSON.parse(content) })
           commit('MODAL_CLOSE', 'loading')
-          resolve(content)
+          return content
+        })
+        .then(content => {
+          let { json, metadata } = JSON.parse(content)
+          return dispatch('METADATA_INITIALIZE', { csvJson: json, metadata }).then(resolve(content))
         })
         .catch(err => {
           commit('MODAL_CLOSE', 'loading')
@@ -97,13 +103,19 @@ const actions = {
   SAVE_IMPORTED_CSV ({ state, commit, rootState }, uid) {
     let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
     let { header, delimiter, json } = state
+    let { metadata } = rootState.metadata
+    for (const columnKey in metadata) {
+      if (metadata.hasOwnProperty(columnKey)) {
+        metadata[columnKey].cells = []
+      }
+    }
     commit('MODAL_OPEN', {
       id: 'loading',
       parameters: {
         message: `Saving modifications to ${rootState.files.list[uid].name}…`
       }
     })
-    return fsp.writeFile(importedFilePath, JSON.stringify({ header, delimiter, json }), 'utf-8')
+    return fsp.writeFile(importedFilePath, JSON.stringify({ header, delimiter, json, metadata }), 'utf-8')
       .then(commit('MODAL_CLOSE', 'loading'))
       .catch(err => {
         commit('MODAL_CLOSE', 'loading')
