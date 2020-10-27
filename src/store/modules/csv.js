@@ -102,13 +102,19 @@ const actions = {
   SAVE_IMPORTED_CSV ({ state, commit, rootState }, uid) {
     let importedFilePath = path.join(importedFolder, uid + '-decoded.json')
     let { header, delimiter, json } = state
+    let { metadata } = rootState.metadata
+    for (const columnKey in metadata) {
+      if (metadata.hasOwnProperty(columnKey)) {
+        metadata[columnKey].cells = []
+      }
+    }
     commit('MODAL_OPEN', {
       id: 'loading',
       parameters: {
         message: `Saving modifications to ${rootState.files.list[uid].name}…`
       }
     })
-    return fsp.writeFile(importedFilePath, JSON.stringify({ header, delimiter, json }), 'utf-8')
+    return fsp.writeFile(importedFilePath, JSON.stringify({ header, delimiter, json, metadata }), 'utf-8')
       .then(commit('MODAL_CLOSE', 'loading'))
       .catch(err => {
         commit('MODAL_CLOSE', 'loading')
