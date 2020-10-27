@@ -91,7 +91,8 @@ const actions = {
           return content
         })
         .then(content => {
-          return dispatch('METADATA_INITIALIZE', { csvJson: JSON.parse(content).json }).then(resolve(content))
+          let { json, metadata } = JSON.parse(content)
+          return dispatch('METADATA_INITIALIZE', { csvJson: json, metadata }).then(resolve(content))
         })
         .catch(err => {
           commit('MODAL_CLOSE', 'loading')

@@ -44,15 +44,14 @@ const mutations = {
 }
 
 const actions = {
-  METADATA_INITIALIZE ({ commit }, { csvJson, savedMetadata }) {
+  METADATA_INITIALIZE ({ commit }, { csvJson, metadata }) {
     return new Promise((resolve, reject) => {
       commit('METADATA_ERASE')
-      if (savedMetadata) {
-        commit('METADATA_DUMP', savedMetadata)
-      } else {
-        const transposedJson = transposeArrayOfObjects(csvJson)
-        Object.keys(transposedJson).forEach(columnName => commit('METADATA_SET_COLUMN_CONTENT', { columnName, columnCells: transposedJson[columnName] }))
+      if (metadata) {
+        commit('METADATA_DUMP', metadata)
       }
+      const transposedJson = transposeArrayOfObjects(csvJson)
+      Object.keys(transposedJson).forEach(columnName => commit('METADATA_SET_COLUMN_CONTENT', { columnName, columnCells: transposedJson[columnName] }))
       resolve()
     })
   }
